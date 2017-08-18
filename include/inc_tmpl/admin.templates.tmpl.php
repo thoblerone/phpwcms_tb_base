@@ -97,6 +97,7 @@ if($result = mysql_query($sql, $db) or die("error while listing templates")) {
         echo 'onclick="return confirm(\''.js_singlequote($BL['be_cnt_delete'].': '.html($row["template_name"])).'\');">';
         echo '<img src="img/button/del_11x11.gif" width="11" height="11" border="0"></a>';
         echo '<img src="img/leer.gif" width="2" height="1">'."</td>\n</tr>\n";
+
         $row_count++;
     }
     mysql_free_result($result);
