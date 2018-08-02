@@ -1447,10 +1447,10 @@ if(!empty($block['tracking_ga']['enable'])) {
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-    ga('create', '%s', 'auto'%s);
+    ga('create', '%s', 'auto');%s
     ga('send', 'pageview');
   </script>",
-       'anonymize' => ', {anonymizeIp: true}',
+       'anonymize' => "\n    ga('set', 'anonymizeIp', true);",
        'optout' => "  <script".SCRIPT_ATTRIBUTE_TYPE.">
     var gaOptOutCookie = 'ga-disable-%s';
     if (document.cookie.indexOf(gaOptOutCookie + '=true') > -1) {
