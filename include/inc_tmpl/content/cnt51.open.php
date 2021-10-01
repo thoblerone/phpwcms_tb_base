@@ -3,15 +3,14 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
  **/
 
-session_start();
+$phpwcms = array('SESSION_START' => true);
 
-$phpwcms = array();
 require_once '../../../include/config/conf.inc.php';
 require_once '../../../include/inc_lib/default.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/helper.session.php';
@@ -26,9 +25,9 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
 	<meta http-equiv="Content-Type" content="text/html; charset=<?php echo PHPWCMS_CHARSET ?>">
 	<title>Choose Location</title>
 	<script type="text/javascript">
-		var ie4 = document.all&&navigator.userAgent.indexOf("Opera")==-1;
-		var ns6 = document.getElementById&&!document.all;
-		var ns4 = document.layers;
+		var ie4 = document.all && navigator.userAgent.indexOf("Opera") === -1,
+            ns6 = document.getElementById && !document.all,
+            ns4 = document.layers;
 
 		function setLocationXY(kx,ky) {
 			window.opener.document.articlecontent.cmap_location_x.value=kx;

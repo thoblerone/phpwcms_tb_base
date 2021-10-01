@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -37,11 +37,11 @@ function showPollImage($image, $zoom = 0) {
         ));
     }
 
-    $list_img_temp  = '<img src="'.$thumb_image['src'].'" '.$thumb_image[3].$image_border.$image_imgclass.' />';
+    $list_img_temp  = '<img src="'.$thumb_image['src'].'" '.$thumb_image[3].$image_border.$image_imgclass.PHPWCMS_LAZY_LOADING.HTML_TAG_CLOSE;
 
     if($zoom && !empty($zoominfo)) {
         // if click enlarge the image
-        $open_popup_link = 'image_zoom.php?'.getClickZoomImageParameter($zoominfo['src'].'?'.$zoominfo[3]);
+        $open_popup_link = 'image_zoom.php?'.getClickZoomImageParameter($zoominfo['src'], $zoominfo[3], $image[1]);
         $open_link = $open_popup_link;
         $return_false = 'return false;';
 
@@ -62,12 +62,12 @@ function utf2html($str) {
     $max = strlen($str);
     $last = 0;  // keeps the index of the last regular character
     for ($i=0; $i < $max; $i++) {
-        $c = $str{$i};
+        $c = substr($str, $i, 1);
         $c1 = ord($c);
         if ($c1>>5 == 6) {  // 110x xxxx, 110 prefix for 2 bytes unicode
             $ret .= substr($str, $last, $i-$last); // append all the regular characters we've passed
             $c1 &= 31; // remove the 3 bit two bytes prefix
-            $c2 = ord($str{++$i}); // the next byte
+            $c2 = ord(substr($str, ++$i, 1)); // the next byte
             $c2 &= 63;  // remove the 2 bit trailing byte prefix
             $c2 |= (($c1 & 3) << 6); // last 2 bits of c1 become first 2 of c2
             $c1 >>= 2; // c1 shifts 2 to the right
@@ -166,9 +166,6 @@ function is_date($PASSED, $TXT_DATE_FORMAT='m/d/Y') {
                         $i++; // Move in string pointer forward 1
                         switch ($dte_frmt_lstchr) {
                             case "A":
-                                if (strtoupper($lastchar)!="AM" && strtoupper($lastchar)!="PM") { $store_arr = FALSE; $i = strlen($PASSED)+1; } // Invalid AM/PM. Crash and burn
-                                else { $store_arr['ampm']=strtoupper($lastchar); } // assign the value to the array
-                                break;
                             case "a":
                                 if (strtoupper($lastchar)!="AM" && strtoupper($lastchar)!="PM") { $store_arr = FALSE; $i = strlen($PASSED)+1; } // Invalid AM/PM. Crash and burn
                                 else { $store_arr['ampm']=strtoupper($lastchar); } // assign the value to the array
@@ -232,9 +229,8 @@ function is_date($PASSED, $TXT_DATE_FORMAT='m/d/Y') {
             if (isset($store_arr['ampm'])) {
                 if ($store_arr['ampm']=="PM") { // Is it PM? If so test to see if hour is set
                     $store_arr['hours']=$store_arr['hours']+12; // The 12 hour date was in PM. Example 11 pm really is 11+12 or 23!
-                }
-                else { // This is AM. Only 1 test needs to be done: 12 am!
-                    if ($store_arr['hours']==12) { $store_arr['hours']=0; } // 12am in 24 cycle is really 0 (0-23!)
+                } elseif ($store_arr['hours']==12) { // This is AM. Only 1 test needs to be done: 12 am!
+                    $store_arr['hours']=0; // 12am in 24 cycle is really 0 (0-23!)
                 }
             }
         }
@@ -439,11 +435,7 @@ function showSelectedContent($param='', $cpsql=null, $listmode=false) {
                 $sql .= "ar.article_id=ac.acontent_aid ";
                 $sql .= "WHERE ac.acontent_id=" . $value . " AND ac.acontent_visible=1 ";
                 $sql .= "AND ac.acontent_block NOT IN ('CPSET', 'SYSTEM') ";
-
-                if( !FEUSER_LOGIN_STATUS ) {
-                    $sql .= 'AND ac.acontent_granted=0 ';
-                }
-
+                $sql .= 'AND ac.acontent_granted' . (FEUSER_LOGIN_STATUS ? '!=2' : '=0') . ' ';
                 $sql .= "AND ac.acontent_trash=0 AND ar.article_deleted=0 AND ";
                 $sql .= "ac.acontent_livedate < NOW() AND (ac.acontent_killdate='0000-00-00 00:00:00' OR ac.acontent_killdate > NOW()) ";
 
@@ -460,11 +452,7 @@ function showSelectedContent($param='', $cpsql=null, $listmode=false) {
                 $sql .= "WHERE ac.acontent_id=" . $value . " AND ac.acontent_visible=1 AND ";
                 $sql .= "ac.acontent_livedate < NOW() AND (ac.acontent_killdate='0000-00-00 00:00:00' OR ac.acontent_killdate > NOW()) ";
                 $sql .= "AND ac.acontent_block='SYSTEM' ";
-
-                if( !FEUSER_LOGIN_STATUS ) {
-                    $sql .= 'AND ac.acontent_granted=0 ';
-                }
-
+                $sql .= 'AND ac.acontent_granted' . (FEUSER_LOGIN_STATUS ? '!=2' : '=0') . ' ';
                 $sql .= "AND ac.acontent_trash=0 AND ar.article_deleted=0 ";
                 if(!PREVIEW_MODE) {
                     $sql .= " AND ar.article_begin < NOW() AND (ar.article_end='0000-00-00 00:00:00' OR ar.article_end > NOW()) ";
@@ -488,10 +476,7 @@ function showSelectedContent($param='', $cpsql=null, $listmode=false) {
                     $sql .= "AND acontent_block NOT IN ('CPSET', 'SYSTEM') ";
                 }
 
-                if( !FEUSER_LOGIN_STATUS ) {
-                    $sql .= 'AND acontent_granted=0 ';
-                }
-
+                $sql .= 'AND acontent_granted' . (FEUSER_LOGIN_STATUS ? '!=2' : '=0') . ' ';
                 $sql .= "ORDER BY acontent_sorting".$sort.", acontent_id";
 
             }
@@ -630,24 +615,20 @@ function getContentPartSpacer($space_before=0, $space_after=0) {
             $spacers['before'] .= '</'.$template_default['article']['div_spacer_tag'].'>';
         }
 
+    } elseif(empty($template_default["article"]["div_spacer"])) {
+        $spacers['after'] = '<br class="'.$template_default['classes']['spaceholder-cp-after'].'" />'.spacer(1, $space_after);
     } else {
-
-        if(empty($template_default["article"]["div_spacer"])) {
-            $spacers['after'] = '<br class="'.$template_default['classes']['spaceholder-cp-after'].'" />'.spacer(1, $space_after);
+         $spacers['after'] .= '<'.$template_default['article']['div_spacer_tag'].' style="';
+        if($template_default['article']['div_spacer_style'] === 'padding') {
+            $spacers['after'] .= 'padding-bottom';
+        } elseif($template_default['article']['div_spacer_style'] === 'height') {
+            $spacers['after'] .= 'height';
         } else {
-             $spacers['after'] .= '<'.$template_default['article']['div_spacer_tag'].' style="';
-            if($template_default['article']['div_spacer_style'] === 'padding') {
-                $spacers['after'] .= 'padding-bottom';
-            } elseif($template_default['article']['div_spacer_style'] === 'height') {
-                $spacers['after'] .= 'height';
-            } else {
-                $spacers['after'] .= 'margin-bottom';
-            }
-            $spacers['after'] .= ':'.$space_after.$template_default['article']['div_spacer_unit'].';" ';
-            $spacers['after'] .= 'class="'.$template_default['classes']['spaceholder-cp-after'].'">';
-            $spacers['after'] .= '</'.$template_default['article']['div_spacer_tag'].'>';
+            $spacers['after'] .= 'margin-bottom';
         }
-
+        $spacers['after'] .= ':'.$space_after.$template_default['article']['div_spacer_unit'].';" ';
+        $spacers['after'] .= 'class="'.$template_default['classes']['spaceholder-cp-after'].'">';
+        $spacers['after'] .= '</'.$template_default['article']['div_spacer_tag'].'>';
     }
 
     return $spacers;
@@ -680,9 +661,7 @@ function getContentPartAlias($crow) {
         if(!empty($alias['alias_status'])) {
             $sql_alias .= 'AND acontent_visible=1 ';
         }
-        if( !FEUSER_LOGIN_STATUS ) {
-            $sql_alias .= 'AND acontent_granted=0 ';
-        }
+        $sql_alias .= 'AND acontent_granted' . (FEUSER_LOGIN_STATUS ? '!=2' : '=0') . ' ';
         $sql_alias .= "LIMIT 1";
 
         $result = _dbQuery($sql_alias);
@@ -910,6 +889,13 @@ function convert2htmlspecialchars($matches) {
     return '';
 }
 
+/**
+ * Parse BBCode style [img] tags
+ * [img=123.pngx200x100x1x85 alt Text]Title[/img]
+ *
+ * @param $matches
+ * @return string
+ */
 function parse_images($matches) {
 
     if(isset($matches[1])) {
@@ -939,14 +925,22 @@ function parse_images($matches) {
             $image .= 'x'.$quality;
         }
         $image     .= '/'.$img_id.$ext.'" alt="'.$alt.'"';
+        if($width) {
+            $image .= ' width="' . $width . '"';
+        }
+        if($height) {
+            $image .= ' height="' . $height . '"';
+        }
         if(isset($matches[3])) {
 
-            $title = html_specialchars( preg_replace('/\s+/', ' ', clean_slweg( xss_clean( $matches[3] ) ) ) );
+            $title = html( preg_replace('/\s+/', ' ', clean_slweg( xss_clean( $matches[3] ) ) ) );
             if($title) {
                 $image .= ' title="'.$title.'"';
             }
         }
-        $image     .= ' />';
+
+        $class = empty($GLOBALS['template_default']['classes']['image-parse-inline'])  ? 'img-bbcode' : $GLOBALS['template_default']['classes']['image-parse-inline'];
+        $image     .= ' class="' . $class . ' ' . $class . '-' .$img_id . '"' . PHPWCMS_LAZY_LOADING . HTML_TAG_CLOSE;
 
         return $image;
 

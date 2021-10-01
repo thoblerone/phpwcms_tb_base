@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -40,7 +40,7 @@ if(!count($content['news']['news_lang']) || (isset($content['news']['news_lang']
 	$content['news']['news_lang'] = array();
 }
 
-if( empty($content['news']['news_sort']) || $content['news']['news_sort'] > 10 ) {
+if( empty($content['news']['news_sort']) || $content['news']['news_sort'] > 18 ) {
 	$content['news']['news_sort'] = 9;
 }
 if( empty($content['news']['news_paginate_count']) ) {

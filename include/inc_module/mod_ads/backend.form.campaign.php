@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -31,7 +31,7 @@ $BE['HEADER']['ads.js']				= getJavaScriptSourceLink($phpwcms['modules'][$module
 <table border="0" cellpadding="0" cellspacing="0" width="100%" summary="">
 
 	<tr>
-		<td align="right" class="chatlist" nowrap="nowrap"><?php echo $BL['be_cnt_last_edited']  ?>:&nbsp;</td>
+		<td align="right" class="chatlist nowrap" nowrap="nowrap"><?php echo $BL['be_cnt_last_edited']  ?>:&nbsp;</td>
 		<td class="v10"><?php
 
 		echo html(date($BL['be_fprivedit_dateformat'], strtotime($plugin['data']['adcampaign_changed'])));
@@ -204,7 +204,7 @@ if(!empty($plugin['data']['adcampaign_id'])) {
 			getFieldById('adcampaign_date_start').value = subrstr('00' + date, 2) + '<?php echo $BLM['date_delimiter'] ?>' + subrstr('00' + month, 2) + '<?php echo $BLM['date_delimiter'] ?>' + year;
 
 			var timestart = getFieldById('adcampaign_time_start');
-			if(Trim(timestart.value) == '') {
+			if(Trim(timestart.value) === '') {
 				timestart.value = '00:00';
 			}
 		}
@@ -243,7 +243,7 @@ if(!empty($plugin['data']['adcampaign_id'])) {
 		function aEnd(date, month, year) {
 			getFieldById('adcampaign_date_end').value = subrstr('00' + date, 2) + '<?php echo $BLM['date_delimiter'] ?>' + subrstr('00' + month, 2) + '<?php echo $BLM['date_delimiter'] ?>' + year;
 			var timeend = getFieldById('adcampaign_time_end');
-			if(Trim(timeend.value) == '') {
+			if(Trim(timeend.value) === '') {
 				timeend.value = '23:59';
 			}
 		}
@@ -386,7 +386,7 @@ if(isset($plugin['error']['image'])) {
 <?php echo $plugin['data']['image'] ?>
 			</select></td>
 			<td>&nbsp;</td>
-			<td class="upload newimage"><input type="file" name="adcampaign_upload_image" id="adcampaign_upload_image" title="<?php echo $BLM['ad_upload_image'] ?>" /></td>
+			<td class="upload newimage"><input type="file" name="adcampaign_upload_image" id="adcampaign_upload_image" title="<?php echo $BLM['ad_upload_image'] ?>" accept="image/png,image/jpeg,image/gif,image/webp,.gif,.png,.webp,.jpeg,.jpg" /></td>
 			</tr>
 			</table></td>
 
@@ -410,7 +410,7 @@ if(isset($plugin['error']['flash'])) {
 <?php echo $plugin['data']['flash'] ?>
 			</select></td>
 				<td>&nbsp;</td>
-				<td class="upload newflash"><input type="file" name="adcampaign_upload_flash" id="adcampaign_upload_flash" title="<?php echo $BLM['ad_upload_flash'] ?>" /></td>
+				<td class="upload newflash"><input type="file" name="adcampaign_upload_flash" id="adcampaign_upload_flash" title="<?php echo $BLM['ad_upload_flash'] ?>" accept=".swf" /></td>
 			</tr>
 			</table></td>
 
@@ -434,7 +434,7 @@ if(isset($plugin['error']['css'])) {
 <?php echo $plugin['data']['css'] ?>
 			</select></td>
 				<td>&nbsp;</td>
-				<td class="upload newcss"><input type="file" name="adcampaign_upload_css" id="adcampaign_upload_css" title="<?php echo $BLM['ad_upload_css'] ?>" /></td>
+				<td class="upload newcss"><input type="file" name="adcampaign_upload_css" id="adcampaign_upload_css" title="<?php echo $BLM['ad_upload_css'] ?>" accept="text/css,.css" /></td>
 			</tr>
 			</table></td>
 

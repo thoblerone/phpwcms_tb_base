@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -46,21 +46,12 @@ $crow["acontent_form"] = isset($crow["acontent_form"]['ctext_format']) ? $crow["
 switch($crow["acontent_form"]) {
 
     case 'markdown':
-        // Load ParseDown class
-        if(!isset($phpwcms['parsedown_class'])) {
-            require_once(PHPWCMS_ROOT.'/include/inc_ext/parsedown/Parsedown.php');
-            require_once(PHPWCMS_ROOT.'/include/inc_ext/parsedown-extra/ParsedownExtra.php');
-            $phpwcms['parsedown_class'] = new ParsedownExtra();
-        }
+        init_markdown();
         $crow['acontent_text'] = $phpwcms['parsedown_class']->text($crow['acontent_text']);
         break;
 
     case 'textile':
-        // Load Textile function and class
-        if(!isset($phpwcms['textile_class'])) {
-            require_once(PHPWCMS_ROOT.'/include/inc_ext/classTextile.php');
-            $phpwcms['textile_class'] = new Textile();
-        }
+        init_textile();
         $crow['acontent_text'] = $phpwcms['textile_class']->textileThis($crow['acontent_text']);
         break;
 

@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  *
  * @author Marus Köhl <info@pagewerkstatt.ch>
  * @link http://www.pagewerkstatt.ch
@@ -21,22 +21,18 @@ if (!defined('PHPWCMS_ROOT')) {
 // ----------------------------------------------------------------
 
 $file_action = array(
-    "file_dir"  => empty($_POST["file_dir"]) ? 0 : intval($_POST["file_dir"]),
-    "mark"      => empty($_POST["ftp_mark"]) || !is_array($_POST["ftp_mark"]) ? array() : $_POST["ftp_mark"],
-    "newdir"    => empty($_POST["file_newdir"]) ? 0 : intval($_POST["file_newdir"])
+    'file_dir' => empty($_POST['file_dir']) ? 0 : intval($_POST['file_dir']),
+    'mark' => empty($_POST['ftp_mark']) || !is_array($_POST['ftp_mark']) ? array() : $_POST['ftp_mark'],
+    'newdir' => empty($_POST['file_newdir']) ? 0 : intval($_POST['file_newdir'])
 );
 
 //Get post variables
 if(isset($_POST['file_action'])) {
-
     $file_action['action']  = intval($_POST['file_action']);
     $file_action_msg        = $BL['file_actions_msg_error'];
-
 } else {
-
     $file_action['action']  = 0;
     $file_action_msg        = '';
-
 }
 
 if($file_action['action'] === 1 && $file_action["mark"]) {
@@ -108,27 +104,27 @@ if($file_action['action'] === 1 && $file_action["mark"]) {
 <script type=text/javascript>
 function showAction() {
     divid = document.filetakeover.file_action.value;
-    if (divid == '0') {
+    if (divid === '0') {
         document.getElementById("div_button").style.display='none';
         document.getElementById("div_status").style.display='none';
         document.getElementById("div_folder").style.display='none';
         document.getElementById("div_user").style.display='none';
-    } else if (divid == '1') {
+    } else if (divid === '1') {
         document.getElementById("div_button").style.display='block';
         document.getElementById("div_status").style.display='none';
         document.getElementById("div_folder").style.display='none';
         document.getElementById("div_user").style.display='none';
-    } else if (divid == '2') {
+    } else if (divid === '2') {
         document.getElementById("div_button").style.display='block';
         document.getElementById("div_status").style.display='none';
         document.getElementById("div_folder").style.display='block';
         document.getElementById("div_user").style.display='none';
-    } else if (divid == '3') {
+    } else if (divid === '3') {
         document.getElementById("div_button").style.display='block';
         document.getElementById("div_status").style.display='block';
         document.getElementById("div_folder").style.display='none';
         document.getElementById("div_user").style.display='none';
-    } else if (divid == '4') {
+    } else if (divid === '4') {
         document.getElementById("div_button").style.display='block';
         document.getElementById("div_status").style.display='none';
         document.getElementById("div_folder").style.display='none';

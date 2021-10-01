@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -159,7 +159,7 @@ $BL['be_ftptakeover_title']             = 'take over files uploaded via ftp';
 $BL['be_ftptakeover_mark']              = 'mark';
 $BL['be_ftptakeover_available']         = 'available files';
 $BL['be_ftptakeover_size']              = 'size';
-$BL['be_ftptakeover_nofile']            = 'there is still no file available &#8211; you have to upload one via ftp';
+$BL['be_ftptakeover_nofile']            = 'There are no files available &#8211; you have to upload one by ftp or the the multiple file upload.';
 $BL['be_ftptakeover_all']               = 'ALL';
 $BL['be_ftptakeover_directory']         = 'directory';
 $BL['be_ftptakeover_rootdir']           = 'root directory';
@@ -173,6 +173,8 @@ $BL['be_ftptakeover_active']            = 'active';
 $BL['be_ftptakeover_public']            = 'public';
 $BL['be_ftptakeover_createthumb']       = 'create thumbnail';
 $BL['be_ftptakeover_button']            = 'take over selected files';
+$BL['be_ftptakeover_new_folder']        = 'create folder';
+$BL['be_ftptakeover_new_folder_placeholder'] = 'name of the new folder in the root directory';
 
 // files.reiter.tmpl.php
 $BL['be_ftab_title']                    = 'file center';
@@ -993,7 +995,6 @@ $BL['be_admin_struct_adduser_this']  = 'take over selected user';
 $BL['be_admin_struct_remove_all']    = 'remove all users';
 $BL['be_admin_struct_remove_this']   = 'remove selected user';
 
-
 $BL['be_ctype_alias'] = 'contentpart alias';
 $BL['be_cnt_setting'] = 'take over';
 $BL['be_cnt_spaces'] = 'spaces of contentpart alias';
@@ -1023,11 +1024,11 @@ $BL['be_admin_keyword_add']             = 'add KEYWORD';
 
 $BL['be_cnt_transparent'] = 'Flash transparent';
 
-
 // added: 02-04-2006
 $BL['be_admin_struct_orderkilldate']   = 'kill date';
 $BL['be_func_switch_contentpart'] = 'Do you really want to switch content part? \n\nBe very careful doing so! \nImportant settings might be overwritten! \n';
 $BL["phpwcms_code_snippets_dir_exists"] = '<strong>ATTENTION!</strong> The &quot;CODE-SNIPPETS&quot; directory still exists! Delete directory <strong>phpwcms_code_snippets</strong> - this is a potential security problem.';
+$BL['gd_not_loaded'] = '<strong>No GD functionality available!</strong> Please make sure that the PHP GD library is activated, otherwise the processing of images will not work reliably.';
 
 $BL['be_ctype_poll'] = 'poll';
 $BL['be_cnt_pos8']                      = 'table, left';
@@ -1078,7 +1079,6 @@ $BL['be_article_pagination']            = 'paginate articles';
 $BL['be_article_per_page']              = 'articles per page';
 $BL['be_pagination']                    = 'pagination';
 
-
 $BL['be_ctype_recipe']                  = 'recipe';
 $BL['be_ctype_faq']                     = 'faq';
 $BL['be_cnt_additional']                = 'addition';
@@ -1102,7 +1102,6 @@ $BL['be_cnt_last_edited']               = 'last change';
 $BL['be_cnt_export_selection']          = 'export selection';
 $BL['be_cnt_delete_duplicates']         = 'delete duplicates';
 $BL['be_cnt_new_recipient']             = 'add recipient';
-
 
 $BL['be_cnt_newsletter_prepare']        = 'newsletter active';
 $BL['be_cnt_newsletter_prepare1']       = 'all recipients will be taken over to sending queue';
@@ -1147,6 +1146,7 @@ $BL['be_date_format']                   = 'date format';
 $BL['be_check_login_against']           = 'validate login against';
 $BL['be_userprofile_db']                = 'user profile database';
 $BL['be_backenduser_db']                = 'backend user database';
+$BL['be_check_login_allow_email']       = 'Accept email as login';
 
 $BL['be_gb_post_login']                 = 'post for users logged in only';
 $BL['be_gb_show_login']                 = 'show for users logged in only';
@@ -1250,7 +1250,9 @@ $BL['be_on']                            = 'on';
 $BL['be_random']                        = 'random';
 $BL['be_sorted']                        = 'sorted';
 $BL['be_granted_download']              = 'secured frontend download only';
-$BL['be_granted_feuser']                = 'for logged-in frontend users only';
+$BL['be_granted_feuser']                = 'Only visible for logged-in frontend users';
+$BL['be_hidden_for_feuser']             = 'Hidden for logged-in frontend users';
+$BL['be_visible_for_everybody']         = 'Visible for everybody (default)';
 $BL['be_fileuploader_typeError']        = "{file} has an invalid extension. Valid extension(s): {extensions}.";
 $BL['be_fileuploader_sizeError']        = "{file} is too large, maximum file size is {sizeLimit}.";
 $BL['be_fileuploader_minSizeError']     = "{file} is too small, minimum file size is {minSizeLimit}.";
@@ -1393,6 +1395,7 @@ $BL['be_caption_file_title']            = 'file title';
 $BL['be_caption_descr.']                = 'descr.';
 $BL['be_display_html5_only']            = 'HTML5 only';
 $BL['be_audio_only']                    = 'audio only';
+$BL['be_hide_downloadbutton']           = 'hide HTML5 download button';
 
 $BL['be_filter']                        = 'filter';
 $BL['be_filter_with_tags']              = 'by tag';
@@ -1434,13 +1437,20 @@ $BL['cookie_consent_more'] = 'More info';
 $BL['be_cookie_consent_link'] = 'cookie policy url/alias';
 $BL['be_cookie_consent_theme'] = 'theme (empty = no CSS)';
 $BL['be_google_analytics_enable'] = 'use Google Analytics';
-$BL['be_piwik_enable'] = 'use Piwik';
+$BL['be_google_tag_manager_enable'] = 'use Google Tag Manager';
+$BL['be_piwik_enable'] = 'use Matomo/Piwik';
 $BL['be_tracking_anonymize'] = 'anonymize the IP';
 $BL['be_tracking_id'] = 'tracking ID';
 $BL['be_site_id'] = 'site ID';
-$BL['be_piwik_url'] = 'Piwik URL';
+$BL['be_piwik_url'] = 'Matomo/Piwik URL';
 $BL['be_filedownload_direct_blocked'] = 'blocked by <abbr title="%s">.htaccess</abbr>';
 $BL['be_tracking_optout'] = 'support for Opt-Out cookie <i>&lt;a href=&quot;javascript:gaOptout()&quot;&gt;&lt;/a&gt;</i>';
+$BL['be_require_consent'] = 'Deactivate tracking code widthout consent';
+$BL['be_consent_cookie_name'] = 'Consent cookie name';
+$BL['be_consent_cookie_value'] = 'Consent cookie value';
+$BL['be_respect_donottrack'] = 'Respect the Do-Not-Track browser setting';
+$BL['placeholder_require_cookie_name'] = 'cookieconsent_dismissed';
+$BL['placeholder_require_cookie_value'] = 'yes';
 
 $BL['be_iptc_data'] = 'IPTC data';
 $BL['be_iptc_as_caption'] = 'use for caption, copyright etc. as long yet unset';
@@ -1491,4 +1501,18 @@ $BL['be_extensions_copyright'] = 'Extensions are copyright of their respective o
 $BL['be_password_show'] = 'Show password';
 $BL['be_password_hide'] = 'Hide password';
 
-$BL['be_admin_template_choose_file'] = 'text template, alternatively select file template';
+$BL['be_admin_template_choose_file'] = 'Text template, alternatively select file template';
+
+$BL['be_flashplayer_marker'] = 'Marker';
+$BL['be_marker_time'] = 'Time (seconds, i.e. 10.5)';
+$BL['be_marker_text'] = 'Text';
+$BL['be_marker_overlaytext'] = 'Overlay text';
+
+$BL['copy_to_clipboard'] = 'Copy to Clipboard';
+$BL['url_parameter'] = 'URL parameter';
+$BL['file_extension'] = 'Extension';
+$BL['download_link'] = 'Download link';
+$BL['disposition_attachment'] = 'Attachment';
+$BL['disposition_attachment_description'] = 'direct download';
+$BL['disposition_inline'] = 'Inline';
+$BL['disposition_inline_description'] = 'display in browser';

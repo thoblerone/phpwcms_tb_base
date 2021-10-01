@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -34,7 +34,7 @@ if($_SESSION["wcs_user"] != "guest") { //Prüfung für Gastzugang
             $err = str_replace('{VAL}', html($new_username), $BL['be_profile_account_err1'])."\n";
         }
     }
-    if ($_POST["form_password"] == $_POST["form_password2"]) {
+    if ($_POST["form_password"] === $_POST["form_password2"]) {
         if(strlen($_POST["form_password"]) > 0) {
         $new_password = slweg($_POST["form_password"]);
         if ( strlen($new_password) < 5) $err .= str_replace('{VAL}', strlen($new_password), $BL['be_profile_account_err2'])."\n";
@@ -49,49 +49,28 @@ if($_SESSION["wcs_user"] != "guest") { //Prüfung für Gastzugang
         }
     }
 
-    if($_POST["form_lang"]) {
-        $new_language = slweg(trim($_POST["form_lang"]));
-    } else {
-        $new_language = $phpwcms["default_lang"];
-    }
+    $new_language = isset($_POST["form_lang"]) ? slweg(trim($_POST["form_lang"])) : $phpwcms["default_lang"];
 
     $new_wysiwyg = empty($_POST['form_wysiwyg']) ? 0 : intval($_POST['form_wysiwyg']);
     $user_var['template'] = empty($_POST['form_wysiwyg_template']) ? '' : clean_slweg($_POST['form_wysiwyg_template']);
 
+    $user_var['selected_cp'] = array();
     if(isset($_POST['profile_cp_total'])) {
 
         $profile_cp_total           = intval($_POST['profile_cp_total']);
         $profile_account_cp_total   = isset($_POST['profile_account_cp']) && is_array($_POST['profile_account_cp']) ? count($_POST['profile_account_cp']) : 0;
 
-        if(!$profile_account_cp_total || $profile_account_cp_total === $profile_cp_total) {
-
-            $user_var['selected_cp'] = array();
-
-        } else {
-
-            $user_var['selected_cp'] = array();
-
-            foreach($_POST['profile_account_cp'] as $cp) {
-
+        if($profile_account_cp_total && $profile_account_cp_total !== $profile_cp_total) {
+            foreach ($_POST['profile_account_cp'] as $cp) {
                 $cp = intval($cp);
                 $user_var['selected_cp'][$cp] = $cp;
-
             }
-
         }
-
-    } else {
-
-        $user_var['selected_cp'] = array();
-
     }
-
-    //Jetzt die Daten aktualisieren
 
     if(empty($err)) {
 
-        $sql  = "UPDATE ".DB_PREPEND."phpwcms_user SET ";
-        $sql .= "   usr_login="._dbEscape($new_username).", ";
+        $sql  = "UPDATE ".DB_PREPEND."phpwcms_user SET usr_login="._dbEscape($new_username).", ";
 
         if(!empty($new_password)) {
             $sql .= "usr_pass="._dbEscape(md5(makeCharsetConversion($new_password, PHPWCMS_CHARSET, 'utf-8'))).", ";
@@ -115,9 +94,9 @@ if($_SESSION["wcs_user"] != "guest") { //Prüfung für Gastzugang
             $_SESSION["WYSIWYG_EDITOR"]     = $new_wysiwyg;
             $_SESSION["wcs_user_cp"]        = $user_var['selected_cp'];
 
-            set_language_cookie();
+            set_language_cookie($new_language);
 
-            headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string('csrftoken').'&do=profile');
+            headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string().'&do=profile');
         }
     }
 } //Ende Prüfung Gastzugang

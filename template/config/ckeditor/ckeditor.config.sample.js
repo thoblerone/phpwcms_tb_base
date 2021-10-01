@@ -50,7 +50,7 @@ CKEDITOR.editorConfig = function( config ) {
     config.width = 800;
     config.height = 400;
 
-    //config.extraPlugins = 'magicline';
+    config.extraPlugins = 'magicline,image2';
     //config.removePlugins = 'resize';
 
     // Allow classes for all tags
@@ -67,6 +67,10 @@ CKEDITOR.editorConfig = function( config ) {
     //config.contentsCss = 'template/config/ckeditor/ckeditor.custom.css';
     //config.protectedSource.push( /<i[\s\S]*?\>/g ); //allows beginning <i> tag
     //config.protectedSource.push( /<\/i[\s\S]*?\>/g ); //allows ending </i> tag
+    config.protectedSource.push( /<button[\s\S]*?\>/g ); //allows beginning <button> tag
+    config.protectedSource.push( /<\/button[\s\S]*?\>/g ); //allows ending </button> tag
+    config.protectedSource.push( /<span[\s\S]*?\>/g ); //allows beginning <span> tag
+    config.protectedSource.push( /<\/span[\s\S]*?\>/g ); //allows ending </span> tag
 
     //config.contentsCss = 'assets/config/ckeditor/ckeditor.custom.css';
     //config.colorButton_colors = "00F"; //000,FFF,...
@@ -74,8 +78,8 @@ CKEDITOR.editorConfig = function( config ) {
     //config.format_uppercase = { element: 'span', attributes: {'class': 'uppercase'}, name: 'UPPERCASE' };
     //config.format_blockquote = { element: 'blockquote', name: 'Blockquote' };
 
-     //config.image2_altRequired = true;
-     //config.image2_alignClasses = ['image-left', 'image-center', 'image-right'];
-     //config.image2_captionedClass = 'image-captioned';
+    //config.image2_altRequired = true;
+    //config.image2_alignClasses = ['image-left', 'image-center', 'image-right'];
+    //config.image2_captionedClass = 'image-captioned';
 
 };

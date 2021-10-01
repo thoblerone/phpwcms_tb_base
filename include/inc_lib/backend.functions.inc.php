@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -111,7 +111,7 @@ function subnavback($text, $link, $h_before=0, $h_after=0) {
     $sn .= "</tr>";
     if(intval($h_after)) {
         $sn .= "<tr><td colspan=\"2\"><img src=\"img/leer.gif\" width=\"1\" height=\"".intval($h_after)."\" alt=\"\" /></td></tr>";
-    };
+    }
     $sn .= "</table>";
     echo $sn;
 }
@@ -127,7 +127,7 @@ function subnavback($text, $link, $h_before=0, $h_after=0) {
  * @param mixed &$file_image_size
  * @return string
  */
-function check_image_extension($file, $filename='', &$file_image_size) {
+function check_image_extension($file, $filename, $file_image_size) {
 
     $result = false;
     if(empty($file_image_size[2])) {
@@ -164,10 +164,12 @@ function check_image_extension($file, $filename='', &$file_image_size) {
             case 15: // there seems to be a problem with getimagesize and Quicktime VR
                      // mov -> wmbf ? why ever!
                      // do an additional extension check and compare against mov
+
                      $result = strtolower(which_ext($filename)) === 'mov' ? 'mov' : 'wbmp';
                      break;
 
             case 16: $result = 'xbm'; break;
+            case 32: $result = 'webp'; break;
         }
     }
 
@@ -213,7 +215,7 @@ function getArticleSortValue($cat_id=0) {
  * Make a re-sort for given structure ID and
  * return new sorted articles as array
  */
-function getArticleReSorted(& $cat_id, & $ordered_by) {
+function getArticleReSorted($cat_id, $ordered_by) {
 
     // get all articles including deleted and update sorting
     // in correct sort order by adding sort + 10
@@ -267,7 +269,6 @@ function getArticleReSorted(& $cat_id, & $ordered_by) {
     }
 
     return $article;
-
 }
 
 function phpwcmsversionCheck() {
@@ -376,7 +377,7 @@ function phpwcmsversionCheck() {
 }
 
 
-function createOptionTransferSelectList($id='', $leftData, $rightData, $option = array()) {
+function createOptionTransferSelectList($id, $leftData, $rightData, $option = array()) {
     // used to create
 
     global $BL;
@@ -607,8 +608,8 @@ function set_status_message($msg='', $type='info', $replace=array()) {
     return NULL;
 }
 
-function set_language_cookie() {
-    setcookie('phpwcmsBELang', $_SESSION["wcs_user_lang"], time()+(3600*24*365), '/', getCookieDomain() );
+function set_language_cookie($lang='en') {
+    setcookie('phpwcmsBELang', $lang, time()+(3600*24*365), '/', getCookieDomain(), PHPWCMS_SSL, true);
 }
 
 // checks for alias and sets unique value
@@ -635,6 +636,7 @@ function proof_alias($current_id, $alias='', $mode='CATEGORY') {
         'r404',
         'phpwcms-preview',
         'dl',
+        'fmp'
     );
 
     if($alias === '') {
@@ -798,11 +800,8 @@ function _getTime($time='', $delimeter=':', $default_time='H:i:s') {
     $second         = 0;
 
     for($x=0; $x<=2; $x++) {
-
         if(isset($timeformat[$x])) {
-
-            $value = trim($timeformat[$x]);
-            switch( $value{0} ) {
+            switch(substr(trim($timeformat[$x]), 0, 1)) {
 
                 case 'H':   if(isset($time[$x])) {
                                 $hour = intval($time[$x]);
@@ -828,9 +827,7 @@ function _getTime($time='', $delimeter=':', $default_time='H:i:s') {
                             }
                             break;
             }
-
         }
-
     }
 
     $time = str_replace($delimeter, ':', $default_time);
@@ -856,12 +853,8 @@ function _getDate($date='', $delimeter='', $default_date='') {
     $year           = '';
 
     for($x=0; $x<=2; $x++) {
-
         if(isset($dateformat[$x])) {
-
-            $value = trim($dateformat[$x]);
-            $value = strtolower($value);
-            switch( $value{0} ) {
+            switch(substr(strtolower(trim($dateformat[$x])), 0, 1)) {
 
                 case 'y':   if(isset($date[$x])) {
                                 $year = intval($date[$x]);
@@ -888,9 +881,7 @@ function _getDate($date='', $delimeter='', $default_date='') {
                             break;
 
             }
-
         }
-
     }
 
     if($year && $month && $day) {
@@ -948,8 +939,8 @@ function _dbSaveCategories($categories=array(), $type='', $pid=0, $seperator=','
 
 function setItemsPerPage($default=25) {
     if( isset($_GET['showipp']) ) {
-        $ipp = intval( is_numeric($_GET['showipp']) ? $_GET['showipp'] : $default );
-        setcookie('phpwcmsBEItemsPerPage', $ipp, time()+157680000, '/', getCookieDomain() );
+        $ipp = intval(is_numeric($_GET['showipp']) ? $_GET['showipp'] : $default);
+        setcookie('phpwcmsBEItemsPerPage', $ipp, time()+157680000, '/', getCookieDomain(), PHPWCMS_SSL, true);
     } elseif(isset($_SESSION['PAGE_FILTER'])) {
         $ipp = $_SESSION['PAGE_FILTER']['IPP'];
     } elseif( isset($_COOKIE['phpwcmsBEItemsPerPage']) ) {

@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -24,15 +24,15 @@ $_phpwcms_home['homeCntType'] = empty($_COOKIE['homeCntType']) ? '' : $_COOKIE['
 
 if(isset($_POST['homeMaxArticles'])) {
 	if($_phpwcms_home['homeMaxArticles'] = intval($_POST['homeMaxArticles'])) {
-		@setcookie('homeMaxArticles', strval($_phpwcms_home['homeMaxArticles']) , time()+31536000); // store cookie for 1 year
+		@setcookie('homeMaxArticles', strval($_phpwcms_home['homeMaxArticles']) , time()+31536000, '/', getCookieDomain(), PHPWCMS_SSL, true); // store cookie for 1 year
 	}
 }
 if(isset($_POST['homeMaxCntParts'])) {
 	if($_phpwcms_home['homeMaxCntParts'] = intval($_POST['homeMaxCntParts'])) {
-		@setcookie('homeMaxCntParts', strval($_phpwcms_home['homeMaxCntParts']) , time()+31536000); // store cookie for 1 year
+		@setcookie('homeMaxCntParts', strval($_phpwcms_home['homeMaxCntParts']) , time()+31536000, '/', getCookieDomain(), PHPWCMS_SSL, true); // store cookie for 1 year
 	}
 	$_phpwcms_home['homeCntType'] = clean_slweg($_POST['homeCntType']);
-	@setcookie('homeCntType', $_phpwcms_home['homeCntType'], time()+31536000); // store cookie for 1 year
+	@setcookie('homeCntType', $_phpwcms_home['homeCntType'], time()+31536000, '/', getCookieDomain(), PHPWCMS_SSL, true); // store cookie for 1 year
 	$_SESSION['phpwcms_backend_search'] = '';
 }
 
@@ -75,7 +75,7 @@ $_last10_article = _dbQuery($_asql_1);
 
 ?>
 <div style="margin:0 0 10px 0;padding:0;">
-	<form class="formRightInput" action="phpwcms.php" id="setHomeMaxArticles" name="setHomeMaxArticles" method="post">
+	<form class="formRightInput" action="phpwcms.php?do=home" id="setHomeMaxArticles" name="setHomeMaxArticles" method="post">
 		<select name="homeMaxArticles" onchange="this.form.submit();">
 	<?php foreach(array(5,10,15,25,50,75,100,150) as $x): ?>
 			<option value="<?php echo $x ?>"<?php is_selected($_phpwcms_home['homeMaxArticles'], $x) ?>><?php echo $x ?></option>
@@ -116,8 +116,8 @@ $_last10_article = _dbQuery($_asql_1);
 				echo ' / ' . html($value['article_subtitle']);
 			}
 			echo '</td>'.LF;
-			echo '	<td align="center" nowrap="nowrap" style="width:115px">&nbsp;'.$value['article_date'].'&nbsp;</td>'.LF;
-			echo '	<td style="padding:3px;width:42px;" nowrap="nowrap">';
+			echo '	<td align="center" class="nowrap" style="width:115px">&nbsp;'.$value['article_date'].'&nbsp;</td>'.LF;
+			echo '	<td style="padding:3px;width:42px;" class="nowrap">';
 			echo '<img src="img/button/visible_12x13_'.$value["article_aktiv"].'.gif" alt="" border="0" style="margin-right:2px;" />';
 			echo '<a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;id='.$value['article_id'];
 			echo '"><img src="img/button/edit_22x13.gif" alt="Edit" border="0" /></a>';
@@ -142,7 +142,7 @@ $_last10_article = _dbQuery($_asql_1);
 </table>
 
 <div style="margin:25px 0 10px 0;padding:0;">
-	<form class="formRightInput" action="phpwcms.php" id="setHomeMaxCntParts" name="setHomeMaxCntParts" method="post">
+	<form class="formRightInput" action="phpwcms.php?do=home" id="setHomeMaxCntParts" name="setHomeMaxCntParts" method="post">
 		<select name="homeCntType" onChange="this.form.submit();" class="width150">
 			<option value="">&#8211;</option>
 	<?php foreach($wcs_content_type as $key => $value): ?>
@@ -207,9 +207,9 @@ $_last10_article = _dbQuery($_asql_1);
 			$value['notice'] = html(preg_replace('/\s+/', ' ', $value['notice'], false));
 
 			echo '	<td class="overflow-ellipsis home-cp" title="'.$BL['be_func_content_edit'].': '.html($value['notice_long'], false).'" style="font-weight:normal">'.$value['notice'].'</td>'.LF;
-			echo '	<td align="center" nowrap="nowrap" style="width:115px">&nbsp;'.$value['acontent_changed'].'&nbsp;</td>'.LF;
+			echo '	<td align="center" class="nowrap" style="width:115px">&nbsp;'.$value['acontent_changed'].'&nbsp;</td>'.LF;
 
-			echo '	<td style="padding:3px;width:42px;" nowrap="nowrap">';
+			echo '	<td style="padding:3px;width:42px;" class="nowrap">';
 			echo '<img src="img/button/visible_12x13_'.$value["acontent_visible"].'.gif" alt="" border="0" style="margin-right:2px;" />';
 			echo '<a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=2&amp;';
 			echo 'id='.$value['acontent_aid'].'&amp;acid='.$value['acontent_id'];

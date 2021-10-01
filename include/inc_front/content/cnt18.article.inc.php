@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -29,7 +29,7 @@ if($crow['acontent_attr_id']) {
     $crow['attr_class_id'][] = 'id="'.html($crow['acontent_attr_id']).'"';
 }
 
-if(($crow['attr_class_id'] = implode(' ', $crow['attr_class_id']))) {;
+if(($crow['attr_class_id'] = implode(' ', $crow['attr_class_id']))) {
     $CNT_TMP .= '<div '.$crow['attr_class_id'].'>';
     $crow['attr_class_id_close'] = '</div>';
 } else {
@@ -271,15 +271,26 @@ if($guestbook['visible']) {
     } else {
 
         $guestbook['imgdata']   = '';
-        $guestbook['entry']     = preg_replace_callback('/{IMAGE:(.*)}/i', create_function('$matches', '$GLOBALS["guestbook"]["imgdata"]=$matches[1]; return "{IMAGE}";'), $guestbook['entry']);
+        $guestbook['entry']     = preg_replace_callback(
+            '/{IMAGE:(.*)}/i',
+            function($matches) {
+                $GLOBALS['guestbook']['imgdata'] = $matches[1];
+                return '{IMAGE}';
+            },
+            $guestbook['entry']
+        );
         $guestbook['imgdata']   = explode('x', strtolower($guestbook['imgdata']));
 
         // image width
         $guestbook['imgdata'][0] = empty($guestbook['imgdata'][0]) ? '' : intval($guestbook['imgdata'][0]);
-        if(!$guestbook['imgdata'][0]) $guestbook['imgdata'][0] = '';
+        if($guestbook['imgdata'][0] === 0) {
+            $guestbook['imgdata'][0] = '';
+        }
         // image height
         $guestbook['imgdata'][1] = empty($guestbook['imgdata'][1]) ? '' : intval($guestbook['imgdata'][1]);
-        if(!$guestbook['imgdata'][1]) $guestbook['imgdata'][1] = '';
+        if($guestbook['imgdata'][1] === 0) {
+            $guestbook['imgdata'][1] = '';
+        }
         // image zoom
         $guestbook['imgdata'][2] = empty($guestbook['imgdata'][2]) ? 0 : 1;
 
@@ -398,7 +409,7 @@ if($guestbook['visible']) {
 
                 $guestbook['readform'] = 1;
                 if($guestbook['cookie'] && $guestbook['time']) {
-                    setcookie('phpwcms_guestbook'.$guestbook['cid'], time(), time()+intval($guestbook['time']));
+                    setcookie('phpwcms_guestbook'.$guestbook['cid'], time(), time()+intval($guestbook['time']), '/', getCookieDomain(), PHPWCMS_SSL, true);
                 }
 
                 // check if notify email should be sent
@@ -536,26 +547,19 @@ if($guestbook['visible']) {
             }
             $guestbook['form'] .= getFormTrackingValue().'</form>';
 
-
+        } elseif(!$guestbook['flooding']) {
+            // if successfully signed show signed info
+            $guestbook['signed'] = render_cnt_template($guestbook['signed'], 'EMAIL',   html_specialchars($guestbook['post']['email']));
+            $guestbook['signed'] = render_cnt_template($guestbook['signed'], 'NAME',    html_specialchars($guestbook['post']['name']));
+            $guestbook['signed'] = render_cnt_template($guestbook['signed'], 'URL',     html_specialchars($guestbook['post']['url']));
+            $guestbook['signed'] = render_cnt_template($guestbook['signed'], 'MSG',     html_specialchars($guestbook['post']['msg']));
+            $guestbook['form'] = $guestbook['signed'];
         } else {
-
-            if(!$guestbook['flooding']) {
-                // if successfully signed show signed info
-                $guestbook['signed'] = render_cnt_template($guestbook['signed'], 'EMAIL',   html_specialchars($guestbook['post']['email']));
-                $guestbook['signed'] = render_cnt_template($guestbook['signed'], 'NAME',    html_specialchars($guestbook['post']['name']));
-                $guestbook['signed'] = render_cnt_template($guestbook['signed'], 'URL',     html_specialchars($guestbook['post']['url']));
-                $guestbook['signed'] = render_cnt_template($guestbook['signed'], 'MSG',     html_specialchars($guestbook['post']['msg']));
-                $guestbook['form'] = $guestbook['signed'];
-            } else {
-                $guestbook['form'] = $guestbook['spamalert'];
-            }
-
+            $guestbook['form'] = $guestbook['spamalert'];
         }
 
     }
     // end guestbook form
-
-
 
     // start guestbook listing
 
@@ -782,8 +786,9 @@ if($guestbook['visible']) {
 
                     if($thumb_image != false) {
 
-                        $guestbook['entry_image']  = '<img src="'. $thumb_image['src'] .'" '.$thumb_image[3];
-                        $guestbook['entry_image'] .= ' alt="'.html_specialchars($guestbook['row']['guestbook_imagename']).'" />';
+                        $guestbook['entry_image']  = '<img src="' . $thumb_image['src'] . '" ' . $thumb_image[3];
+                        $guestbook['entry_image'] .= ' alt="' . html($guestbook['row']['guestbook_imagename']) . '"';
+                        $guestbook['entry_image'] .= PHPWCMS_LAZY_LOADING . HTML_TAG_CLOSE;
 
                         //zoom
                         if($guestbook['imgdata'][2]) {
@@ -798,10 +803,10 @@ if($guestbook['visible']) {
 
                             if($zoominfo != false) {
 
-                                $popup_img = 'image_zoom.php?'.getClickZoomImageParameter($zoominfo['src'].'?'.$zoominfo[3]);
-                                $guestbook['entry_image']   =   '<a href="'.$popup_img.'" onclick="window.open(\''.$popup_img.
-                                                                "','previewpic','width=".$zoominfo[1].",height=".$zoominfo[2]."');return false;".
-                                                                '">'.$guestbook['entry_image'].'</a>';
+                                $popup_img = 'image_zoom.php?'.getClickZoomImageParameter($zoominfo['src'], $zoominfo[3], $guestbook['row']['guestbook_image']);
+                                $guestbook['entry_image'] = '<a href="'.$popup_img.'" onclick="window.open(\''.$popup_img.
+                                                            "','previewpic','width=".$zoominfo[1].",height=".$zoominfo[2]."');return false;".
+                                                            '">'.$guestbook['entry_image'].'</a>';
                             }
                         }
                     }

@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -101,15 +101,15 @@ if($news['list_mode']) {
     // choose by category
     if(count($news['news_category'])) {
 
-        $news['news_joined_sql']        = true;
-        $news['news_category_sql']      = array();
+        $news['news_joined_sql']    = true;
+        $news['news_category_sql']  = array();
 
         foreach($news['news_category'] as $value) {
             $news['news_category_sql'][] = 'pcat.cat_name LIKE ' . _dbEscape($value);
         }
 
         // use sub query instead of JOIN to compare against AND / OR / NOT
-        if($news['news_andor'] != 'NOT') {
+        if($news['news_andor'] !== 'NOT') {
 
             $news['sql_where_cat']  = '(';
             $news['sql_where_cat'] .=   'SELECT COUNT(pcat.cat_pid) ';
@@ -264,44 +264,76 @@ if($news['list_mode']) {
     switch($news['news_sort']) {
 
         case 1:     // create date, DESC
-                    $sql .= 'pc.cnt_created DESC';
-                    break;
+            $sql .= 'pc.cnt_created DESC';
+            break;
 
         case 2:     // create date, ASC
-                    $sql .= 'pc.cnt_created ASC';
-                    break;
+            $sql .= 'pc.cnt_created ASC';
+            break;
 
         case 3:     // change date, DESC
-                    $sql .= 'pc.cnt_changed DESC';
-                    break;
+            $sql .= 'pc.cnt_changed DESC';
+            break;
 
         case 4:     // change date, ASC
-                    $sql .= 'pc.cnt_changed ASC';
-                    break;
+            $sql .= 'pc.cnt_changed ASC';
+            break;
 
         case 5:     // live date, DESC
-                    $sql .= 'cnt_ts_livedate DESC';
-                    break;
+            $sql .= 'cnt_ts_livedate DESC';
+            break;
 
         case 6:     // live date, ASC
-                    $sql .= 'cnt_ts_livedate ASC';
-                    break;
+            $sql .= 'cnt_ts_livedate ASC';
+            break;
 
         case 7:     // kill date, DESC
-                    $sql .= 'cnt_ts_killdate DESC';
-                    break;
+            $sql .= 'cnt_ts_killdate DESC';
+            break;
 
         case 8:     // kill date, ASC
-                    $sql .= 'cnt_ts_killdate ASC';
-                    break;
+            $sql .= 'cnt_ts_killdate ASC';
+            break;
 
         case 10:    // sort date, ASC
-                    $sql .= 'cnt_ts_sortdate ASC';
-                    break;
+            $sql .= 'cnt_ts_sortdate ASC';
+            break;
+
+        case 17:    // title, DESC
+            $sql .= 'pc.cnt_title DESC';
+            break;
+
+        case 18:    // title, ASC
+            $sql .= 'pc.cnt_title ASC';
+            break;
+
+        case 11:    // editor, DESC
+            $sql .= 'pc.cnt_editor DESC, cnt_ts_sortdate DESC';
+            break;
+
+        case 12:    // editor, ASC
+            $sql .= 'pc.cnt_editor ASC, cnt_ts_sortdate ASC';
+            break;
+
+        case 15:    // place, DESC
+            $sql .= 'pc.cnt_place DESC, cnt_ts_sortdate DESC';
+            break;
+
+        case 16:    // place, ASC
+            $sql .= 'pc.cnt_place ASC, cnt_ts_sortdate ASC';
+            break;
+
+        case 13:    // title alt, DESC
+            $sql .= 'pc.cnt_name DESC';
+            break;
+
+        case 14:    // title alt, ASC
+            $sql .= 'pc.cnt_name ASC';
+            break;
 
         case 9:
         default:    // sort date, DESC
-                    $sql .= 'cnt_ts_sortdate DESC';
+            $sql .= 'cnt_ts_sortdate DESC';
 
     }
 
@@ -353,7 +385,7 @@ if($news['template']) {
     $news['config']['news_per_row']             = abs(intval($news['config']['news_per_row']));
     $news['config']['news_teaser_limit_chars']  = intval($news['config']['news_teaser_limit_chars']);
     $news['config']['news_teaser_limit_words']  = intval($news['config']['news_teaser_limit_words']);
-    $news['config']['check_lang']               = (count($phpwcms['allowed_lang']) > 1) ? true : false;
+    $news['config']['check_lang']               = count($phpwcms['allowed_lang']) > 1;
     $news['config']['gallery_allowed_ext']      = convertStringToArray(strtolower($news['config']['gallery_allowed_ext']));
     if(count($news['config']['gallery_allowed_ext'])) {
         foreach($news['config']['gallery_allowed_ext'] as $ikey => $ivalue) {
@@ -367,7 +399,7 @@ if($news['template']) {
     // start parsing news entries
     $news['row_count'] = 1;
     $news['total_count'] = 1;
-    $news['entry_count'] = count($news['result']);
+    $news['entry_count'] = is_array($news['result']) ? count($news['result']) : 0;
 
     // set new target if necessary
     if(empty($news['news_detail_link'])) {
@@ -406,25 +438,18 @@ if($news['template']) {
                     $value['cnt_teasertext'] = getCleanSubString($value['cnt_teasertext'], $news['config']['news_teaser_limit_words'], $news['config']['news_teaser_limit_ellipse'], 'word');
                 }
 
-                if(empty($value['cnt_object']['cnt_textformat']) || $value['cnt_object']['cnt_textformat'] == 'plain') {
+                if(empty($value['cnt_object']['cnt_textformat']) || $value['cnt_object']['cnt_textformat'] === 'plain') {
                     $value['cnt_teasertext'] = plaintext_htmlencode($value['cnt_teasertext']);
                     $value['cnt_description'] = plaintext_htmlencode($value['cnt_description']);
-                } elseif($value['cnt_object']['cnt_textformat'] == 'br') {
+                } elseif($value['cnt_object']['cnt_textformat'] === 'br') {
                     $value['cnt_teasertext'] = br_htmlencode($value['cnt_teasertext']);
                     $value['cnt_description'] = br_htmlencode($value['cnt_description']);
-                } elseif($value['cnt_object']['cnt_textformat'] == 'markdown') {
-                    if(!isset($phpwcms['parsedown_class'])) {
-                        require_once(PHPWCMS_ROOT.'/include/inc_ext/parsedown/Parsedown.php');
-                        require_once(PHPWCMS_ROOT.'/include/inc_ext/parsedown-extra/ParsedownExtra.php');
-                        $phpwcms['parsedown_class'] = new ParsedownExtra();
-                    }
+                } elseif($value['cnt_object']['cnt_textformat'] === 'markdown') {
+                    init_markdown();
                     $value['cnt_teasertext'] = $phpwcms['parsedown_class']->text($value['cnt_teasertext']);
                     $value['cnt_description'] = $phpwcms['parsedown_class']->text($value['cnt_description']);
-                } elseif($value['cnt_object']['cnt_textformat'] == 'textile') {
-                    if(!isset($phpwcms['textile_class'])) {
-                        require_once(PHPWCMS_ROOT.'/include/inc_ext/classTextile.php');
-                        $phpwcms['textile_class'] = new Textile();
-                    }
+                } elseif($value['cnt_object']['cnt_textformat'] === 'textile') {
+                    init_textile();
                     $value['cnt_teasertext'] = $phpwcms['textile_class']->textileThis($value['cnt_teasertext']);
                     $value['cnt_description'] = $phpwcms['textile_class']->textileThis($value['cnt_description']);
                 } else {
@@ -698,12 +723,12 @@ if($news['template']) {
                                     }
 
                                     // render gallery item
-                                    $ivalue =& $value['cnt_object']['cnt_files']['images'][ $value['gallery_id'][ $ivalue ] ];
+                                    $ivalue = $value['cnt_object']['cnt_files']['images'][ $value['gallery_id'][ $ivalue ] ];
 
                                     // check for caption and copyright
                                     if($news['config']['gallery_filecenter_info'] && !isset($value['gallery_captions'][$ikey])) {
 
-                                        if($news['config']['check_lang'] && $ivalue['f_vars']) {
+                                        if($news['config']['check_lang'] && !empty($ivalue['f_vars'])) {
 
                                             $ivalue['f_vars'] = @unserialize($ivalue['f_vars']);
 
@@ -716,8 +741,8 @@ if($news['template']) {
                                         }
 
                                         $value['gallery_captions'][$ikey] = array(
-                                            'caption' => $ivalue['f_longinfo'],
-                                            'copyright' => $ivalue['f_copyright']
+                                            'caption' => isset($ivalue['f_longinfo']) ? $ivalue['f_longinfo'] : '',
+                                            'copyright' => isset($ivalue['f_copyright']) ? $ivalue['f_copyright'] : ''
                                         );
                                     }
 
@@ -783,12 +808,17 @@ if($news['template']) {
                         $value['files_template'] = $news['config']['files_template_detail'] == 'default' ? '' : $news['config']['files_template_detail'];
                     }
 
+                    // Preserve current content part values, might be overwritten by files CP
+                    $_crow = $crow;
+
                     // include content part files renderer
                     include PHPWCMS_ROOT.'/include/inc_front/content/cnt7.article.inc.php';
 
                     $news['entries'][$key] = render_cnt_template($news['entries'][$key], 'FILES', $news['files_result'] );
 
-                    unset($IS_NEWS_CP);
+                    // Restore content part values
+                    $crow = $_crow;
+                    unset($IS_NEWS_CP, $_crow);
 
                 } else {
 

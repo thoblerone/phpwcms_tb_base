@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -51,7 +51,7 @@ function i18n_get_filename() {
 	return PHPWCMS_TEMPLATE . 'template_lang/' . i18n_get_language(true) . '.php';
 }
 function i18n_get_file_open_text() {
-	$text  = '<?php ' . LF;
+	$text  = '<?php' . LF;
 	$text .= '// phpwcms template language file "' . i18n_get_language(true) . '" (' . now('Y-m-d H:i:s') . ')' . LF;
 	$text .= '// ATTENTION! Never add the closing PHP tag "? >" at the end of this file!' . LF . LF;
 	return $text;

@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -54,7 +54,7 @@ if(isset($_POST["file_aktion"]) && intval($_POST["file_aktion"]) == 1) {
     $file_sort              = intval($_POST["file_sort"]);
     $file_title             = clean_slweg($_POST["file_title"]);
     $file_alt               = clean_slweg($_POST["file_alt"]);
-    $file_is_uploaded       = isset($_FILES["file"]["tmp_name"]) && is_uploaded_file($_FILES["file"]["tmp_name"]) ? true : false;
+    $file_is_uploaded       = isset($_FILES["file"]["tmp_name"]) && is_uploaded_file($_FILES["file"]["tmp_name"]);
     $file_iptc_info         = null;
     $file_image_size        = null;
     $file_svg               = 0;
@@ -164,7 +164,7 @@ if(isset($_POST["file_aktion"]) && intval($_POST["file_aktion"]) == 1) {
     } else {
 
         $fileName = sanitize_filename($_FILES["file"]["name"]);
-        if(false === ($fileExt = check_image_extension($_FILES["file"]["tmp_name"], $fileName, $file_image_size))) {;
+        if(false === ($fileExt = check_image_extension($_FILES["file"]["tmp_name"], $fileName, $file_image_size))) {
             $fileExt = which_ext($fileName);
         }
         $fileHash = md5( $fileName . microtime() );
@@ -204,7 +204,7 @@ if(isset($_POST["file_aktion"]) && intval($_POST["file_aktion"]) == 1) {
 
                 require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.svg-reader.php';
 
-                if($file_svg = @SVGMetadataExtractor::getMetadata($_FILES["file"]["tmp_name"])) {;
+                if($file_svg = @SVGMetadataExtractor::getMetadata($_FILES["file"]["tmp_name"])) {
                     $fileType = 'image/svg+xml';
                     $file_image_size = array(
                         0 => $file_svg['width'],
@@ -254,7 +254,7 @@ if(isset($_POST["file_aktion"]) && intval($_POST["file_aktion"]) == 1) {
                 }
             } else {
                 $oldumask = umask(0);
-                if(@mkdir($useruploadpath, 0777)) {;
+                if(@mkdir($useruploadpath, 0777)) {
                     if(!@move_uploaded_file($_FILES["file"]["tmp_name"], $usernewfile)) {
                         $file_error["upload"] = $BL['be_fprivup_err3'].' (2)';
                     }
@@ -272,7 +272,7 @@ if(isset($_POST["file_aktion"]) && intval($_POST["file_aktion"]) == 1) {
                 _dbSaveCategories($file_tags, 'file', $new_fileId, ',');
 
                 //after successful upload go back to clear post (form) var
-                headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string('csrftoken').'&do=files&f=0&uploaded=1');
+                headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string().'&do=files&f=0&uploaded=1');
 
             } else {
 

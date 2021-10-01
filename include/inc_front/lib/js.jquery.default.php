@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -26,7 +26,7 @@ function init_frontend_edit_js() {
 
     initJSPlugin('switchClass');
     // based on work and idea by markus@localhorst (http://forum.phpwcms.org/viewtopic.php?f=8&t=19551)
-    $GLOBALS['block']['js_ondomready'][] = '        $("a.fe-link").toggle();$("#fe-link").click(function(){$(this).switchClass("enabled","disabled");$("a.fe-link").toggle();});';
+    $GLOBALS['block']['js_ondomready'][] = '$("a.fe-link").toggle();$("#fe-link").on("click", function(){$(this).switchClass("enabled","disabled");$("a.fe-link").toggle();});';
 
 }
 

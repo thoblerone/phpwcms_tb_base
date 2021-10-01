@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -67,7 +67,6 @@ require PHPWCMS_ROOT.'/include/inc_lib/imagick.convert.inc.php';
 require PHPWCMS_ROOT.'/include/inc_front/front.func.inc.php';
 require PHPWCMS_ROOT.'/include/inc_front/ext.func.inc.php';
 require PHPWCMS_ROOT.'/include/inc_front/content.func.inc.php';
-
 
 // SEO logging
 if(!empty($phpwcms['enable_seolog']) && !empty($_SERVER['HTTP_REFERER']) && strpos($_SERVER['HTTP_REFERER'], $_SERVER['SERVER_NAME']) === false) {
@@ -143,10 +142,6 @@ if(!empty($phpwcms['IE7-js']) && $phpwcms['USER_AGENT']['agent'] == 'IE' && vers
 
 $content['page_start'] .= '</head>'.LF;
 
-if(!$phpwcms['base_href'] && $phpwcms['rewrite_url'] && strpos($content['page_start'], '<base href') === false) {
-    $content['page_start'] = str_replace('<title>', '<base href="'.PHPWCMS_URL.'"'.HTML_TAG_CLOSE . LF . '  <title>', $content['page_start']);
-}
-
 // inject body tag in case of class or id attribute
 $content['page_start'] .= '<body';
 if(!empty($template_default['body']['id'])) {
@@ -163,7 +158,7 @@ if(PHPWCMS_REWRITE) {
     $content["all"] = preg_replace_callback('/onclick="location.href=\'index.php\?([a-zA-Z0-9@,\.\+\-_\*#\/%=&;]+?)\'/', 'js_url_search', $content["all"]);
     if(PHPWCMS_REWRITE_EXT && strpos($content["all"], PHPWCMS_REWRITE_EXT.'&amp;')) {
         $content['all'] = str_replace(PHPWCMS_REWRITE_EXT.'&amp;', PHPWCMS_REWRITE_EXT.'?', $content["all"]);
-    };
+    }
 
     $content['all'] = str_replace('img/cmsimage.php', 'im', $content['all']);
     $content['page_start'] = str_replace('img/cmsimage.php', 'im', $content['page_start']);
@@ -176,11 +171,15 @@ if(count($block['bodyjs'])) {
     $content['page_end'] .= implode(LF, $block['bodyjs']);
 }
 if(!empty($phpwcms['browser_check']['fe'])) {
-    $content['page_end'] .= '<script'.SCRIPT_ATTRIBUTE_TYPE.'> var $buoop = {';
+    $buoop = array('insecure' => isset($phpwcms['browser_check']['insecure']) ? boolval($phpwcms['browser_check']['insecure']) : true);
     if(!empty($phpwcms['browser_check']['vs'])) {
-        $content['page_end'] .= 'vs:' . $phpwcms['browser_check']['vs'];
+        $buoop['vs'] = $phpwcms['browser_check']['vs'];
     }
-    $content['page_end'] .= '}; </script><script'.SCRIPT_ATTRIBUTE_TYPE.' src="//browser-update.org/update.js"></script>';
+    if(!empty($phpwcms['browser_check']['required'])) {
+        $buoop['required'] = '{' . trim($phpwcms['browser_check']['required'], '{}') . '}';
+    }
+    $content['page_end'] .= '<script'.SCRIPT_ATTRIBUTE_TYPE.'>var $buoop = ' . json_encode($buoop) . '; </script>';
+    $content['page_end'] .= '<script'.SCRIPT_ATTRIBUTE_TYPE.' src="https://browser-update.org/update.min.js"></script>';
 }
 $content['page_end'] .= LF.'</body>'.LF.'</html>';
 
@@ -202,11 +201,15 @@ if($phpwcms['cache_timeout']) {
 }
 
 // write phpwcms release information in a custom HTTP header
-header('X-phpwcms-Release: ' . PHPWCMS_VERSION);
+if(empty($phpwcms['disable_generator'])) {
+    header('X-phpwcms-Release: ' . PHPWCMS_VERSION);
+}
 
 // retrieve complete processing time
-list($usec, $sec) = explode(' ', microtime());
-header('X-phpwcms-Page-Processed-In: ' . number_format(1000*($usec + $sec - $phpwcms_rendering_start), 3) .' ms');
+if(empty($phpwcms['disable_processed_in'])) {
+    list($usec, $sec) = explode(' ', microtime());
+    header('X-phpwcms-Page-Processed-In: ' . number_format(1000 * ($usec + $sec - $phpwcms_rendering_start), 3) . ' ms');
+}
 
 // print PDF
 if($aktion[2] === 1 && defined('PRINT_PDF') && PRINT_PDF) {

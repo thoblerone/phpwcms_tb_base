@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -28,11 +28,11 @@ if(empty($content['search']["text_html"])) {
     $content['search']['text_html'] = 0;
 }
 
-$content['search']['search_filename'] = empty($content['search']["no_filenames"]) ? true : false;   // search/list for file/imagenames
-$content['search']['search_username'] = empty($content['search']["no_username"]) ? true : false;
-$content['search']['search_caption'] = empty($content['search']["no_caption"]) ? true : false;
-$content['search']['search_keyword'] = empty($content['search']["no_keyword"]) ? true : false;
-$content['search']['show_summary'] = empty($content['search']["hide_summary"]) ? true : false; // show search tester text
+$content['search']['search_filename'] = empty($content['search']["no_filenames"]); // search/list for file/imagenames
+$content['search']['search_username'] = empty($content['search']["no_username"]);
+$content['search']['search_caption'] = empty($content['search']["no_caption"]);
+$content['search']['search_keyword'] = empty($content['search']["no_keyword"]);
+$content['search']['show_summary'] = empty($content['search']["hide_summary"]); // show search tester text
 
 // read template
 if(empty($crow["acontent_template"]) && is_file(PHPWCMS_TEMPLATE.'inc_default/search.tmpl')) {
@@ -203,9 +203,7 @@ if(!empty($_POST["search_input_field"]) || !empty($_GET['searchwords'])) {
 				$csql .= DB_PREPEND."phpwcms_articlecontent WHERE acontent_aid=".$s_id." ";
 				$csql .= "AND acontent_visible=1 AND acontent_trash=0 AND ";
 				$csql .= "acontent_livedate < NOW() AND (acontent_killdate='0000-00-00 00:00:00' OR acontent_killdate > NOW()) AND ";
-                if( !FEUSER_LOGIN_STATUS ) {
-                    $csql .= 'acontent_granted=0 AND ';
-                }
+                $csql .= 'acontent_granted' . (FEUSER_LOGIN_STATUS ? '!=2' : '=0') . ' AND ';
                 $csql .= "acontent_type IN (0, 1, 2, 4, 5, 6, 7, 11, 14, 26, 27, 29, 100, 31, 32)";
 
                 $scresult = _dbQuery($csql);
@@ -587,22 +585,31 @@ if(!empty($_POST["search_input_field"]) || !empty($_GET['searchwords'])) {
 
             $_search_next_link = '';
             $_search_prev_link = '';
+            $_search_link_class = $template_default['classes']['search-paginate-link'] ? ' class="' . $template_default['classes']['search-paginate-link'] .'"' : '';
+            $_search_link_active_class = $template_default['classes']['search-paginate-link-active'] ? ' class="' . $template_default['classes']['search-paginate-link-active'] .'"' : '';
+            $_search_link_disabled_class = $template_default['classes']['search-paginate-link-disabled'] ? ' class="' . $template_default['classes']['search-paginate-link-disabled'] .'"' : '';
 
-            if($_search_next_page != $_search_current_page) {
-                $_search_next_link = '<a href="' . str_replace('___SEARCHSTART___', ($_search_current_page + 1), $_search_page_link) . '">';
-            }
-            if($_search_next_link) {
-                $_search_next_link = $_search_next_link.$GLOBALS['_search_next_link_t'].'</a>';
+            if($_search_next_page !== $_search_current_page) {
+                $_search_next_link .= '<a href="' . str_replace('___SEARCHSTART___', ($_search_current_page + 1), $_search_page_link) . '"';
+                $_search_next_link .= $_search_link_class . '>' . $GLOBALS['_search_next_link_t'] . '</a>';
             } elseif($content["search"]["show_next"]) {
-                $_search_next_link = $GLOBALS['_search_next_link_t'];
+                $_search_next_link .= '<a ';
+                if ($template_default['attributes']['cp-paginate']['href-disabled']) {
+                    $_search_next_link .= 'href = "' . $template_default['attributes']['cp-paginate']['href-disabled'] . '" ';
+                }
+                $_search_next_link .= 'data-disabled="true" tabindex="-1" aria-disabled="true"' . $_search_link_disabled_class . '>';
+                $_search_next_link .= $GLOBALS['_search_next_link_t'] . '</a>';
             }
-            if($_search_prev_page != $_search_current_page) {
-                $_search_prev_link = '<a href="' . str_replace('___SEARCHSTART___', ($_search_current_page - 1), $_search_page_link) . '">';
-            }
-            if($_search_prev_link) {
-                $_search_prev_link = $_search_prev_link.$GLOBALS['_search_prev_link_t'].'</a>';
+            if($_search_prev_page !== $_search_current_page) {
+                $_search_prev_link .= '<a href="' . str_replace('___SEARCHSTART___', ($_search_current_page - 1), $_search_page_link) . '"';
+                $_search_prev_link .= $_search_link_class . '>' . $GLOBALS['_search_prev_link_t'] . '</a>';
             } elseif($content["search"]["show_prev"]) {
-                $_search_prev_link = $GLOBALS['_search_prev_link_t'];
+                $_search_prev_link .= '<a ';
+                if ($template_default['attributes']['cp-paginate']['href-disabled']) {
+                    $_search_prev_link .= 'href = "' . $template_default['attributes']['cp-paginate']['href-disabled'] . '" ';
+                }
+                $_search_prev_link .= 'data-disabled="true" tabindex="-1" aria-disabled="true"' . $_search_link_disabled_class . '>';
+                $_search_prev_link .= $GLOBALS['_search_prev_link_t'] . '</a>';
             }
             $crow['template']['pagination'] = render_cnt_template($crow['template']['pagination'], 'NEXT', $_search_next_link);
             $crow['template']['pagination'] = render_cnt_template($crow['template']['pagination'], 'PREV', $_search_prev_link);
@@ -621,11 +628,9 @@ if(!empty($_POST["search_input_field"]) || !empty($_GET['searchwords'])) {
                 for($_search_page_i = 1; $_search_page_i <= $_search_max_pages; $_search_page_i++) {
 
                     $_search_navi_x[$_search_page_i]  = $GLOBALS['_search_navi'][1][1];
-                    if($_search_current_page == $_search_page_i) {
-                        $_search_navi_x[$_search_page_i] .= $_search_page_i;
-                    } else {
-                        $_search_navi_x[$_search_page_i] .= '<a href="' . str_replace('___SEARCHSTART___', $_search_page_i, $_search_page_link) . '">' . $_search_page_i . '</a>';
-                    }
+                    $_search_navi_x[$_search_page_i] .= '<a href="' . str_replace('___SEARCHSTART___', $_search_page_i, $_search_page_link) . '"';
+                    $_search_navi_x[$_search_page_i] .= $_search_current_page === $_search_page_i ? $_search_link_active_class : $_search_link_class;
+                    $_search_navi_x[$_search_page_i] .= '>' . $_search_page_i . '</a>';
                     $_search_navi_x[$_search_page_i] .= $GLOBALS['_search_navi'][1][2];
 
                 }
@@ -640,18 +645,17 @@ if(!empty($_POST["search_input_field"]) || !empty($_GET['searchwords'])) {
                 $_search_navi_x = array();
                 for($_search_page_i = 1; $_search_page_i <= $_search_max_pages; $_search_page_i++) {
 
-                    $_search_navi_x[$_search_page_i]  = $GLOBALS['_search_navi'][1][1];
-                    $_search_page_i_start   = ($_search_page_i-1) * $content["search"]["result_per_page"];
-                    $_search_page_i_end     = $_search_page_i_start + $content["search"]["result_per_page"];
+                    $_search_navi_x[$_search_page_i] = $GLOBALS['_search_navi'][1][1];
+                    $_search_page_i_start = ($_search_page_i-1) * $content["search"]["result_per_page"];
+                    $_search_page_i_end = $_search_page_i_start + $content["search"]["result_per_page"];
                     if($_search_results < $_search_page_i_end) {
                         $_search_page_i_end = $_search_results;
                     }
                     $_search_page_i_start++;
-                    if($_search_current_page == $_search_page_i) {
-                        $_search_navi_x[$_search_page_i] .= $_search_page_i_start.'-'.$_search_page_i_end;
-                    } else {
-                        $_search_navi_x[$_search_page_i] .= '<a href="' . str_replace('___SEARCHSTART___', $_search_page_i, $_search_page_link) . '">' . $_search_page_i_start.'-'.$_search_page_i_end . '</a>';
-                    }
+
+                    $_search_navi_x[$_search_page_i] .= '<a href="' . str_replace('___SEARCHSTART___', $_search_page_i, $_search_page_link) . '"';
+                    $_search_navi_x[$_search_page_i] .= $_search_current_page === $_search_page_i ? $_search_link_active_class : $_search_link_class;
+                    $_search_navi_x[$_search_page_i] .= '>' . $_search_page_i_start . '&ndash;' . $_search_page_i_end . '</a>';
                     $_search_navi_x[$_search_page_i] .= $GLOBALS['_search_navi'][1][2];
 
                 }
@@ -665,12 +669,13 @@ if(!empty($_POST["search_input_field"]) || !empty($_GET['searchwords'])) {
 
             $crow['template']['pagination'] = render_cnt_template($crow['template']['pagination'], 'NAVI', $GLOBALS['_search_navi']);
             if($crow['template']['paginate_custom']) {
-                $crow['template']['pagination'] = '<div class="'.$template_default['classes']['search-nextprev'].'">' . LF . '  ' . $crow['template']['pagination'] . LF . '</div>';
+                $crow['template']['pagination'] = '<div class="'.$template_default['classes']['search-nextprev'].'">' . $crow['template']['pagination'] . '</div>';
             }
 
         } else {
 
             $crow['template']['text'] = $content['search']['text_html'] ? $content["search"]["text_noresult"] : plaintext_htmlencode($content['search']['text_noresult']);
+
         }
 
     } else {
@@ -750,9 +755,7 @@ if(isset($content["search"]["result_per_page"])) {
             ),
             $crow['template']['result']
         );
-
     }
-
 }
 
 $crow['template']['result'] = render_cnt_template($crow['template']['result'], 'ATTR_CLASS', html($crow['acontent_attr_class']));

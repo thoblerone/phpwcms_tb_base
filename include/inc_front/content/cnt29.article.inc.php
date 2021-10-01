@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -167,6 +167,8 @@ if($image['template']) {
 
             }
 
+            $this_image_name = $image['images'][$key][2] . '.' . $image['images'][$key][3];
+
             $thumb_image = get_cached_image(array(
                 "target_ext"    =>  $image['images'][$key][3],
                 "image_name"    =>  $image['images'][$key][2] . '.' . $image['images'][$key][3],
@@ -264,12 +266,12 @@ if($image['template']) {
             if($caption[3]) {
                 $list_img_temp .= ' title="'.$caption[3].'"';
             }
-            $list_img_temp .= ' class="'.$image['thumb_class'].'" />';
+            $list_img_temp .= ' class="' . $image['thumb_class'] . '"' . PHPWCMS_LAZY_LOADING . HTML_TAG_CLOSE;
             $img_a          = '';
 
             if($image['zoom'] && isset($zoominfo) && $zoominfo != false) {
                 // if click enlarge the image
-                $open_popup_link = 'image_zoom.php?'.getClickZoomImageParameter($zoominfo['src'].'?'.$zoominfo[3]);
+                $open_popup_link = 'image_zoom.php?'.getClickZoomImageParameter($zoominfo['src'], $zoominfo[3], $image['images'][$key][1]);
                 if($caption[2][0]) {
                     $open_link = $caption[2][0];
                     $return_false = '';
@@ -279,15 +281,10 @@ if($image['template']) {
                 }
 
                 if(!$image['lightbox'] || $caption[2][0]) {
-
                     $img_thumb_link  = '<a href="'.$open_link."\" onclick=\"checkClickZoom();clickZoom('".$open_popup_link."','previewpic','width=";
                     $img_thumb_link .= $zoominfo[1].",height=".$zoominfo[2]."');".$return_false.'"'.$caption[2][1];
                     $img_thumb_link .= $list_ahref_style.' class="'.$template_default['classes']['image-zoom'].'">';
-
-                    $img_a .= $img_thumb_link;
-
                 } else {
-
                     // Gallery image
                     $img_thumb_link  = '<a href="'.$zoominfo['src'].'" rel="lightbox['.$image['lightbox'].']"'.get_attr_data_gallery($image['lightbox'], ' ', ' ');
                     if($caption[0]) {
@@ -295,14 +292,10 @@ if($image['template']) {
                     } elseif(strpos($image['tmpl_entry'], '{IMGNAME}')) {
                         $img_thumb_link .= 'title="'.parseLightboxCaption( $image['images'][$key][1] ).'" ';
                     }
-
                     $img_thumb_link .= $list_ahref_style.'class="'.$template_default['classes']['image-lightbox'].'">';
-
-                    $img_a .= $img_thumb_link;
-
                 }
 
-                $img_a .= $list_img_temp.'</a>';
+                $img_a .= $img_thumb_link.$list_img_temp.'</a>';
 
                 $img_zoom_name      = $zoominfo[0];
                 $img_zoom_rel       = $zoominfo['src'];
@@ -416,6 +409,7 @@ if($image['template']) {
     $image['template'] = str_replace('{THUMB_WIDTH_MAX}', $image['tmpl_thumb_width_max'], $image['template']);
     $image['template'] = str_replace('{THUMB_HEIGHT_MAX}', $image['tmpl_thumb_height_max'], $image['template']);
     $image['template'] = str_replace('{THUMB_COLUMNS}', $image['col'], $image['template']);
+    $image['template'] = str_replace('{IMAGE_COUNT}', $total, $image['template']);
 
     $image['template'] = render_cnt_template($image['template'], 'IMAGE_CLASS_CENTER', $image['center_image_class']);
     $image['template'] = render_cnt_template($image['template'], 'ATTR_CLASS', html($crow['acontent_attr_class']));

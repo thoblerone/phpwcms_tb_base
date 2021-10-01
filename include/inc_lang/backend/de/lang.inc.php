@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -155,7 +155,7 @@ $BL['be_ftptakeover_title'] = 'Dateien aus FTP Verzeichnis &uuml;bernehmen';
 $BL['be_ftptakeover_mark'] = 'Wahl';
 $BL['be_ftptakeover_available'] = 'Verf&uuml;gbare Dateien';
 $BL['be_ftptakeover_size'] = 'Gr&ouml;&szlig;e';
-$BL['be_ftptakeover_nofile'] = 'Momentan sind keine Dateien verf&uuml;gbar &#8211; Sie m&uuml;ssen diese per FTP hochladen.';
+$BL['be_ftptakeover_nofile'] = 'Keine Dateien verf&uuml;gbar &#8211; Sie m&uuml;ssen diese per FTP oder Mehrfachupload hochladen.';
 $BL['be_ftptakeover_all'] = 'Alle';
 $BL['be_ftptakeover_directory'] = 'Ordner';
 $BL['be_ftptakeover_rootdir'] = 'Wurzelverzeichnis';
@@ -169,6 +169,8 @@ $BL['be_ftptakeover_active'] = 'Aktiv';
 $BL['be_ftptakeover_public'] = '&Ouml;ffentlich';
 $BL['be_ftptakeover_createthumb'] = 'Vorschau erzeugen';
 $BL['be_ftptakeover_button'] = 'Dateien &uuml;bernehmen';
+$BL['be_ftptakeover_new_folder'] = 'Ordner anlegen';
+$BL['be_ftptakeover_new_folder_placeholder'] = 'neuer Name des Ordners im Wurzelverzeichnis';
 
 // files.reiter.tmpl.php
 $BL['be_ftab_title'] = 'Dateizentrale';
@@ -1016,6 +1018,7 @@ $BL['be_cnt_transparent'] = 'Flash transparent';
 $BL['be_admin_struct_orderkilldate'] = 'Enddatum';
 $BL['be_func_switch_contentpart'] = 'Soll der Content Part wirklich ge&auml;ndert werden? \n\nBitte sind Sie &auml;u&szlig;erst vorsichtig damit! \nWichtige Einstellungen k&ouml;nnten &uuml;berschrieben werden! \n';
 $BL["phpwcms_code_snippets_dir_exists"] = '<strong>ACHTUNG!</strong> Das &quot;CODE-SNIPPETS&quot; Verzeichnis ist noch immer vorhanden! L&ouml;schen Sie das Verzeichnis <strong>&quot;phpwcms_code_snippets&quot;</strong>, sonst haben Sie ein potentielles Sicherheitproblem.';
+$BL['gd_not_loaded'] = '<strong>Keine GD-Funktionalit&auml;t vorhanden!</strong> Bitte pr&uuml;fen Sie, dass die PHP GD-Erweiterung aktiviert ist, da sonst das Verarbeiten von Bildern nicht zuverl&auml;ssig funktioniert.';
 
 $BL['be_ctype_poll'] = 'Poll';
 $BL['be_cnt_pos8'] = 'Tabelle, links';
@@ -1132,6 +1135,7 @@ $BL['be_date_format'] = 'Datumsformat';
 $BL['be_check_login_against'] = 'Login pr&uuml;fen gegen';
 $BL['be_userprofile_db'] = 'Benutzerprofil-Datenbank';
 $BL['be_backenduser_db'] = 'Backendnutzer-Datenbank';
+$BL['be_check_login_allow_email'] = 'E-Mail als Login akzeptieren';
 
 $BL['be_gb_post_login'] = 'Posten nur f&uuml;r angemeldete Benutzer';
 $BL['be_gb_show_login'] = 'Anzeigen nur f&uuml;r angemeldete Benutzer';
@@ -1168,7 +1172,7 @@ $BL['be_image_cropit'] = 'Bild auf Gr&ouml;&szlig;e schneiden';
 $BL['be_image_align'] = 'Bildausrichtung';
 
 $BL['be_ctype_flashplayer'] = 'HTML5/Flash Media-Player';
-$BL['be_flashplayer_caption'] = 'Titel';
+$BL['be_flashplayer_caption'] = 'Beschreibung';
 $BL['be_flashplayer_thumbnail'] = 'Vorschau';
 $BL['be_flashplayer_selectsize'] = 'Playergr&ouml;&szlig;e w&auml;hlen';
 $BL['be_flash_media'] = 'Flash';
@@ -1235,7 +1239,9 @@ $BL['be_on'] = 'an';
 $BL['be_random'] = 'zuf&auml;llig';
 $BL['be_sorted'] = 'sortiert';
 $BL['be_granted_download'] = 'gesch&uuml;tzter Download im Frontend';
-$BL['be_granted_feuser'] = 'nur f&uuml;r angemeldete Frontend Benutzer';
+$BL['be_granted_feuser'] = 'Nur sichtbar f&uuml;r angemeldete Frontend Benutzer';
+$BL['be_hidden_for_feuser'] = 'Ausblenden f&uuml;r angemeldete Frontend Benutzer';
+$BL['be_visible_for_everybody'] = 'F&uuml;r jeden sichtbar (Standard)';
 $BL['be_fileuploader_typeError'] = "{file} hat eine nicht zulässige Erweiterung. Zulässig: {extensions}";
 $BL['be_fileuploader_sizeError'] = "{file} ist zu groß, Dateigröße maximal {sizeLimit}.";
 $BL['be_fileuploader_minSizeError'] = "{file} ist zu klein, Dateigröße mindestens {minSizeLimit}.";
@@ -1318,7 +1324,7 @@ $BL['file_actions_step1'] = "Schritt 1: Verzeichnis ausw&auml;hlen";
 $BL['file_actions_step2'] = "Schritt 2: Dateien ausw&auml;hlen";
 $BL['file_actions_step3'] = "Schritt 3: Gew&uuml;nschte Aktion ausw&auml;hlen";
 $BL['file_actions_button'] = 'Aktion ausf&uuml;hren';
-$BL['file_actions_no'] = 'Keine Datein zum Bearbeiten. Bitte anderen Ordner ausw&auml;hlen';
+$BL['file_actions_no'] = 'Keine Dateien zum Bearbeiten. Bitte anderen Ordner ausw&auml;hlen';
 $BL['file_actions_delete'] = 'Sind sie sicher, dass die gew&auml;hlten Dateien gel&ouml;schen werden sollen?';
 $BL['file_actions_bemuser'] = 'Die ausgew&auml;hlten Dateien werden dem neuen Benutzer zugeordnet und in dessen Wurzelverzeichnis verschoben.';
 $BL['file_actions_bemfolder'] = 'Bitte w&auml;hlen sie den Zielordner. Die ausgew&auml;hlten Dateien werden in diesen Order verschoben.';
@@ -1376,6 +1382,7 @@ $BL['be_caption_file_title'] = 'Dateititel';
 $BL['be_caption_descr.'] = 'Beschr.';
 $BL['be_display_html5_only'] = 'ausschlie&szlig;lich HTML5';
 $BL['be_audio_only'] = 'nur Audio';
+$BL['be_hide_downloadbutton'] = 'HTML5 Download-Button ausblenden';
 
 $BL['be_filter'] = 'Filter';
 $BL['be_filter_with_tags'] = 'nach Schlagwort';
@@ -1417,13 +1424,20 @@ $BL['cookie_consent_more'] = 'Weitere Informationen';
 $BL['be_cookie_consent_link'] = 'Cookie-Policy URL/Alias';
 $BL['be_cookie_consent_theme'] = 'Vorlage (leer = ohne CSS)';
 $BL['be_google_analytics_enable'] = 'Google Analytics benutzen';
-$BL['be_piwik_enable'] = 'Piwik benutzen';
+$BL['be_google_tag_manager_enable'] = 'Google Tag Manager benutzen';
+$BL['be_piwik_enable'] = 'Matomo/Piwik benutzen';
 $BL['be_tracking_anonymize'] = 'IP anonymisieren';
 $BL['be_tracking_id'] = 'Tracking-ID';
 $BL['be_site_id'] = 'Site-ID';
-$BL['be_piwik_url'] = 'Piwik URL';
+$BL['be_piwik_url'] = 'Matomo/Piwik URL';
 $BL['be_filedownload_direct_blocked'] = 'geblockt durch <abbr title="%s">.htaccess</abbr>';
 $BL['be_tracking_optout'] = 'Opt-Out-Cookie unterst&uuml;tzen <i>&lt;a href=&quot;javascript:gaOptout()&quot;&gt;&lt;/a&gt;</i>';
+$BL['be_require_consent'] = 'Tracking-Code ohne Consent nicht aktivieren';
+$BL['be_consent_cookie_name'] = 'Name des Consent-Cookies';
+$BL['be_consent_cookie_value'] = 'Wert des Consent-Cookies';
+$BL['be_respect_donottrack'] = 'Browser-Einstellung Do-Not-Track respektieren';
+$BL['placeholder_require_cookie_name'] = 'cookieconsent_dismissed';
+$BL['placeholder_require_cookie_value'] = 'yes';
 
 $BL['be_iptc_data'] = 'IPTC-Angaben';
 $BL['be_iptc_as_caption'] = 'f&uuml;r Beschreibung, Copyright etc. nutzen, solange nicht gesetzt';
@@ -1475,3 +1489,17 @@ $BL['be_password_show'] = 'Passwort anzeigen';
 $BL['be_password_hide'] = 'Password verstecken';
 
 $BL['be_admin_template_choose_file'] = 'Textvorlage, alternativ Dateivorlage ausw&auml;hlen';
+
+$BL['be_flashplayer_marker'] = 'Markierung';
+$BL['be_marker_time'] = 'Zeit (Sekunden, z.B. 10.5)';
+$BL['be_marker_text'] = 'Text';
+$BL['be_marker_overlaytext'] = '&Uuml;berlagernder Text';
+
+$BL['copy_to_clipboard'] = 'In die Zwischenablage kopieren';
+$BL['url_parameter'] = 'URL-Parameter';
+$BL['file_extension'] = 'Erweiterung';
+$BL['download_link'] = 'Download-Link';
+$BL['disposition_attachment'] = 'Attachment';
+$BL['disposition_attachment_description'] = 'direkt laden';
+$BL['disposition_inline'] = 'Inline';
+$BL['disposition_inline_description'] = 'im Browser anzeigen';

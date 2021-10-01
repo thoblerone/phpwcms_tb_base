@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <oliver@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -152,8 +152,14 @@ if(!isset($plugin['data']['shopprod_overwrite_meta'])) {
     <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>
 
     <tr>
-        <td align="right" class="chatlist"><?php echo $BLM['shopprod_unit'] ?>:&nbsp;</td>
-        <td><input name="shopprod_unit" type="text" id="shopprod_unit" class="v12 width125" value="<?php echo html($plugin['data']['shopprod_unit']) ?>" size="30" maxlength="100" /></td>
+        <td align="right" class="chatlist"><?php echo $BLM['shopprod_inventory'] ?>:&nbsp;</td>
+        <td><table cellpadding="0" cellspacing="0" border="0" summary="">
+                <tr>
+                    <td><input name="shopprod_inventory" type="text" id="shopprod_inventory" class="v12 width125 right" value="<?php echo $plugin['data']['shopprod_inventory'] ?>" size="30" maxlength="11" /></td>
+                    <td align="right" class="chatlist width100"><?php echo $BLM['shopprod_unit'] ?>:&nbsp;</td>
+                    <td><input name="shopprod_unit" type="text" id="shopprod_unit" class="v12 width170" value="<?php echo html($plugin['data']['shopprod_unit']) ?>" size="30" maxlength="100" /></td>
+                </tr>
+        </table></td>
     </tr>
 
     <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="10" /></td></tr>
@@ -257,7 +263,7 @@ if(!isset($plugin['data']['shopprod_overwrite_meta'])) {
             'value'     => $plugin['data']['shopprod_description0'],
             'field'     => 'shopprod_description0',
             'height'    => '150px',
-            'width'     => '536px',
+            'width'     => '100%',
             'rows'      => '10',
             'editor'    => $_SESSION["WYSIWYG_EDITOR"],
             'lang'      => 'en'
@@ -279,7 +285,7 @@ if(!isset($plugin['data']['shopprod_overwrite_meta'])) {
             'value'     => $plugin['data']['shopprod_description1'],
             'field'     => 'shopprod_description1',
             'height'    => '250px',
-            'width'     => '536px',
+            'width'     => '100%',
             'rows'      => '10',
             'editor'    => $_SESSION["WYSIWYG_EDITOR"],
             'lang'      => 'en'
@@ -447,7 +453,6 @@ if(count($plugin['data']['shopprod_files'])) {
 
     <tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
 
-
     <tr>
         <td align="right" class="chatlist tdtop3"><?php echo $BLM['prod_cat'] ?>:&nbsp;</td>
         <td><table cellpadding="0" cellspacing="0" border="0" summary="">
@@ -489,14 +494,33 @@ if(count($plugin['data']['shopprod_files'])) {
 
     <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="10" /></td></tr>
 
-
     <tr>
         <td align="right" class="chatlist"><?php echo $BLM['shopprod_tag'] ?>:&nbsp;</td>
         <td><input name="shopprod_tag" type="text" id="shopprod_tag" class="v12 width400" value="<?php echo html_specialchars( trim($plugin['data']['shopprod_tag'], ',') ) ?>" size="30" maxlength="250" /></td>
     </tr>
 
+    <tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
 
-    <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="18" /></td></tr>
+    <tr>
+        <td align="right" class="chatlist"><?php echo $BLM['shopprod_on_request'] ?>:&nbsp;</td>
+        <td class="tdtop1">
+            <div>
+                <label>
+                    <input type="checkbox" name="shopprod_on_request" id="shopprod_on_request" value="1"<?php is_checked($plugin['data']['shopprod_on_request'], 1) ?> />
+                    <strong><?php echo $BL['be_cnt_activated'] ?></strong>
+                </label>
+            </div>
+        </td>
+    </tr>
+    <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5" /></td></tr>
+    <tr>
+        <td align="right" class="chatlist"><?php echo $BLM['shopprod_on_request_button'] ?>:&nbsp;</td>
+        <td><input name="shopprod_on_request_url" type="text" id="shopprod_on_request_url" class="v12 width400" value="<?php echo html($plugin['data']['shopprod_on_request_url']) ?>" size="30" maxlength="250" title="<?php echo $BLM['shopprod_on_request_url'] ?>" placeholder="<?php echo $BLM['shopprod_on_request_url'] ?>" /></td>
+    </tr>
+
+    <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5" /></td></tr>
+    <tr><td colspan="2" class="rowspacer7x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
+    <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="5" /></td></tr>
 
     <tr>
         <td align="right" class="chatlist tdtop4"><?php echo $BL['be_ftptakeover_status'] ?>:&nbsp;</td>

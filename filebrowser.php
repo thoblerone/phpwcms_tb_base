@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -20,9 +20,7 @@
  * - Issue 265 based on TB's post
  */
 
-session_start();
-
-$phpwcms            = array();
+$phpwcms            = array('SESSION_START' => true);
 $phpwcms_root       = rtrim(str_replace('\\', '/', dirname(__FILE__)), '/');
 $js_files_all       = array();
 $js_files_select    = array();
@@ -33,7 +31,8 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/helper.session.php';
 
 if( empty($_SESSION["wcs_user_lang"]) ) {
 
-    session_destroy();
+    $_SESSION = array();
+    @session_destroy();
     headerRedirect(PHPWCMS_URL, 401);
 
 } else {
@@ -252,7 +251,7 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
     $bgcol      = (isset($row["f_id"]) && $row["f_id"] == $_SESSION["imgdir"]) ? ' bgcolor="#FED83F"' : '';
 
     echo '<tr'.$bgcol.'><td colspan="2"><img src="img/leer.gif" height="2" width="1" border="0" alt="" /></td></tr>'.LF; //Abstand vor
-    echo '<tr'.$bgcol.'><td class="msglist" nowrap="nowrap">';
+    echo '<tr'.$bgcol.'><td class="msglist nowrap" nowrap="nowrap">';
     echo $count.'<img src="img/leer.gif" height="1" width="4" border="0" alt="" /><img src="img/icons/harddisk_16x11.gif" border="0" alt="" />'; //Zellinhalt 1. Spalte
     echo '<img src="img/leer.gif" height="1" width="4" alt="" border="0" />'.$dirname.'</td><td><img src="img/leer.gif" height="1" width="5" border="0" alt="" /></td></tr>'.LF;
     //Aufbau trennende Tabellen-Zeile
@@ -279,7 +278,7 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
     switch($js_aktion) {
 
         case 6:
-            $file_sql .= "f_ext IN ('swf', 'mp3', 'flv', 'mp4', 'm4v', 'f4v', 'jpg', 'jpeg', 'png', 'gif', 'mp3', 'aac') AND ";
+            $file_sql .= "f_ext IN ('swf', 'mp3', 'flv', 'mp4', 'm4v', 'f4v', 'jpg', 'jpeg', 'png', 'gif', 'mp3', 'aac', 'webp') AND ";
             break;
 
             // H.264
@@ -332,7 +331,7 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
             $entry_id  = empty($_SESSION['filebrowser_image_entry_id']) ? '' : $_SESSION['filebrowser_image_entry_id'];
             // no break here
         case 7:
-            $file_sql .= "f_ext IN ('jpeg', 'jpg', 'png', 'gif', 'svg'";
+            $file_sql .= "f_ext IN ('jpeg', 'jpg', 'png', 'gif', 'svg', 'webp'";
             if($phpwcms['image_library'] !== 'gd2') {
                 $file_sql .= ", 'pdf', 'ai', 'psd', 'tif', 'tiff', 'bmp', 'eps', 'webp'";
             }
@@ -362,7 +361,11 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
     $file_sql .= "(f_public=1 OR f_uid=".$_SESSION["wcs_user_id"].") ";
     $file_sql .= "ORDER BY f_sort, f_name";
 
-    $ckeditor_action = isset($_GET['CKEditorFuncNum']) ? intval($_GET['CKEditorFuncNum']) : 0;
+    if (empty($_SESSION['CKEditorFuncNum'])) {
+        $ckeditor_action = isset($_GET['CKEditorFuncNum']) ? intval($_GET['CKEditorFuncNum']) : 0;
+    } else {
+        $ckeditor_action = $_SESSION['CKEditorFuncNum'];
+    }
 
     $file_result = _dbQuery($file_sql);
 
@@ -446,7 +449,7 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
 
                     //mod
                     case 10:
-                        $js  = "window.opener.SetUrl('download.php?f=".$file_row["f_hash"] . "&target=0');";
+                        $js  = "window.opener.SetUrl('download.php?f=".$file_row["f_hash"] . "');";
                         break;
 
                     case 11:
@@ -455,7 +458,7 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
 
                     //CKEditor
                     case 16:
-                        $js  = "window.opener.CKEDITOR.tools.callFunction(".$ckeditor_action.", 'download.php?f=".$file_row["f_hash"] . "&target=0');";
+                        $js  = "window.opener.CKEDITOR.tools.callFunction(".$ckeditor_action.", 'download.php?f=".$file_row["f_hash"] . "');";
                         break;
 
                     case 17:
@@ -548,7 +551,7 @@ if(!empty($count_user_files)) { //Listing in case of user files/folders
 
     $fileuploaderAllowedExtensions = '';
     if(is_string($phpwcms['allowed_upload_ext'])) {
-        $fileuploaderAllowedExtensions = $phpwcms['allowed_upload_ext'];
+        $fileuploaderAllowedExtensions = strtolower($phpwcms['allowed_upload_ext']);
         if(strpos($fileuploaderAllowedExtensions, ',') !== false) {
             $fileuploaderAllowedExtensions = "'" . str_replace(',', "','", $fileuploaderAllowedExtensions) . "'";
         }
@@ -583,7 +586,7 @@ $(function() {
     // File Uploading
     var uploader = new qq.FileUploader({
         element: $('#upload-file-select')[0],
-        action: '<?php echo PHPWCMS_URL; ?>include/inc_act/act_upload.php?<?php echo get_token_get_string('csrftoken'); ?>',
+        action: '<?php echo PHPWCMS_URL; ?>include/inc_act/act_upload.php?<?php echo get_token_get_string(); ?>',
         multiple: true,
         autoUpload: false,
         allowedExtensions: [<?php echo $fileuploaderAllowedExtensions; ?>],
@@ -623,21 +626,21 @@ $(function() {
         },
         disableDefaultDropzone: false,
         onSubmit: function(id, fileName) {
-            if(uploadFileCount == 0) {
+            if(!uploadFileCount) {
                 fileBrowserForm.show();
             }
             uploadFileCount++;
         },
         onCancel: function(id, fileName) {
             uploadFileCount--;
-            if(uploadFileCount == 0) {
+            if(!uploadFileCount) {
                 fileBrowserForm.hide();
             }
         },
         onComplete: function(id, fileName, responseJSON) {
             if(responseJSON.success) {
                 uploadFileCount--;
-                if(uploadFileCount == 0) {
+                if(!uploadFileCount) {
                     document.location.reload(true);
                 }
             }
@@ -718,7 +721,7 @@ function folder_list($pid, $vor, $zieldatei) {
             }
 
             echo "<tr".$bgcol."><td colspan=\"2\"><img src=\"img/leer.gif\" height=\"2\" width=\"1\" alt=\"\" border=\"0\" /></td></tr>\n";
-            echo "<tr".$bgcol."><td class=\"msglist\" nowrap=\"nowrap\">";
+            echo "<tr".$bgcol."><td class=\"msglist nowrap\" nowrap=\"nowrap\">";
             echo $count."<img src=\"img/leer.gif\" height=\"1\" width=\"".($vor+6)."\" border=\"0\" alt=\"\" /><img src=\"img/icons/folder_zu.gif\" border=\"0\" alt=\"\" />";
             echo "<img src=\"img/leer.gif\" height=\"1\" width=\"5\" alt=\"\" border=\"0\" />".$dirname."</td><td><img src=\"img/leer.gif\" height=\"1\" width=\"5\" alt=\"\" border=\"0\" /></td></tr>\n";
             echo "<tr".$bgcol."><td colspan=\"2\"><img src=\"img/leer.gif\" height=\"1\" width=\"1\" alt=\"\" border=\"0\" /></td></tr>\n";

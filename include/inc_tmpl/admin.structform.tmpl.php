@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -17,7 +17,7 @@ if (!defined('PHPWCMS_ROOT')) {
 // ----------------------------------------------------------------
 
 $acat_struct_mode   = 'STRUCT';
-$acat_lang_mode     = $_GET['struct'] != 'index' && count($phpwcms['allowed_lang']) > 1 ? true : false;
+$acat_lang_mode     = $_GET['struct'] !== 'index' && count($phpwcms['allowed_lang']) > 1;
 
 if($_GET['struct'] === 'index') {
 
@@ -510,7 +510,7 @@ foreach($wcs_content_type as $key => $value) {
 $temp_count = 0;
 foreach($acat_cntpart as $value) {
     if(isset($wcs_content_type[$value])) {
-        echo '<option value="'.$value.'">'.$wcs_content_type[$value]."</option>\n";;
+        echo '<option value="'.$value.'">'.$wcs_content_type[$value]."</option>\n";
         unset($wcs_content_type[$value]);
     }
     $value1 = $value * (-1);

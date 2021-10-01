@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -40,13 +40,15 @@ require_once PHPWCMS_ROOT.'/include/inc_ext/phpmailer/PHPMailerAutoload.php';
 
 if(!checkFormTrackingValue()) {
 
-	echo '<html><head><title>phpwcms Formmailer</title></head>';
-	echo '<body><pre>';
-	echo 'You are not allowed to send form!'.LF;
+    header("HTTP/1.0 405 Method Not Allowed");
+
+    echo '<html lang="en"><head><meta charset="utf-8"><title>phpwcms Formmailer</title></head>';
+	echo '<body>';
+	echo '<h1>You are not allowed to send the form!</h1><pre>';
 	if(!PHPWCMS_GDPR_MODE) {
-        echo 'Your IP: ' . getRemoteIP() . LF;
+        echo 'Your IP: ' . html(getRemoteIP()) . LF;
     }
-	echo 'HTTP-REFERER: '.(empty($ref) ? 'unknown' : $ref);
+	echo 'HTTP-REFERRER: ' . (empty($ref) ? 'unknown' : html($ref));
 	echo '</pre></body></html>';
 	exit();
 
@@ -82,13 +84,13 @@ function phpwcms_form_encode($in_str, $charset) {
 
 //check which language to use
 $lang = "EN";
-if(isset($_POST["language"]) && strlen($_POST['language']) < 3 ) {
-	$lang = trim($_POST["language"]);
-	unset($_POST["language"]);
-	$translate[$lang] = array_merge($translate['EN'], $translate[$lang]);
-}
-if(!isset($translate[$lang])) {
-	$lang = "EN";
+if(isset($_POST["language"]) && strlen($_POST['language']) < 3) {
+    $_POST["language"] = trim(strtoupper($_POST["language"]));
+	if (isset($translate[$_POST["language"]])) {
+	    $lang = $_POST["language"];
+        $translate[$lang] = array_merge($translate['EN'], $translate[$lang]);
+	}
+    unset($_POST["language"]);
 }
 
 //charset
@@ -100,7 +102,9 @@ if(isset($_POST["charset"])) {
 	$charset = str_replace('/', '', $charset);
 	unset($_POST["charset"]);
 }
-if(empty($charset)) $charset = 'utf-8';
+if(empty($charset)) {
+    $charset = 'utf-8';
+}
 $content_type = 'Content-Type: text/plain; charset='.$charset."\n";
 
 //getting the required fields list
@@ -243,7 +247,7 @@ if(isset($form_error)) {
 		$table = "";
 		foreach($form_error as $key => $value) {
   			$table .= "<tr bgcolor=\"#F4F4F4\">";
-    		$table .= "<td class=\"error\">[".$key."]</td>";
+    		$table .= "<td class=\"error\">[".html($key)."]</td>";
     		$table .= "<td class=\"error\">".html($value)."</td>";
   			$table .= "</tr>\n";
 		}
@@ -325,11 +329,12 @@ if(isset($form_error)) {
 
 	$false = '';
 
-	if(isset($send_copy_to)) {
+    $mail->setFrom($recipient, $phpwcms['SMTP_FROM_NAME']);
+    $mail->addReplyTo($recipient);
 
-		$mail->setFrom($recipient, $phpwcms['SMTP_FROM_NAME']);
-		$mail->addReplyTo($recipient);
-		$mail->addAddress($send_copy_to);
+    if(isset($send_copy_to)) {
+
+        $mail->addAddress($send_copy_to);
 
 		if(!$mail->send()) {
 			$false .= '(1) '.html($mail->ErrorInfo).'<br>';
@@ -338,14 +343,9 @@ if(isset($form_error)) {
 		$mail->setFrom($send_copy_to);
 		$mail->addReplyTo($send_copy_to);
 
-	} else {
-
-		$mail->setFrom($recipient, $phpwcms['SMTP_FROM_NAME']);
-		$mail->addReplyTo($recipient);
-
 	}
 
-	$mail->clearAddresses();
+    $mail->clearAddresses();
 	$mail->addAddress($recipient);
 
 	if(!$mail->send()) {

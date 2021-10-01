@@ -3,14 +3,13 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
  **/
 
-session_start();
-$phpwcms = array();
+$phpwcms = array('SESSION_START' => true);
 require_once '../../include/config/conf.inc.php';
 require_once '../inc_lib/default.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/helper.session.php';
@@ -28,4 +27,4 @@ if($chat_message) {
 	_dbQuery($sql, 'INSERT');
 }
 
-headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string('csrftoken').'&do=chat&p=1&l='.$chatlist.'&'.get_token_get_string('csrftoken'));
+headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string().'&do=chat&p=1&l='.$chatlist);

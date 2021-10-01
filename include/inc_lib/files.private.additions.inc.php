@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -19,9 +19,9 @@ if (!defined('PHPWCMS_ROOT')) {
 
 if(isset($_GET["all"])) { // Hide/Show
 
-    if($_GET["all"] == "open") { // All
+    $_SESSION["klapp"] = array();
 
-        $_SESSION["klapp"] = array();
+    if($_GET["all"] == "open") { // All
 
         $sql = "SELECT f_id FROM ".DB_PREPEND."phpwcms_file WHERE f_kid=0 AND f_trash=0";
         if(empty($_SESSION["wcs_user_admin"])) {
@@ -35,11 +35,6 @@ if(isset($_GET["all"])) { // Hide/Show
                 $_SESSION["klapp"][intval(['f_id'])] = 1;
             }
         }
-
-    } else { // close
-
-        $_SESSION["klapp"] = array();
-
     }
 
     _dbQuery("UPDATE ".DB_PREPEND."phpwcms_user SET usr_var_privatefile="._dbEscape(serialize($_SESSION["klapp"]))." WHERE usr_id=".intval($_SESSION["wcs_user_id"]), 'UPDATE');
@@ -85,7 +80,7 @@ $count_user_files = _dbCount($sql);
 if($count_user_files) {
     echo "<table width=\"538\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">";
     echo "<tr><td colspan=\"2\"><img src=\"img/leer.gif\" width=\"1\" height=\"1\"></td></tr>";
-    list_private(0, 0, "phpwcms.php?do=files&amp;f=0", $_SESSION["wcs_user_id"], $cutID, $_SESSION["wcs_user_thumb"], $phpwcms);
+    list_private(0, 0, "phpwcms.php?do=files&amp;f=0", $_SESSION["wcs_user_id"], 0, $phpwcms);
     include_once PHPWCMS_ROOT."/include/inc_lib/files.private-filelist.inc.php";
     echo "</table>";
 } else {

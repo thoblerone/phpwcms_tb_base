@@ -3,14 +3,13 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
  **/
 
-session_start();
-$phpwcms = array();
+$phpwcms = array('SESSION_START' => true);
 $PHPWCMS_ROOT = dirname(dirname(dirname(__FILE__)));
 
 require_once $PHPWCMS_ROOT.'/include/config/conf.inc.php';
@@ -22,7 +21,7 @@ checkLogin();
 validate_csrf_tokens();
 require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
 
-$ref = empty($_SESSION['REFERER_URL']) ? PHPWCMS_URL.'phpwcms.php?'.get_token_get_string('csrftoken') : $_SESSION['REFERER_URL'];
+$ref = empty($_SESSION['REFERER_URL']) ? PHPWCMS_URL.'phpwcms.php?'.get_token_get_string() : $_SESSION['REFERER_URL'];
 $file_error = array();
 $new_fileId = 0;
 
@@ -36,13 +35,27 @@ $ftp = array(
 if(is_array($ftp["mark"]) && count($ftp["mark"])) {
     foreach($ftp["mark"] as $key => $value) {
         if(intval($ftp["mark"][$key])) {
-            $ftp["file"][$key]      = base64_decode($ftp["file"][$key]);
-            $ftp["filename"][$key]  = clean_slweg($ftp["filename"][$key]);
+            $ftp["file"][$key] = base64_decode($ftp["file"][$key]);
+            if (substr($ftp["file"][$key], 0, 1) === '.' || strpos($ftp["file"][$key], '/') !== false || strpos($ftp["file"][$key], "\\") !== false || !is_file(PHPWCMS_ROOT.$phpwcms["ftp_path"].$ftp["file"][$key])) {
+                unset(
+                    $ftp["mark"][$key],
+                    $ftp["file"][$key],
+                    $ftp["filename"][$key]
+                );
+            } else {
+                $ftp["filename"][$key] = clean_slweg($ftp["filename"][$key]);
+            }
         } else {
-            unset($ftp["mark"][$key], $ftp["file"][$key], $ftp["filename"][$key]);
+            unset(
+                $ftp["mark"][$key],
+                $ftp["file"][$key],
+                $ftp["filename"][$key]
+            );
         }
     }
-    if(!count($ftp["mark"])) $ftp["error"] = 1;
+    if(!count($ftp["mark"])) {
+        $ftp["error"] = 1;
+    }
 } else {
     $ftp["error"] = 1;
 }
@@ -85,18 +98,19 @@ if(!$ftp["error"]) {
         require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.convertibletimestamp.php';
     }
 
-    $ftp["dir"]         = intval($_POST["file_dir"]);
-    $ftp["short_info"]  = clean_slweg($_POST["file_shortinfo"]);
-    $ftp["title"]       = clean_slweg($_POST["file_title"]);
-    $ftp["alt"]         = clean_slweg($_POST["file_alt"]);
-    $ftp["aktiv"]       = empty($_POST["file_aktiv"]) ? 0 : 1;
-    $ftp["public"]      = empty($_POST["file_public"]) ? 0 : 1;
-    $ftp["replace"]     = empty($_POST["file_replace"]) ? 0 : 1;
-    $ftp["long_info"]   = slweg($_POST["file_longinfo"]);
-    $ftp["copyright"]   = slweg($_POST["file_copyright"]);
-    $ftp["tags"]        = trim( trim( clean_slweg($_POST["file_tags"]), ',') );
-    $ftp["keywords"]    = isset($_POST["file_keywords"]) ? $_POST["file_keywords"] : array();
-    $ftp["keys"]        = "";
+    $ftp['dir']         = intval($_POST['file_dir']);
+    $ftp['dir_new']     = empty($_POST['file_dir_new']) ? '' : clean_slweg($_POST['file_dir_new']);
+    $ftp['short_info']  = clean_slweg($_POST['file_shortinfo']);
+    $ftp['title']       = clean_slweg($_POST['file_title']);
+    $ftp['alt']         = clean_slweg($_POST['file_alt']);
+    $ftp['aktiv']       = empty($_POST['file_aktiv']) ? 0 : 1;
+    $ftp['public']      = empty($_POST['file_public']) ? 0 : 1;
+    $ftp['replace']     = empty($_POST['file_replace']) ? 0 : 1;
+    $ftp['long_info']   = slweg($_POST['file_longinfo']);
+    $ftp['copyright']   = slweg($_POST['file_copyright']);
+    $ftp['tags']        = trim( trim( clean_slweg($_POST['file_tags']), ',') );
+    $ftp['keywords']    = isset($_POST['file_keywords']) ? $_POST['file_keywords'] : array();
+    $ftp['keys']        = '';
     $ftp['file_vars']   = array();
 
     if(is_array($ftp["keywords"]) && count($ftp["keywords"])) {
@@ -113,7 +127,6 @@ if(!$ftp["error"]) {
     }
 
     if(count($phpwcms['allowed_lang']) > 1) {
-
         foreach($phpwcms['allowed_lang'] as $lang) {
             $lang = strtolower($lang);
 
@@ -144,9 +157,38 @@ if(!$ftp["error"]) {
                 $ftp['file_vars'][$lang]['alt'] = clean_slweg($_POST['file_alt_'.$lang]);
             }
         }
-
     }
 
+    if ($ftp['dir_new']) {
+        if ($ftp['dir']) {
+            $where = 'f_kid=0 AND f_trash=0 AND f_id=' . $ftp['dir'];
+            if(empty($_SESSION["wcs_user_admin"])) {
+                $where .= ' AND f_uid='.intval($_SESSION["wcs_user_id"]);
+            }
+            $target_dir = _dbGet('phpwcms_file', '*', $where, '', '', 1);
+        }
+        if (isset($target_dir[0]['f_id'])) {
+            $dir_new_public = intval($target_dir[0]['f_public']);
+            $dir_new_active = intval($target_dir[0]['f_aktiv']);
+        } else {
+            $ftp['dir'] = 0;
+            $dir_new_public = $ftp["public"];
+            $dir_new_active = $ftp["aktiv"];
+        }
+        $data = array(
+            'f_pid'			=> $ftp['dir'],
+            'f_uid'			=> intval($_SESSION["wcs_user_id"]),
+            'f_kid'			=> 0,
+            'f_aktiv'		=> $dir_new_active,
+            'f_public'		=> $dir_new_public,
+            'f_name'		=> $ftp['dir_new'],
+            'f_created'		=> now()
+        );
+        $new_dir = _dbInsert('phpwcms_file', $data);
+        if (isset($new_dir['INSERT_ID'])) {
+            $ftp['dir'] = intval($new_dir['INSERT_ID']);
+        }
+    }
 
 ?><p><img src="../../img/symbole/rotation.gif" alt="" width="15" height="15"><strong class="title">&nbsp;Selected files will be taken over!</strong></p><?php
 
@@ -171,7 +213,7 @@ if(!$ftp["error"]) {
 
             $file_type      = '';
             $file_size      = filesize($file_path);
-            if(false === ($file_ext = check_image_extension($file_path, $file, $file_image_size))) {;
+            if(false === ($file_ext = check_image_extension($file_path, $file, $file_image_size))) {
                 $file_ext = which_ext($file);
             }
             $file_name      = sanitize_filename($ftp["filename"][$key]);
@@ -237,14 +279,14 @@ if(!$ftp["error"]) {
             }
 
             // Check if SVG and detect related values
-            if(!$file_check && $file_ext === 'svg' && ($file_svg = @SVGMetadataExtractor::getMetadata($file_path))) {
+            if(empty($file_check[0]) && $file_ext === 'svg' && ($file_svg = @SVGMetadataExtractor::getMetadata($file_path))) {
 
-                $file_svg = 1;
                 $file_type = 'image/svg+xml';
                 $file_check = array(
                     0 => $file_svg['width'],
                     1 => $file_svg['height']
                 );
+                $file_svg = 1;
 
             } else {
 
@@ -265,7 +307,6 @@ if(!$ftp["error"]) {
                 if($file_type === '') {
                     $file_type = @mime_content_type($file_path);
                 }
-
             }
 
             $sql  = "INSERT INTO ".DB_PREPEND."phpwcms_file (";
@@ -288,9 +329,7 @@ if(!$ftp["error"]) {
                 $wcs_newfilename = $file_hash . $_file_extension;
 
                 // changed for using hashed file names
-                $usernewfile    = $useruploadpath.$wcs_newfilename;
-
-
+                $usernewfile = $useruploadpath.$wcs_newfilename;
                 $oldumask = umask(0);
 
                 if ($dir = @opendir($useruploadpath)) {

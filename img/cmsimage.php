@@ -3,15 +3,14 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
  **/
 
-
-$phpwcms    = array();
-$root       = rtrim(str_replace('\\', '/', realpath(dirname(__FILE__).'/../') ), '/').'/';
+$phpwcms = array();
+$root = rtrim(str_replace('\\', '/', realpath(dirname(__FILE__).'/../') ), '/').'/';
 require_once $root.'/include/config/conf.inc.php';
 require_once $root.'/include/inc_lib/default.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/general.inc.php';
@@ -125,7 +124,8 @@ if(isset($data[1])) {
 
         if(is_intval($hash)) {
 
-            @session_start();
+            $phpwcms['SESSION_START'] = true;
+            require_once PHPWCMS_ROOT.'/include/inc_lib/helper.session.php';
             $file_public = empty($_SESSION["wcs_user_id"]) ? 'f_public=1' : '(f_public=1 OR f_uid='.intval($_SESSION["wcs_user_id"]).')';
 
             require_once(PHPWCMS_ROOT.'/include/inc_lib/dbcon.inc.php');
@@ -133,7 +133,7 @@ if(isset($data[1])) {
             $sql   = 'SELECT f_hash, f_ext, f_svg, f_image_width, f_image_height, f_name FROM '.DB_PREPEND.'phpwcms_file WHERE ';
             $sql  .= 'f_id='.intval($hash)." AND ";
             if(substr($phpwcms['image_library'], 0, 2) === 'gd') {
-                $sql .= "f_ext IN ('jpg','jpeg','png','gif','bmp', 'svg') AND ";
+                $sql .= "f_ext IN ('jpg','jpeg','png','gif','bmp', 'svg', 'webp') AND ";
             }
             $sql  .= 'f_trash=0 AND f_aktiv=1 AND '.$file_public;
             $hash  = _dbQuery($sql);
@@ -155,7 +155,8 @@ if(isset($data[1])) {
 
         } elseif(strlen($hash) === 32 && (!$ext || !is_file(PHPWCMS_ROOT.'/'.PHPWCMS_FILES.$hash.'.'.$ext))) {
 
-            @session_start();
+            $phpwcms['SESSION_START'] = true;
+            require_once PHPWCMS_ROOT.'/include/inc_lib/helper.session.php';
             $file_public = empty($_SESSION["wcs_user_id"]) ? 'f_public=1' : '(f_public=1 OR f_uid='.intval($_SESSION["wcs_user_id"]).')';
 
             require_once PHPWCMS_ROOT.'/include/inc_lib/dbcon.inc.php';
@@ -163,7 +164,7 @@ if(isset($data[1])) {
             $sql   = 'SELECT f_hash, f_ext, f_svg, f_image_width, f_image_height, f_name FROM '.DB_PREPEND.'phpwcms_file WHERE ';
             $sql  .= 'f_hash='._dbEscape($hash)." AND ";
             if(substr($phpwcms['image_library'], 0, 2) === 'gd') {
-                $sql .= "f_ext IN ('jpg','jpeg','png','gif','bmp', 'svg') AND ";
+                $sql .= "f_ext IN ('jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp') AND ";
             }
             $sql  .= 'f_trash=0 AND f_aktiv=1 AND '.$file_public;
             $hash  = _dbQuery($sql);
@@ -213,7 +214,7 @@ if(isset($data[1])) {
                 if($quality < 10 || $quality > 100) {
                     $quality = '';
                 } else {
-                    $value['jpg_quality'] = $quality;
+                    $value['quality'] = $quality;
                 }
             } else {
                 $quality = '';
@@ -276,8 +277,13 @@ if(isset($data[1])) {
                     $doc = new DOMDocument();
                     $doc->load(PHPWCMS_ROOT.'/'.PHPWCMS_FILES.$value['image_name']);
                     $svg_tag = $doc->getElementsByTagName('svg')->item(0);
-                    $svg_tag->setAttribute('width', $value['max_width']);
-                    $svg_tag->setAttribute('height', $value['max_height']);
+                    $svg_tag->setAttribute('width', round($value['max_width']) . 'px');
+                    $svg_tag->setAttribute('height', round($value['max_height']) . 'px');
+                    // Fix Affinity related SVG attribute error
+                    $svg_viewBox = $svg_tag->getAttribute('viewBox');
+                    if($svg_viewBox === '' && ($svg_viewbox = $svg_tag->getAttribute('viewbox')) !== '') {
+                        $svg_tag->setAttribute('viewBox', $svg_viewbox);
+                    }
                     if($svg_preserveAspectRatio) {
                         $svg_tag->setAttribute('preserveAspectRatio', $svg_preserveAspectRatio);
                     }
@@ -341,6 +347,10 @@ if(isset($data[1])) {
                 $value["max_height"] = $basis * $grid;
             }
 
+            if (PHPWCMS_WEBP && !$svg) {
+                $value['target_ext'] = 'webp';
+            }
+
             $image = get_cached_image($value, false, false);
 
             if(!empty($image[0])) {
@@ -354,13 +364,9 @@ if(isset($data[1])) {
                     $image['type'] = get_mimetype_by_extension(which_ext($image[0]));
                 }
 
-                if(empty($name)) {
-                    $name = empty($data[2]) ? $image[0] : $data[2];
-                }
-
                 header('Content-Type: ' . $image['type']);
                 header('Content-length: '.filesize(PHPWCMS_THUMB.$image[0]));
-                header('Content-Disposition: inline; filename="'.rawurlencode($name).'"');
+                header('Content-Disposition: inline; filename="'.rawurlencode($image[0]).'"');
                 @readfile(PHPWCMS_THUMB.$image[0]);
                 exit;
             }

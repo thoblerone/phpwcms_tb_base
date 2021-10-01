@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -81,7 +81,7 @@ if($_userInfo['subscriptions']) {
 	<tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="10" /></td></tr>
 
 	<tr>
-		<td align="right" class="chatlist" nowrap="nowrap"><?php
+		<td align="right" class="chatlist nowrap" nowrap="nowrap"><?php
 
 		echo $BL['be_newsletter_selectCSV'];
 		echo '<input type="hidden" name="MAX_FILE_SIZE" value="'.$_userInfo['max_file_size'].'" />';

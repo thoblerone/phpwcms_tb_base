@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -78,8 +78,24 @@ if(isset($result[0]['article_id'])) {
                 $row['article_menutitle']   = $alias_result[0]['article_menutitle'];
                 $row['article_opengraph']   = $alias_result[0]['article_opengraph'];
                 $row['article_canonical']   = $alias_result[0]['article_canonical'];
+                $row['article_meta']        = $alias_result[0]['article_meta'];
             }
         }
+    }
+
+    if($row['article_meta']) {
+        $row['article_meta'] = json_decode($row['article_meta'], true);
+    }
+    if(is_array($row['article_meta'])) {
+        $row['article_meta'] = array_merge(get_default_article_meta(), $row['article_meta']);
+    } else {
+        $row['article_meta'] = get_default_article_meta();
+    }
+
+    // overwrite doctype language if enabled
+    if(!empty($phpwcms['use_content_lang']) && !empty($row["article_lang"]) && $row["article_lang"] !== $phpwcms['DOCTYPE_LANG']) {
+        $phpwcms['DOCTYPE_LANG'] = $row["article_lang"];
+        $phpwcms['default_lang'] = $row["article_lang"];
     }
 
     //Kategoriebezeichner
@@ -217,7 +233,7 @@ if(isset($result[0]['article_id'])) {
     $img_thumb_alt      = $caption[1];
     $img_thumb_title    = $caption[3];
     $img_thumb_url      = $caption[2][0];
-    $img_thumb_target   = $caption[2][1];
+    $img_thumb_target   = $caption[2][2];
 
     $img_zoom_name      = empty($row["article_image"]['name']) ? '' : $row["article_image"]['name'];
     $img_zoom_rel       = '';
@@ -243,7 +259,8 @@ if(isset($result[0]['article_id'])) {
             if($img_thumb_title) {
                 $thumb_img .= ' title="'.html($img_thumb_title).'"';
             }
-            $thumb_img .= ' class="'.$template_default['classes']['image-article-summary'].'"'.HTML_TAG_CLOSE;
+            $thumb_img .= ' class="' . $template_default['classes']['image-article-summary'] . '"';
+            $thumb_img .= PHPWCMS_LAZY_LOADING . HTML_TAG_CLOSE;
 
             $img_thumb_name     = $thumb_image[0];
             $img_thumb_rel      = $thumb_image['src'];
@@ -287,7 +304,7 @@ if(isset($result[0]['article_id'])) {
                         'src' => $img_zoom_rel
                     );
 
-                    $popup_img = 'image_zoom.php?'.getClickZoomImageParameter($zoominfo['src'].'?'.$zoominfo[3]);
+                    $popup_img = 'image_zoom.php?'.getClickZoomImageParameter($zoominfo['src'], $zoominfo[3], $row["article_image"]["name"]);
 
                     if(!empty($caption[2][0])) {
                         $open_link = $caption[2][0];
@@ -345,13 +362,9 @@ if(isset($result[0]['article_id'])) {
         $sql_cnt  = "SELECT DISTINCT IF(acontent_paginate_page=1, 0, acontent_paginate_page) AS acontent_paginate_page, ";
         $sql_cnt .= "acontent_paginate_title ";
         $sql_cnt .= "FROM ".DB_PREPEND."phpwcms_articlecontent WHERE ";
-            $sql_cnt .= "acontent_aid=".$row["article_id"]." AND acontent_visible=1 AND acontent_trash=0 AND ";
-            $sql_cnt .= "acontent_livedate < NOW() AND (acontent_killdate='0000-00-00 00:00:00' OR acontent_killdate > NOW()) ";
-
-        if( !FEUSER_LOGIN_STATUS ) {
-            $sql_cnt .= 'AND acontent_granted=0 ';
-        }
-
+        $sql_cnt .= "acontent_aid=".$row["article_id"]." AND acontent_visible=1 AND acontent_trash=0 AND ";
+        $sql_cnt .= "acontent_livedate < NOW() AND (acontent_killdate='0000-00-00 00:00:00' OR acontent_killdate > NOW()) ";
+        $sql_cnt .= 'AND acontent_granted' . (FEUSER_LOGIN_STATUS ? '!=2' : '=0') . ' ';
         $sql_cnt .= "AND acontent_block IN ('', 'CONTENT') ORDER BY acontent_paginate_page DESC";
         $sql_cnt  = _dbQuery($sql_cnt);
 
@@ -368,10 +381,10 @@ if(isset($result[0]['article_id'])) {
                 // set content part pagination title
                 if(!isset($content['CpPageTitles'][ $crow['acontent_paginate_page'] ])) {
 
-                    $content['CpPageTitles'][ $crow['acontent_paginate_page'] ] = $crow['acontent_paginate_title'] == '' ? '#'.$paginate_count : $crow['acontent_paginate_title'];
+                    $content['CpPageTitles'][ $crow['acontent_paginate_page'] ] = $crow['acontent_paginate_title'] === '' ? '#'.$paginate_count : $crow['acontent_paginate_title'];
 
                 // check if content part title is set but starts with '#'
-                } elseif(isset($content['CpPageTitles'][ $crow['acontent_paginate_page'] ]) && $crow['acontent_paginate_title'] != '' && $content['CpPageTitles'][ $crow['acontent_paginate_page'] ]{0} == '#') {
+                } elseif(isset($content['CpPageTitles'][ $crow['acontent_paginate_page'] ]) && $crow['acontent_paginate_title'] !== '' && substr($content['CpPageTitles'][ $crow['acontent_paginate_page'] ], 0, 1) === '#') {
 
                     $content['CpPageTitles'][ $crow['acontent_paginate_page'] ] = $crow['acontent_paginate_title'];
 
@@ -418,22 +431,17 @@ if(isset($result[0]['article_id'])) {
             $row["article_image"]['tmplfull'] = file_get_contents(PHPWCMS_TEMPLATE.'inc_default/article_summary.tmpl');
         }
 
+    } elseif($_CpPaginate && $content['aId_CpPage'] > 1) { // template fallback
+        $row["article_image"]['tmplfull']  = '[TITLE]<h1>{TITLE}</h1>[/TITLE]'.LF.'<!--CP_PAGINATE_START//-->'.LF;
+        $row["article_image"]['tmplfull'] .= '<div class="cpPagination">'.LF;
+        $row["article_image"]['tmplfull'] .= '  [CP_PAGINATE_PREV]<a href="{CP_PAGINATE_PREV}" class="cpPaginationPrev">Previous</a>[/CP_PAGINATE_PREV]'.LF;
+        $row["article_image"]['tmplfull'] .= '  [CP_PAGINATE]{CP_PAGINATE}[/CP_PAGINATE]'.LF;
+        $row["article_image"]['tmplfull'] .= '  [CP_PAGINATE_NEXT]<a href="{CP_PAGINATE_NEXT}" class="cpPaginationNext">Previous</a>[/CP_PAGINATE_NEXT]'.LF;
+        $row["article_image"]['tmplfull'] .= '</div><!--CP_PAGINATE_END//-->';
     } else {
-
-        // template fallback
-        if($_CpPaginate && $content['aId_CpPage'] > 1) {
-            $row["article_image"]['tmplfull']  = '[TITLE]<h1>{TITLE}</h1>[/TITLE]'.LF.'<!--CP_PAGINATE_START//-->'.LF;
-            $row["article_image"]['tmplfull'] .= '<div class="cpPagination">'.LF;
-            $row["article_image"]['tmplfull'] .= '  [CP_PAGINATE_PREV]<a href="{CP_PAGINATE_PREV}" class="cpPaginationPrev">Previous</a>[/CP_PAGINATE_PREV]'.LF;
-            $row["article_image"]['tmplfull'] .= '  [CP_PAGINATE]{CP_PAGINATE}[/CP_PAGINATE]'.LF;
-            $row["article_image"]['tmplfull'] .= '  [CP_PAGINATE_NEXT]<a href="{CP_PAGINATE_NEXT}" class="cpPaginationNext">Previous</a>[/CP_PAGINATE_NEXT]'.LF;
-            $row["article_image"]['tmplfull'] .= '</div><!--CP_PAGINATE_END//-->';
-        } else {
-            $row["article_image"]['tmplfull']  = '[TITLE]<h1>{TITLE}</h1>'.LF.'[/TITLE][SUB]<h3>{SUB}</h3>'.LF.'[/SUB]';
-            $row["article_image"]['tmplfull'] .= '[SUMMARY][IMAGE]<span style="float:left;margin:2px 10px 5px 0;">{IMAGE}';
-                $row["article_image"]['tmplfull'] .= '[CAPTION_SUPPRESS_ELSE][CAPTION]<br />'.LF.'{CAPTION}[/CAPTION][/CAPTION_SUPPRESS_ELSE]</span>'.LF.'[/IMAGE]{SUMMARY}</div>'.LF.'[/SUMMARY]';
-        }
-
+        $row["article_image"]['tmplfull']  = '[TITLE]<h1>{TITLE}</h1>'.LF.'[/TITLE][SUB]<h3>{SUB}</h3>'.LF.'[/SUB]';
+        $row["article_image"]['tmplfull'] .= '[SUMMARY][IMAGE]<span style="float:left;margin:2px 10px 5px 0;">{IMAGE}';
+        $row["article_image"]['tmplfull'] .= '[CAPTION_SUPPRESS_ELSE][CAPTION]<br />'.LF.'{CAPTION}[/CAPTION][/CAPTION_SUPPRESS_ELSE]</span>'.LF.'[/IMAGE]{SUMMARY}</div>'.LF.'[/SUMMARY]';
     }
 
     //rendering
@@ -480,20 +488,18 @@ if(isset($result[0]['article_id'])) {
         $row["article_image"]['tmplfull'] = render_cnt_template($row["article_image"]['tmplfull'], 'SUMMARY', $row["article_hidesummary"] ? '' : $row["article_summary"]);
         $row["article_image"]['tmplfull'] = render_cnt_template($row["article_image"]['tmplfull'], 'MORE', $row["article_morelink"] ? ' ' : '');
 
+        $row['article_meta']['class'] = trim(get_css_keywords($row['article_keyword']) . ' ' . $row['article_meta']['class']);
+
         // article class based on keyword *CSS-classname*
-        $row['article_class'] = get_css_keywords($row['article_keyword']);
-        $row['article_class'] = count($row['article_class']) ? implode(' ', $row['article_class']) : '';
-        $row["article_image"]['tmplfull'] = render_cnt_template($row["article_image"]['tmplfull'], 'CLASS', $row['article_class']);
+        $row["article_image"]['tmplfull'] = render_cnt_template($row["article_image"]['tmplfull'], 'CLASS', $row['article_meta']['class']);
 
         // Render SYSTEM
         if(strpos($row["article_image"]['tmplfull'], '[SYSTEM]') !== false) {
             // Search for all system related content parts
             $sql_cnt  = 'SELECT * FROM ' . DB_PREPEND . 'phpwcms_articlecontent WHERE acontent_aid=' . $content["article_id"] . ' ';
             $sql_cnt .= "AND acontent_visible=1 AND acontent_trash=0 AND acontent_block='SYSTEM' AND acontent_tid IN (2, 3) "; // 2 = article detail, 3 = article detail OR list
-                $sql_cnt .= "AND acontent_livedate < NOW() AND (acontent_killdate='0000-00-00 00:00:00' OR acontent_killdate > NOW()) ";
-            if(!FEUSER_LOGIN_STATUS) {
-                $sql_cnt .= 'AND acontent_granted=0 ';
-            }
+            $sql_cnt .= "AND acontent_livedate < NOW() AND (acontent_killdate='0000-00-00 00:00:00' OR acontent_killdate > NOW()) ";
+            $sql_cnt .= 'AND acontent_granted' . (FEUSER_LOGIN_STATUS ? '!=2' : '=0') . ' ';
             $sql_cnt .= "ORDER BY acontent_sorting, acontent_id";
             $row["article_image"]['tmplfull'] = render_cnt_template($row["article_image"]['tmplfull'], 'SYSTEM', showSelectedContent('CPC', $sql_cnt));
         } else {
@@ -501,7 +507,7 @@ if(isset($result[0]['article_id'])) {
         }
 
         $row["article_image"]['tmplfull'] = render_cnt_template($row["article_image"]['tmplfull'], 'IMAGE', $thumb_img);
-            $row["article_image"]['tmplfull'] = render_cnt_template($row["article_image"]['tmplfull'], 'CAPTION_SUPPRESS', empty($row['article_image']['caption_suppress']) ? '' : ' ');
+        $row["article_image"]['tmplfull'] = render_cnt_template($row["article_image"]['tmplfull'], 'CAPTION_SUPPRESS', empty($row['article_image']['caption_suppress']) ? '' : ' ');
         $row["article_image"]['tmplfull'] = render_cnt_template($row["article_image"]['tmplfull'], 'CAPTION', nl2br(html_specialchars($row["article_image"]["caption"])));
         $row["article_image"]['tmplfull'] = render_cnt_template($row["article_image"]['tmplfull'], 'COPYRIGHT', html_specialchars($row["article_image"]["copyright"]));
         $row["article_image"]['tmplfull'] = render_cnt_template($row["article_image"]['tmplfull'], 'ALT', html($img_thumb_alt));
@@ -529,11 +535,9 @@ if(isset($result[0]['article_id'])) {
 
     // render content parts
     $sql_cnt  = "SELECT * FROM ".DB_PREPEND."phpwcms_articlecontent WHERE acontent_aid=".$row["article_id"]." ";
-        $sql_cnt .= "AND acontent_visible=1 AND acontent_trash=0 AND ";
-        $sql_cnt .= "acontent_livedate < NOW() AND (acontent_killdate='0000-00-00 00:00:00' OR acontent_killdate > NOW()) ";
-    if( !FEUSER_LOGIN_STATUS ) {
-        $sql_cnt .= 'AND acontent_granted=0 ';
-    }
+    $sql_cnt .= "AND acontent_visible=1 AND acontent_trash=0 AND ";
+    $sql_cnt .= "acontent_livedate < NOW() AND (acontent_killdate='0000-00-00 00:00:00' OR acontent_killdate > NOW()) ";
+    $sql_cnt .= 'AND acontent_granted' . (FEUSER_LOGIN_STATUS ? '!=2' : '=0') . ' ';
     $sql_cnt .= "ORDER BY acontent_sorting, acontent_id";
     $cresult  = _dbQuery($sql_cnt);
 
@@ -591,11 +595,11 @@ if(isset($result[0]['article_id'])) {
             $CNT_TMP .= 'id="cpid'.$crow["acontent_id"].'" class="'.$template_default['classes']['cp-anchor'].'"></a>';
         }
 
-            // set CP space before and after or wrap if both
-            $content['cp_spacers'] = getContentPartSpacer($crow["acontent_before"], $crow["acontent_after"]);
+        // set CP space before and after or wrap if both
+        $content['cp_spacers'] = getContentPartSpacer($crow["acontent_before"], $crow["acontent_after"]);
 
         // Space before
-            $CNT_TMP .= $content['cp_spacers']['before'];
+        $CNT_TMP .= $content['cp_spacers']['before'];
 
         // set frontend edit link
         if($content['article_frontend_edit']) {
@@ -621,9 +625,9 @@ if(isset($result[0]['article_id'])) {
         $CNT_TMP .= getContentPartTopLink($crow["acontent_top"]);
 
         // Space after
-            $CNT_TMP .= $content['cp_spacers']['after'];
+        $CNT_TMP .= $content['cp_spacers']['after'];
 
-            // Maybe content part ID should be used inside templates or for something different
+        // Maybe content part ID should be used inside templates or for something different
         $CNT_TMP = str_replace( array('[%CPID%]', '{CPID}'), $crow["acontent_id"], $CNT_TMP );
 
         // trigger content part functions

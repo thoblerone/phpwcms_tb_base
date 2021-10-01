@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -16,11 +16,7 @@ if (!defined('PHPWCMS_ROOT')) {
 }
 // ----------------------------------------------------------------
 
-// build the database table prepend part
-define ('DB_PREPEND', empty($GLOBALS['phpwcms']["db_prepend"]) ? '' : $GLOBALS['phpwcms']["db_prepend"].'_');
-
-// Log DB errors
-define ('DB_LOG_ERRORS', empty($GLOBALS['phpwcms']["db_errorlog"]) ? false : true);
+define('DB_LOG_ERRORS', empty($GLOBALS['phpwcms']["db_errorlog"]) ? false : true);
 
 // open the connection to MySQL database
 if(!empty($GLOBALS['phpwcms']["db_pers"]) && substr($GLOBALS['phpwcms']["db_host"], 0, 2) !== 'p:') {
@@ -37,6 +33,7 @@ if($is_mysql_error === false) {
     // for compatibility issues try to check for MySQL version and charset
     $GLOBALS['phpwcms']['db_version'] = _dbInitialize();
     define('PHPWCMS_DB_VERSION', $GLOBALS['phpwcms']['db_version']);
+    define('DB_PREPEND', empty($GLOBALS['phpwcms']["db_prepend"]) ? '' : mysqli_real_escape_string($GLOBALS['db'], $GLOBALS['phpwcms']["db_prepend"]) . '_');
 
 } elseif($is_mysql_error !== 'dbdown.php') {
 
@@ -45,11 +42,15 @@ if($is_mysql_error === false) {
 } else {
 
     define('PHPWCMS_DB_VERSION', $GLOBALS['phpwcms']['db_version']);
+    define('DB_PREPEND', empty($GLOBALS['phpwcms']["db_prepend"]) ? '' : aporeplace($GLOBALS['phpwcms']["db_prepend"]) . '_');
 
 }
 
 // deprecated function for escaping db items
 function aporeplace($value='') {
+    if (!$GLOBALS['db']) {
+        return str_replace(array("\\", "\x00", "\n", "\r", "'",  '"', "\x1a"), array("\\\\", "\\0", "\\n", "\\r", "\'", '\"', "\\Z"), $value);
+    }
     return mysqli_real_escape_string($GLOBALS['db'], $value);
 }
 
@@ -91,7 +92,6 @@ function _dbQuery($query='', $_queryMode='ASSOC') {
             case 'UPDATE':
                 $queryResult['AFFECTED_ROWS'] = mysqli_affected_rows($GLOBALS['db']);
                 return $queryResult;
-                break;
 
             // INSERT ... ON DUPLICATE KEY
             case 'ON_DUPLICATE':
@@ -102,7 +102,6 @@ function _dbQuery($query='', $_queryMode='ASSOC') {
                     $queryResult['AFFECTED_ROWS'] = 1;
                 }
                 return $queryResult;
-                break;
 
             // SELECT Queries
             case 'ROW':
@@ -120,10 +119,8 @@ function _dbQuery($query='', $_queryMode='ASSOC') {
                 if(strpos($query, 'SELECT COUNT(') !== false) {
                     $row = mysqli_fetch_row($result);
                     return $row ? (int) $row[0] : 0;
-                } else {
-                    return mysqli_num_rows($result);
                 }
-                break;
+                return mysqli_num_rows($result);
 
             // SET, CREATE, ALTER, DROP, RENAME, TRUNCATE
             case 'RENAME':
@@ -133,36 +130,30 @@ function _dbQuery($query='', $_queryMode='ASSOC') {
             case 'TRUNCATE':
             case 'CREATE':
                 return true;
-                break;
 
             // send SHOW query and count results
             case 'COUNT_SHOW':
                 return mysqli_num_rows($result);
-                break;
 
             default:
                 $_queryMode = 'mysqli_fetch_assoc';
-
         }
 
         while($row = $_queryMode($result)) {
-
             $queryResult[$queryCount] = $row;
             $queryCount++;
-
         }
-        mysqli_free_result($result);
+
+        if (!is_bool($result)) {
+            mysqli_free_result($result);
+        }
 
         return $queryResult;
 
-    } else {
-
-        _dbLogError(_dbError('LOG', $query));
-
-        return false;
-
     }
 
+    _dbLogError(_dbError('LOG', $query));
+    return false;
 }
 
 function _dbCount($query='') {
@@ -685,15 +676,15 @@ function _dbSetVar($var='', $value=null, $compare=false) {
             switch($compare) {
 
                 case '>':
-                    $set = $default > $value ? true : false;
+                    $set = $default > $value;
                     break;
 
                 case '<':
-                    $set = $default < $value ? true : false;
+                    $set = $default < $value;
                     break;
 
                 case '!=':
-                    $set = $default != $value ? true : false;
+                    $set = $default != $value;
                     break;
 
                 default:

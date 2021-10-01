@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -39,7 +39,7 @@ if(!isset($_GET["s"])) {
 
             echo ($row["pagelayout_default"]) ? " (".$BL['be_admin_tmpl_default'].")" : '';
 
-            echo "</a></td>\n".'<td align="right" nowrap="nowrap" style="padding:2px 3px 0 5px">';
+            echo "</a></td>\n".'<td align="right" class="nowrap" style="padding:2px 3px 0 5px">';
 
             echo '<a href="phpwcms.php?do=admin&amp;p=8&amp;s='.$row["pagelayout_id"].'" title="'.$BL['be_admin_page_edit'].'">';
             echo '<img src="img/button/edit_22x13.gif" alt="" border="0" /></a>';
@@ -209,7 +209,7 @@ if(!isset($_GET["s"])) {
         update_cache();
 
         if($pagelayout["id"]) {
-            headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string('csrftoken').'&do=admin&p=8&s='.$pagelayout["id"]);
+            headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string().'&do=admin&p=8&s='.$pagelayout["id"]);
         }
 
     }

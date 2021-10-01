@@ -3,14 +3,14 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
  **/
 
 //26-04-2004 Oliver Georgi -> $level seems to be unused
-//19-11-2004 Fernando Batista -> Copy article, Copy strutures http://fernandobatista.net
+//19-11-2004 Fernando Batista -> Copy article, Copy structures http://fernandobatista.net
 //31-03-2005 Fernando Batista -> Copy/Cut Article Content http://fernandobatista.net
 
 function struct_list($id, $copy_article_content, $cut_article_content, $copy_id, $copy_article, $cut_id, $cut_article, $listmode=1, $forbid_cut=0, $forbid_copy=0, $counter=0) {
@@ -46,11 +46,11 @@ function struct_levellist($struct, $key, $counter, $copy_article_content, $cut_a
     $a  = "<tr onmouseover=\"this.bgColor='#CCFF00';\" onmouseout=\"this.bgColor='#FFFFFF';\">\n";
     $a .= '<td width="461">';
     $a .= "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"\">\n<tr>\n";
-    $a .= '<td nowrap="nowrap"><img src="img/leer.gif" width="'.(14+(14*($counter-1)))."\" height=\"1\" alt=\"\" />"; //14
-    $a .= ($child_count) ? "<a href=\"phpwcms.php?".$page_val."&amp;open=".rawurlencode($struct[$key]["acat_id"].":".((!empty($_SESSION["structure"][$struct[$key]["acat_id"]]))?0:1))."\">" : "";
-    $a .= "<img src=\"img/symbole/plus_".(($child_count) ? ((!empty($_SESSION["structure"][ $struct[$key]["acat_id"] ])) ? "close" : "open") : "empty");
-    $a .= ".gif\" width=\"15\" height=\"15\" border=\"0\" alt=\"\" />".(($child_count) ? "</a>" : "");
-    $a .= "<img src=\"img/symbole/page_".(!$struct[$key]["acat_hidden"]?1:7);
+    $a .= '<td nowrap="nowrap" class=""nowrap"><img src="img/leer.gif" width="'.(14+(14*($counter-1)))."\" height=\"1\" alt=\"\" />"; //14
+    $a .= $child_count ? '<a href="phpwcms.php?'.$page_val.'&amp;open='.rawurlencode($struct[$key]["acat_id"].':'.(empty($_SESSION["structure"][$struct[$key]["acat_id"]]) ? 1 : 0)).'">' : '';
+    $a .= "<img src=\"img/symbole/plus_".($child_count ? (empty($_SESSION["structure"][$struct[$key]["acat_id"]]) ? "open" : "close") : "empty");
+    $a .= ".gif\" width=\"15\" height=\"15\" border=\"0\" alt=\"\" />".($child_count ? "</a>" : "");
+    $a .= "<img src=\"img/symbole/page_".($struct[$key]["acat_hidden"] ? 7 : 1);
     if($struct[$key]["acat_regonly"]) {
         $a .= '_locked';
     }
@@ -248,12 +248,12 @@ function struct_articlelist($struct_id, $counter, $copy_article_content, $cut_ar
         $acontent_count = get_article_content_count($article[$akey]["article_id"]);
 
         if($article[$akey]["article_uid"] == $_SESSION["wcs_user_id"] || $_SESSION["wcs_user_admin"]) {
-            $a .= "<td nowrap=\"nowrap\"><img src=\"img/leer.gif\" width=\"".(14+14+(14*($counter-1)))."\" height=\"1\" alt=\"\" />";
+            $a .= "<td class=\"nowrap\"><img src=\"img/leer.gif\" width=\"".(14+14+(14*($counter-1)))."\" height=\"1\" alt=\"\" />";
             $a .= ($acontent_count) ? "<a href=\"phpwcms.php?do=articles&amp;opena=".rawurlencode($article[$akey]["article_id"].":".((!empty($_SESSION["structure"]["article"][$article[$akey]["article_id"]]))?0:1))."\">" : "";
             $a .= "<img src=\"img/symbole/plus_".(($acontent_count) ? ((!empty($_SESSION["structure"]["article"][ $article[$akey]["article_id"] ])) ? "close" : "open") : "empty");
             $a .= ".gif\" width=\"15\" height=\"15\" border=\"0\" alt=\"\" />".(($acontent_count) ? "</a>" : "");
         }else{
-            $a .= "<td nowrap=\"nowrap\"><img src=\"img/leer.gif\" width=\"".(14+29+(14*($counter-1)))."\" height=\"1\" alt=\"\" />";
+            $a .= "<td class=\"nowrap\"><img src=\"img/leer.gif\" width=\"".(14+29+(14*($counter-1)))."\" height=\"1\" alt=\"\" />";
         }
 
         $a .= "<img src=\"img/symbole/text_1.gif\" width=\"11\" height=\"15\" ";
@@ -414,7 +414,7 @@ function struct_articlelist($struct_id, $counter, $copy_article_content, $cut_ar
     }
 }
 
-function struct_articlecontentlist(& $article, $akey, $copy_article_content, $cut_article_content, $counter, $sbutton_string){
+function struct_articlecontentlist($article, $akey, $copy_article_content, $cut_article_content, $counter, $sbutton_string){
 
     $a    = '';
 
@@ -469,7 +469,7 @@ function struct_articlecontentlist(& $article, $akey, $copy_article_content, $cu
             $a .= "</td>";
             $a .= "<td width=\"16\"><img src=\"img/symbole/block.gif\" width=\"9\" height=\"11\" border=\"0\" alt=\"\" style=\"margin:0 3px 0 3px;\" /></td>";
             $a .= "<td class=\"v09\" style=\"color:#727889;\" width=\"102\">".html(' {'.$article_content['acontent_block'].'} ')."</td>";
-			$a .= '<td nowrap="nowrap" style="padding:1px 0 1px 0;width:94px;white-space:nowrap;" onmouseover="'.$info.'">';
+			$a .= '<td class="nowrap" style="padding:1px 0 1px 0;width:94px;white-space:nowrap;" onmouseover="'.$info.'">';
 
             $at  = ' '.$ab.' ';
 
@@ -491,16 +491,15 @@ function struct_articlecontentlist(& $article, $akey, $copy_article_content, $cu
                     $a .= $GLOBALS['BL']['be_func_content_paste_cancel']." [".$at."]";
                     $a .= "\"><img src=\"img/button/cut_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
                 }
+            } elseif($article_content["acontent_id"]) {
+                $a .= "<a href=\"phpwcms.php?do=articles&amp;accut=".$article_content["acontent_id"]."\" title=\"";
+                $a .= $GLOBALS['BL']['be_func_content_cut']." [".$at;
+                $a .= "]\"><img src=\"img/button/cut_11x11_0.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
             } else {
-                if($article_content["acontent_id"]) {
-                        $a .= "<a href=\"phpwcms.php?do=articles&amp;accut=".$article_content["acontent_id"]."\" title=\"";
-                        $a .= $GLOBALS['BL']['be_func_content_cut']." [".$at;
-                        $a .= "]\"><img src=\"img/button/cut_11x11_0.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
-                } else {
-                        $a .= "<a href=\"phpwcms.php?do=articles\" title=\"".$GLOBALS['BL']['be_func_content_no_cut']."\">";
-                        $a .= "<img src=\"img/button/cut_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
-                }
+                $a .= "<a href=\"phpwcms.php?do=articles\" title=\"".$GLOBALS['BL']['be_func_content_no_cut']."\">";
+                $a .= "<img src=\"img/button/cut_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
             }
+
             if($copy_article_content) {
                 if($copy_article_content != $article_content["acontent_id"]) {
                     $a .= '<a href="include/inc_act/act_structure.php?do='.rawurlencode('8|'.$copy_article_content.'|'.$article_content["acontent_aid"].'|'.$article_content["acontent_sorting"]);
@@ -511,15 +510,13 @@ function struct_articlecontentlist(& $article, $akey, $copy_article_content, $cu
                     $a .= $GLOBALS['BL']['be_func_content_paste_cancel']." [".$at."]";
                     $a .= "\"><img src=\"img/button/copy_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
                 }
+            } elseif($article_content["acontent_id"]) {
+                $a .= "<a href=\"phpwcms.php?do=articles&amp;accopy=".$article_content["acontent_id"]."\" title=\"";
+                $a .= $GLOBALS['BL']['be_func_content_copy']." [".$at;
+                $a .= "]\"><img src=\"img/button/copy_11x11_0.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
             } else {
-                if($article_content["acontent_id"]) {
-                    $a .= "<a href=\"phpwcms.php?do=articles&amp;accopy=".$article_content["acontent_id"]."\" title=\"";
-                    $a .= $GLOBALS['BL']['be_func_content_copy']." [".$at;
-                    $a .= "]\"><img src=\"img/button/copy_11x11_0.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
-                } else {
-                    $a .= "<a href=\"phpwcms.php?do=articles\" title=\"".$GLOBALS['BL']['be_func_content_no_copy']."\">";
-                    $a .= "<img src=\"img/button/copy_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
-                }
+                $a .= "<a href=\"phpwcms.php?do=articles\" title=\"".$GLOBALS['BL']['be_func_content_no_copy']."\">";
+                $a .= "<img src=\"img/button/copy_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
             }
 
             $a .= $sbutton_string[$article_content["acontent_id"]];
@@ -599,15 +596,13 @@ function listmode_edits($listmode, $struct, $key, $an, $copy_article_content, $c
                         $GLOBALS['BL']['be_func_struct_paste_cancel']." [".$an."]";
                         $a .= "\"><img src=\"img/button/cut_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
                     }
+                } elseif($struct[$key]["acat_id"]) {
+                    $a .= "<a href=\"phpwcms.php?do=admin&amp;p=6&amp;cut=".$struct[$key]["acat_id"]."\" title=\"";
+                    $a .= $GLOBALS['BL']['be_func_struct_cut_level']." [".$an;
+                    $a .= "]\"><img src=\"img/button/cut_11x11_0.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
                 } else {
-                    if($struct[$key]["acat_id"]) {
-                        $a .= "<a href=\"phpwcms.php?do=admin&amp;p=6&amp;cut=".$struct[$key]["acat_id"]."\" title=\"";
-                        $a .= $GLOBALS['BL']['be_func_struct_cut_level']." [".$an;
-                        $a .= "]\"><img src=\"img/button/cut_11x11_0.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
-                    } else {
-                        $a .= "<a href=\"phpwcms.php?do=admin&amp;p=6\" title=\"".$GLOBALS['BL']['be_func_struct_no_cut']."\">";
-                        $a .= "<img src=\"img/button/cut_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
-                    }
+                    $a .= "<a href=\"phpwcms.php?do=admin&amp;p=6\" title=\"".$GLOBALS['BL']['be_func_struct_no_cut']."\">";
+                    $a .= "<img src=\"img/button/cut_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
                 }
                 if($copy_id) {
                     if($copy_id != $struct[$key]["acat_id"] && !$forbid_copy) {
@@ -622,15 +617,13 @@ function listmode_edits($listmode, $struct, $key, $an, $copy_article_content, $c
                         $GLOBALS['BL']['be_func_struct_paste_cancel']." [".$an."]";
                         $a .= "\"><img src=\"img/button/copy_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
                     }
+                } elseif($struct[$key]["acat_id"]) {
+                    $a .= "<a href=\"phpwcms.php?do=admin&amp;p=6&amp;cop=".$struct[$key]["acat_id"]."\" title=\"";
+                    $a .= $GLOBALS['BL']['be_func_struct_copy_level']." [".$an;
+                    $a .= "]\"><img src=\"img/button/copy_11x11_0.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
                 } else {
-                    if($struct[$key]["acat_id"]) {
-                        $a .= "<a href=\"phpwcms.php?do=admin&amp;p=6&amp;cop=".$struct[$key]["acat_id"]."\" title=\"";
-                        $a .= $GLOBALS['BL']['be_func_struct_copy_level']." [".$an;
-                        $a .= "]\"><img src=\"img/button/copy_11x11_0.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
-                    } else {
-                        $a .= "<a href=\"phpwcms.php?do=admin&amp;p=6\" title=\"".$GLOBALS['BL']['be_func_struct_no_copy']."\">";
-                        $a .= "<img src=\"img/button/copy_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
-                    }
+                    $a .= "<a href=\"phpwcms.php?do=admin&amp;p=6\" title=\"".$GLOBALS['BL']['be_func_struct_no_copy']."\">";
+                    $a .= "<img src=\"img/button/copy_11x11_9.gif\" width=\"11\" height=\"11\" border=\"0\" alt=\"\" /></a>";
                 }
                 $a .= "<a href=\"phpwcms.php?do=admin&amp;p=6&amp;struct=";
                 if($struct[$key]["acat_id"]) {
@@ -722,7 +715,7 @@ function update_404redirect() {
         if($result) {
             if($data['data']['active'] == 9) {
                 set_status_message(str_replace('{ID}', $data['data']['rid'], $GLOBALS['BL']['be_action_deleted']), 'success');
-                headerRedirect('phpwcms.php?'.get_token_get_string('csrftoken').'&do=admin&p=14');
+                headerRedirect('phpwcms.php?'.get_token_get_string().'&do=admin&p=14');
             } else {
                 set_status_message($GLOBALS['BL']['be_successfully_saved'], 'success');
             }
@@ -732,5 +725,4 @@ function update_404redirect() {
     }
 
     return $data;
-
 }

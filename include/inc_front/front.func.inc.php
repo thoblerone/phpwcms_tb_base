@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -23,7 +23,7 @@ function spacer($width=1, $height=1) {
     return '<span style="display:inline-block;width:'.intval($width).'px;height:'.intval($height).'px" class="'.$GLOBALS['template_default']['classes']['spaceholder'].'"></span>';
 }
 
-function headline(& $head, & $subhead, & $layout) {
+function headline($head, $subhead, $layout) {
     $c = '';
     if($head) {
         $c .= $layout["content_head_before"];
@@ -78,7 +78,7 @@ function plugin_size($mediatype, $player, $width, $height) {
 function must_filled($c) {
     //spaceholder for form fields that have to be filled
     //with some content or has to be marked or like that
-    return intval($c) ? '<img src="img/article/fill_in_here.gif" alt=""'.HTML_TAG_CLOSE : '';
+    return intval($c) ? ('<img src="img/article/fill_in_here.gif" alt=""' . PHPWCMS_LAZY_LOADING . HTML_TAG_CLOSE) : '';
 }
 
 //to add all relevant attributes that contains values to a string maybe a html tag
@@ -111,7 +111,7 @@ function html_height_attribute($val=0) {
     return ' style="height:'.intval($val).'px;" ';
 }
 
-function get_body_attributes(& $values) {
+function get_body_attributes($values) {
     //return a standard list of standard html body attributes
     //based on the pagelayout definitions
     $body_class = '';
@@ -164,15 +164,15 @@ function align_base_layout($value) {
 
 function get_colspan($value) {
     //returns colspan value back to table row
-    if(empty($value["layout_type"])) {
+    if (empty($value["layout_type"])) {
         $value["layout_type"] = 0;
     }
-    switch($value["layout_type"]) {
-        case 0:     $col=3; break;
-        case 1:     $col=2; break;
-        case 2:     $col=2; break;
-        case 3:     $col=0; break;
-        default:    $col=3;
+    if ($value["layout_type"] === 1 || $value["layout_type"] === 2) {
+        $col = 2;
+    } elseif ($value["layout_type"] === 3) {
+        $col = 0;
+    } else {
+        $col = 3;
     }
     if(!empty($value["layout_leftspace_width"])) {
         $col++;
@@ -273,7 +273,7 @@ function table_attributes($val, $var_part, $top=1, $tr=false) {
     return $td_attrib;
 }
 
-function get_breadcrumb($start_id, &$struct_array, $key="acat_name") {
+function get_breadcrumb($start_id, $struct_array, $key="acat_name") {
     //returns the breadcrumb path starting with given start_id
     $hash = 'breadcrumbdata_'.md5($start_id.$key);
 
@@ -310,7 +310,7 @@ function breadcrumb_wrapper($match) {
     );
 }
 
-function breadcrumb($start_id, &$struct_array, $end_id=0, $spacer=' &gt; ', $cat_only=false) {
+function breadcrumb($start_id, $struct_array, $end_id=0, $spacer=' &gt; ', $cat_only=false) {
     //builds the breadcrumb menu based on given values
     //$link_to = the page on which the breadcrum part links
     //$root_name = name of the breadcrumb part if empty/false/0 $start_id
@@ -601,7 +601,8 @@ function get_actcat_articles_data($act_cat_id) {
 
     if(isset($result[0]['article_id'])) {
         foreach($result as $row) {
-            $data[$row["article_id"]] = array(
+            $aid = $row["article_id"];
+            $data[$aid] = array(
                 "article_id"            => $row["article_id"],
                 "article_cid"           => $row["article_cid"],
                 "article_title"         => $row["article_title"],
@@ -628,11 +629,11 @@ function get_actcat_articles_data($act_cat_id) {
                 'article_livedate'      => $row["article_livedate"],
                 'article_killdate'      => $row["article_killdate"],
                 'article_uid'           => $row["article_uid"],
-                'article_description'   => $row["article_description"]
+                'article_description'   => $row["article_description"],
+                'article_meta'          => $row["article_meta"]
             );
             // now check for article alias ID
             if($row["article_aliasid"]) {
-                $aid = $row["article_id"];
                 $alias_sql  = "SELECT *, UNIX_TIMESTAMP(article_tstamp) AS article_date, ";
                 $alias_sql .= "UNIX_TIMESTAMP(article_begin) AS article_livedate, ";
                 $alias_sql .= "UNIX_TIMESTAMP(article_end) AS article_killdate ";
@@ -674,8 +675,18 @@ function get_actcat_articles_data($act_cat_id) {
                         $data[$aid]['article_killdate']     = $alias_result[0]["article_killdate"];
                         $data[$aid]['article_menutitle']    = $alias_result[0]["article_menutitle"];
                         $data[$aid]['article_description']  = $alias_result[0]["article_description"];
+                        $data[$aid]['article_meta']         = $alias_result[0]["article_meta"];
                     }
                 }
+            }
+
+            if($data[$aid]['article_meta']) {
+                $data[$aid]['article_meta'] = json_decode($data[$aid]['article_meta'], true);
+            }
+            if(is_array($data[$aid]['article_meta'])) {
+                $data[$aid]['article_meta'] = array_merge(get_default_article_meta(), $data[$aid]['article_meta']);
+            } else {
+                $data[$aid]['article_meta'] = get_default_article_meta();
             }
         }
     }
@@ -770,12 +781,10 @@ function build_levels($struct, $level, $temp_tree, $act_cat_id, $nav_table_struc
         $left_cell  = "<td width=\"".$nav_table_struct["space_left"]."\"".$colspan.">";
         $left_cell .= spacer($nav_table_struct["space_left"], $cell_height)."</td>\n";
         $space_cell = "<td".$colspan.">".spacer(1, 1)."</td><td>".spacer(1, 1)."</td>";
-    } else {
-        if($count > 1) {
-            $colspan    = ($count > 2) ? " colspan=\"".($count-1)."\"" : "";
-            $left_cell  = "<td ".$colspan.">".spacer(1, 1)."</td>\n";
-            $space_cell = "<td".$colspan.">".spacer(1, 1)."</td><td>".spacer(1, 1)."</td>";
-        }
+    } elseif($count > 1) {
+        $colspan    = ($count > 2) ? " colspan=\"".($count-1)."\"" : "";
+        $left_cell  = "<td ".$colspan.">".spacer(1, 1)."</td>\n";
+        $space_cell = "<td".$colspan.">".spacer(1, 1)."</td><td>".spacer(1, 1)."</td>";
     }
     if($nav_table_struct["space_celltop"]) $cell_top = spacer(1, $nav_table_struct["space_celltop"])."<br />";
     if($nav_table_struct["space_cellbottom"]) $cell_bottom = "<br />".spacer(1, $nav_table_struct["space_cellbottom"]);
@@ -978,20 +987,40 @@ function list_articles_summary($alt=NULL, $topcount=99999, $template='') {
         $paginate_navi = preg_replace_callback('/\{NAVI:(.*?)\}/', 'get_PaginateNavigate', $paginate_navi);
 
         // next page link
+        $page_next_link = '<a';
         if($GLOBALS['paginate_temp']['next'] && $page_current < $max_pages) {
             $_getVar['listpage'] = $page_next;
-            $page_next_link = '<a href="' . rel_url( array('listpage'=>$page_next) ) . '">' . $GLOBALS['paginate_temp']['next'] . '</a>';
+            $page_next_link .= ' href="' . rel_url( array('listpage'=>$page_next) ) . '"';
+            if ($template_default['classes']['cp-paginate-link']) {
+                $page_next_link .= ' class="' . $template_default['classes']['cp-paginate-link'] . '"';
+            }
         } else {
-            $page_next_link = $GLOBALS['paginate_temp']['next'];
+            if ($template_default['attributes']['cp-paginate']['href-disabled']) {
+                $page_next_link .= ' href="' . $template_default['attributes']['cp-paginate']['href-disabled'] . '" data-disabled="true" tabindex="-1" aria-disabled="true"';
+            }
+            if ($template_default['classes']['cp-paginate-link-disabled']) {
+                $page_next_link .= ' class="' . $template_default['classes']['cp-paginate-link-disabled'] . '"';
+            }
         }
+        $page_next_link .= '>' . $GLOBALS['paginate_temp']['next'] . '</a>';
 
         // previous page link
+        $page_prev_link = '<a';
         if($GLOBALS['paginate_temp']['prev'] && $page_current > 1) {
             $_getVar['listpage'] = $page_prev;
-            $page_prev_link = '<a href="' . rel_url( array('listpage'=>$page_prev) ) . '">' . $GLOBALS['paginate_temp']['prev'] . '</a>';
+            $page_prev_link .= ' href="' . rel_url( array('listpage'=>$page_prev) ) . '"';
+            if ($template_default['classes']['cp-paginate-link']) {
+                $page_prev_link .= ' class="' . $template_default['classes']['cp-paginate-link'] . '"';
+            }
         } else {
-            $page_prev_link = $GLOBALS['paginate_temp']['prev'];
+            if ($template_default['attributes']['cp-paginate']['href-disabled']) {
+                $page_prev_link .= ' href="' . $template_default['attributes']['cp-paginate']['href-disabled'] . '" data-disabled="true" tabindex="-1" aria-disabled="true"';
+            }
+            if ($template_default['classes']['cp-paginate-link-disabled']) {
+                $page_prev_link .= ' class="' . $template_default['classes']['cp-paginate-link-disabled'] . '"';
+            }
         }
+        $page_prev_link .= '>' . $GLOBALS['paginate_temp']['prev'] . '</a>';
 
         // set listpage value to current page
 
@@ -1012,13 +1041,20 @@ function list_articles_summary($alt=NULL, $topcount=99999, $template='') {
             $navi['suffix'] = empty($navi[1][2]) ? ''  : $navi[1][2]; //suffix
 
             $navi['navi']   = $navi['prefix'];
+            $navi['link_class'] = $template_default['classes']['search-paginate-link'] ? ' class="' . $template_default['classes']['search-paginate-link'] .'"' : '';
+            $navi['link_active_class'] = $template_default['classes']['search-paginate-link-active'] ? ' class="' . $template_default['classes']['search-paginate-link-active'] .'"' : '';
 
             if($navi[0] == '123') {
 
                 for($i = 1; $i <= $max_pages; $i++) {
 
-                    if($i > 1) $navi['navi'] .= $navi['spacer'];
-                    $navi['navi'] .= ($i == $page_current) ? $i : '<a href="' . rel_url( array('listpage'=>$i) ) . '">'.$i.'</a>';
+                    if($i > 1) {
+                        $navi['navi'] .= $navi['spacer'];
+                    }
+
+                    $navi['navi'] .= '<a href="' . rel_url( array('listpage' => $i) ) . '"';
+                    $navi['navi'] .= ($i === $page_current) ? $navi['link_active_class'] : $navi['link_class'];
+                    $navi['navi'] .= '>' . $i . '</a>';
 
                 }
 
@@ -1028,12 +1064,18 @@ function list_articles_summary($alt=NULL, $topcount=99999, $template='') {
 
                     $i_start    = $i * $content['struct'][ $content['cat_id'] ]['acat_maxlist'] + 1;
                     $i_end      = $i_start - 1 + $content['struct'][ $content['cat_id'] ]['acat_maxlist'];
-                    if($i_end > $max_articles) $i_end = $max_articles;
+                    if($i_end > $max_articles) {
+                        $i_end = $max_articles;
+                    }
 
-                    if($i > 0) $navi['navi'] .= $navi['spacer'];
+                    if($i > 0) {
+                        $navi['navi'] .= $navi['spacer'];
+                    }
                     $i_entry    = $i_start.'&ndash;'.$i_end;
                     $i_page     = $i+1;
-                    $navi['navi'] .= ($i_page == $page_current) ? $i_entry : '<a href="' . rel_url( array('listpage'=>$i_page) ) . '">'.$i_entry.'</a>';
+                    $navi['navi'] .= '<a href="' . rel_url( array('listpage' => $i_page) ) . '"';
+                    $navi['navi'] .= ($i_page === $page_current) ? $navi['link_active_class'] : $navi['link_class'];
+                    $navi['navi'] .= '>' . $i_entry . '</a>';
 
                 }
 
@@ -1151,7 +1193,7 @@ function list_articles_summary($alt=NULL, $topcount=99999, $template='') {
                     $caption[3] = empty($caption[3]) ? '' : ' title="'.html_specialchars($caption[3]).'"';
                     $caption[1] = html_specialchars($caption[1]);
 
-                    $thumb_img = '<img src="'.PHPWCMS_IMAGES . $thumb_image[0] .'" '.$thumb_image[3].' alt="'.$caption[1].'"'.$caption[3].' class="'.$GLOBALS['template_default']['classes']['image-article-list'].'"'.HTML_TAG_CLOSE;
+                    $thumb_img = '<img src="'.PHPWCMS_IMAGES . $thumb_image[0] .'" '.$thumb_image[3].' alt="'.$caption[1].'"'.$caption[3].' class="'.$GLOBALS['template_default']['classes']['image-article-list'].'"'.PHPWCMS_LAZY_LOADING.HTML_TAG_CLOSE;
 
                     if($article["article_image"]["list_zoom"]) {
 
@@ -1171,7 +1213,7 @@ function list_articles_summary($alt=NULL, $topcount=99999, $template='') {
                             $img_zoom_width     = $zoominfo[1];
                             $img_zoom_height    = $zoominfo[2];
 
-                            $article["article_image"]["poplink"] = 'image_zoom.php?'.getClickZoomImageParameter($zoominfo['src'].'?'.$zoominfo[3]);
+                            $article["article_image"]["poplink"] = 'image_zoom.php?'.getClickZoomImageParameter($zoominfo['src'], $zoominfo[3], $article["article_image"]['list_name']);
 
                             if(!empty($caption[2][0])) {
                                 $open_link = $caption[2][0];
@@ -1316,19 +1358,26 @@ function list_articles_summary($alt=NULL, $topcount=99999, $template='') {
                     $sql_cnt  = 'SELECT * FROM ' . DB_PREPEND . 'phpwcms_articlecontent WHERE acontent_aid=' . $article["article_id"] . ' ';
                     $sql_cnt .= "AND acontent_livedate < NOW() AND (acontent_killdate='0000-00-00 00:00:00' OR acontent_killdate > NOW()) ";
                     $sql_cnt .= "AND acontent_visible=1 AND acontent_trash=0 AND acontent_block='SYSTEM' AND acontent_tid IN (1, 3) "; // 1 = article list, 3 = article detail OR list
-                    if(!FEUSER_LOGIN_STATUS) {
-                        $sql_cnt .= 'AND acontent_granted=0 ';
-                    }
+                    $sql_cnt .= 'AND acontent_granted' . (FEUSER_LOGIN_STATUS ? '!=2' : '=0') . ' ';
                     $sql_cnt .= "ORDER BY acontent_sorting, acontent_id";
                     $tmpl = render_cnt_template($tmpl, 'SYSTEM', showSelectedContent('CPC', $sql_cnt, true));
                 } else {
                     $tmpl = render_cnt_template($tmpl, 'SYSTEM', '');
                 }
 
+                if (!empty($article['article_meta'])) {
+                    if (is_string($article['article_meta'])) {
+                        $article['article_meta'] = json_decode($article['article_meta'], true);
+                    }
+                    $article['article_meta'] = is_array($article['article_meta']) ? array_merge(get_default_article_meta(), $article['article_meta']) : get_default_article_meta();
+                } else {
+                    $article['article_meta'] = get_default_article_meta();
+                }
+
+                $article['article_meta']['class'] = trim(get_css_keywords($article['article_keyword']) . ' ' . $article['article_meta']['class']);
+
                 // article class based on keyword *CSS-classname*
-                $article['article_class'] = get_css_keywords($article['article_keyword']);
-                $article['article_class'] = count($article['article_class']) ? implode(' ', $article['article_class']) : '';
-                $tmpl = render_cnt_template($tmpl, 'CLASS', $article['article_class']);
+                $tmpl = render_cnt_template($tmpl, 'CLASS', $article['article_meta']['class']);
                 $tmpl = render_cnt_template($tmpl, 'IMAGE', $thumb_img);
                 $tmpl = render_cnt_template($tmpl, 'ZOOMIMAGE', $article["article_image"]["poplink"]);
                 $tmpl = render_cnt_template($tmpl, 'CAPTION_SUPPRESS', empty($article["article_image"]["list_caption_suppress"]) ? '' : ' ');
@@ -1389,7 +1438,7 @@ function list_articles_summary($alt=NULL, $topcount=99999, $template='') {
 
     // restore original articles
     if(isset($_old_articles)) {
-        $content["articles"]    = $_old_articles;
+        $content["articles"] = $_old_articles;
     }
 
     $listing .= $template_default["space_bottom"]; //ends with space at bottom
@@ -1607,9 +1656,27 @@ function include_ext_php($inc_file, $t=0) {
 
 // callback wrapper functions
 function international_date_format_callback($matches) {
+    $matches[1] = trim($matches[1]);
+    if($matches[1] && strpos($matches[1], ' set=') !== false) {
+        $set = explode(' set=', $matches[1]);
+        $matches[1] = trim($set[0]);
+        if(!empty($set[1])) {
+            $set[1] = trim($set[1]);
+            $GLOBALS['phpwcms']['callback'] = is_intval($set[1]) ? intval($set[1]) : phpwcms_strtotime($set[1], NULL, now());
+        }
+    }
     return international_date_format($matches[2], $matches[1], $GLOBALS['phpwcms']['callback']);
 }
 function date_callback($matches) {
+    $matches[1] = trim($matches[1]);
+    if($matches[1] && strpos($matches[1], ' set=') !== false) {
+        $set = explode(' set=', $matches[1]);
+        $matches[1] = trim($set[0]);
+        if(!empty($set[1])) {
+            $set[1] = trim($set[1]);
+            $GLOBALS['phpwcms']['callback'] = is_intval($set[1]) ? intval($set[1]) : phpwcms_strtotime($set[1], NULL, now());
+        }
+    }
     if($GLOBALS['phpwcms']['DOCTYPE_LANG'] !== 'en' && preg_match('/[MFDl]/', $matches[1])) {
         return international_date_format($GLOBALS['phpwcms']['default_lang'], $matches[1], $GLOBALS['phpwcms']['callback']);
     }
@@ -1686,7 +1753,7 @@ function international_date_format($language='', $format="Y/m/d", $date_now=0) {
     return date($format, $date_now);
 }
 
-function return_struct_level(&$struct, $struct_id) {
+function return_struct_level($struct, $struct_id) {
     // walk through the given struct level and returns an array with available levels
     $level_entry = array();
     if(is_array($struct)) {
@@ -1919,7 +1986,7 @@ function get_new_articles_callback($matches) {
     return get_new_articles($GLOBALS['template_default']['news'], $matches[1], $matches[2]);
 }
 
-function get_new_articles(&$template_default, $max_cnt_links=0, $cat='', $dbcon=null) {
+function get_new_articles($template_default, $max_cnt_links=0, $cat='', $dbcon=null) {
     // find all new articles
 
     $max_cnt_links = intval($max_cnt_links);
@@ -2373,7 +2440,7 @@ function include_int_phpcode($string) {
     return ob_get_clean();
 }
 
-function build_sitemap($start=0, $counter=0, & $sitemap) {
+function build_sitemap($start=0, $counter=0, $sitemap=array()) {
     // create sitemap
 
     $s = '';
@@ -2421,7 +2488,7 @@ function build_sitemap($start=0, $counter=0, & $sitemap) {
     return $s;
 }
 
-function build_sitemap_articlelist($cat, $counter=0, & $sitemap) {
+function build_sitemap_articlelist($cat, $counter=0, $sitemap=array()) {
     // create list of articles for given category
 
     $ao = get_order_sort($GLOBALS['content']['struct'][ $cat ]['acat_order']);
@@ -2507,7 +2574,7 @@ function render_urlencode($match) {
     return rawurlencode(decode_entities($match));
 }
 // render date by replacing placeholder tags by value
-function render_cnt_date($text='', $date, $livedate=null, $killdate=null) {
+function render_cnt_date($text='', $date=0, $livedate=null, $killdate=null) {
     if(!($date = intval($date))) {
         $date = now();
     }
@@ -2528,7 +2595,7 @@ function render_cnt_date($text='', $date, $livedate=null, $killdate=null) {
     return $text;
 }
 // render date by replacing placeholder tags by value
-function render_date($text='', $date, $rt='DATE') {
+function render_date($text='', $date=0, $rt='DATE') {
     $rt = preg_quote($rt, '/');
     $GLOBALS['phpwcms']['callback'] = $date;
     $text = preg_replace_callback('/\{'.$rt.':(.*?) lang=(..)\}/', 'international_date_format_callback', $text);
@@ -2575,7 +2642,7 @@ function returnTagContent($string='', $tag='', $findall=false, $tagOpen='[', $ta
     return $data;
 }
 
-function include_url($url) {
+function include_url($url, $ignore_ssl=false) {
     // include given URL but only take content between <body></body>
 
     global $include_urlparts;
@@ -2619,7 +2686,17 @@ function include_url($url) {
             $include_urlparts['path'] = dirname($include_urlparts['path']);
             $include_urlparts['path'] = str_replace('\\', '/', $include_urlparts['path']);
         }
-        $k = @file_get_contents($url);
+        if($ignore_ssl && function_exists('stream_context_create')) {
+            $context = array(
+                'ssl' => array(
+                    'verify_peer' => false,
+                    'verify_peer_name' => false,
+                ),
+            );
+            $k = @file_get_contents($url, false, stream_context_create($context));
+        } else {
+            $k = @file_get_contents($url);
+        }
 
         if($k) {
             // now check against charset
@@ -2640,6 +2717,7 @@ function include_url($url) {
             if(preg_match('/<body[^>]*?'.'>(.*)<\/body>/is', $k, $match)) {
                 $k = $match[1];
             }
+
             $k = str_replace(array('<?', '?>', '<%', '%>'), array('&lt;?', '?&gt;', '&lt;&#37;', '&#37;&gt;'), $k);
             $k = preg_replace_callback('/(href|src|action)=[\'|"]{0,1}(.*?)[\'|"]{0,1}( .*?){0,1}>/i', 'make_absoluteURL', $k);
             $k = htmlfilter_sanitize( trim($k) , array(false, 'link', 'meta'), array(), array('img', 'br', 'hr', 'input'), true);
@@ -2873,9 +2951,9 @@ function buildCascadingMenu($parameter='', $counter=0, $param='string') {
             wrap_ul_div(0 = off, 1 = <div>, 2 = <div id="">, 3 = <div class="navLevel-0">),
             wrap_link_text(<em>|</em>),
             articlemenu_start_level|articlemenu_list_image_size (WxHxCROP OR WxHxCROP)|_
-                articlemenu_use_text (take text from: description:MAXLEN OR menutitle:MAXLEN OR teaser:MAXLEN OR teaser:HTML)|_
-                articlemenu_position (inside|outside)|_
-                <custom>[TEXT]{TEXT}[/TEXT][IMAGE]<img src="{IMAGE}" alt="{IMAGE_NAME}">[/IMAGE]</custom>
+            articlemenu_use_text (take text from: description:MAXLEN OR menutitle:MAXLEN OR teaser:MAXLEN OR teaser:HTML)|_
+            articlemenu_position (inside|outside)|_
+            <custom>[TEXT]{TEXT}[/TEXT][IMAGE]<img src="{IMAGE}" alt="{IMAGE_NAME}">[/IMAGE]</custom>
     */
 
     if($param === 'string') {
@@ -2891,11 +2969,13 @@ function buildCascadingMenu($parameter='', $counter=0, $param='string') {
         $bootstrap      = false; // bootstrap dropdown style
         $onepage        = IS_ONEPAGE_TEMPLATE; // render menu links as id anchor <a href=#alias>
         $onepage_every  = false; // ToDo!
+        $hide_first     = false;
 
         /**
          * P = Show parent level
          * B = Bootstrap compatible rendering
          * A = Articles as menu items
+         * AH = Articles as menu items, hide first (avoid double link because of parent structure level)
          * F = Folded, unfold only active level
          * HCSS = Sample horizontal CSS based menu
          * VCSS = Sample vertical CSS based menu
@@ -2905,10 +2985,12 @@ function buildCascadingMenu($parameter='', $counter=0, $param='string') {
             case 'B':       $bootstrap      = true;
                             break;
 
+            case 'BAH':     $hide_first     = true;
             case 'BA':      $bootstrap      = true;
             case 'A':       $articlemenu    = true;
                             break;
 
+            case 'PBAH':    $hide_first     = true;
             case 'PBA':     $bootstrap      = true;
             case 'PA':      $articlemenu    = true;
             case 'P':       $parent         = true;
@@ -2919,11 +3001,13 @@ function buildCascadingMenu($parameter='', $counter=0, $param='string') {
                             break;
 
                             // vertical, active path unfolded
+            case 'FPAH':    $hide_first     = true;
             case 'FPA':     $articlemenu    = true;
             case 'FP':      $parent         = true;
             case 'F':       $unfold         = 'active_path';
                             break;
 
+            case 'FAH':     $hide_first     = true;
             case 'FA':      $articlemenu    = true;
                             $unfold         = 'active_path';
                             break;
@@ -2945,6 +3029,7 @@ function buildCascadingMenu($parameter='', $counter=0, $param='string') {
         $wrap_ul_div    = empty($parameter[6]) ? 0  : intval($parameter[6]);
         $amenu_options  = array(
             'enable'        => false,
+            'hide_first'    => $hide_first,
             'image'         => false,
             'text'          => false,
             'width'         => 0,
@@ -3046,6 +3131,7 @@ function buildCascadingMenu($parameter='', $counter=0, $param='string') {
             $parameter[12]['item_tag']              = 'li';
             $parameter[12]['wrap_tag']              = '';
             $parameter[12]['attribute_wrap_tag']    = '';
+            $parameter[12]['class_item_link']       = $GLOBALS['template_default']['classes']['navlist-link-class'];
             $parameter[12]['class_item_tag']        = $GLOBALS['template_default']['classes']['navlist-asub_no'];
             $parameter[12]['class_first_item_tag']  = $GLOBALS['template_default']['classes']['navlist-asub_first'];
             $parameter[12]['class_last_item_tag']   = $GLOBALS['template_default']['classes']['navlist-asub_last'];
@@ -3079,7 +3165,7 @@ function buildCascadingMenu($parameter='', $counter=0, $param='string') {
     $ul             = '';
     $TAB            = str_repeat('  ', $counter);
     $_menu_type     = strtolower($menu_type);
-    $max_depth      = ($max_depth == 0 || $max_depth-1 > $counter) ? true : false;
+    $max_depth      = $max_depth == 0 || $max_depth - 1 > $counter;
     $x              = 0;
     $items          = array();
     $last_item      = 0;
@@ -3133,6 +3219,9 @@ function buildCascadingMenu($parameter='', $counter=0, $param='string') {
         } else {
             $bs_data_toggle = '';
             $bs_caret       = '';
+        }
+        if($bootstrap && $GLOBALS['template_default']['classes']['navlist-bs-link']) {
+            $li_a_class = trim($li_a_class.' '.$GLOBALS['template_default']['classes']['navlist-bs-link']);
         }
         if($li_a_class) {
             $li_a_class = ' class="'.$li_a_class.'"';
@@ -3347,7 +3436,7 @@ function getImageCaption($caption, $array_index='NUM', $short=false) {
             return array(
                 0 => '',
                 1 => '',
-                2 => array('', ''),
+                2 => array('', '', ''),
                 3 => '',
                 4 => '',
                 'caption_text' => '',
@@ -3361,7 +3450,7 @@ function getImageCaption($caption, $array_index='NUM', $short=false) {
         return array(
             0 => '',
             1 => '',
-            2 => array('', ''),
+            2 => array('', '', ''),
             3 => '',
             4 => ''
         );
@@ -3397,13 +3486,17 @@ function getImageCaption($caption, $array_index='NUM', $short=false) {
         );
     }
 
-    $caption[2]     = isset($caption[2]) ? explode(' ', trim($caption[2])) : array(0 => '', 1 => '');
-    $caption[2][0]  = trim($caption[2][0]);
+    $caption[2]    = isset($caption[2]) ? explode(' ', trim($caption[2])) : array(0 => '', 1 => '');
+    $caption[2][0] = trim($caption[2][0]);
+    $caption[2][2] = '';
     if(empty($caption[2][0]) || empty($caption[2][1])) {
-        $caption[2][1]  = '';
+        $caption[2][1] = '';
     } else {
-        $caption[2][1]  = trim($caption[2][1]);
-        $caption[2][1]  = empty($caption[2][1]) ? '' : ' target="'.$caption[2][1].'"';
+        $caption[2][1] = trim($caption[2][1]);
+        if($caption[2][1] !== '') {
+            $caption[2][2] = $caption[2][1];
+            $caption[2][1] = ' target="' . $caption[2][1] . '"';
+        }
     }
 
     $caption[4] = isset($caption[4]) ? trim($caption[4]) : (isset($filedata['f_copyright']) ? $filedata['f_copyright'] : '');
@@ -3423,7 +3516,7 @@ function getImageCaption($caption, $array_index='NUM', $short=false) {
             'caption_text' => $caption[0],
             'caption_alt' => $caption[1],
             'caption_link' => $caption[2][0],
-            'caption_target' => $caption[2][1],
+            'caption_target' => $caption[2][2],
             'caption_title' => $caption[3],
             'caption_copyright' => $caption[4]
         );
@@ -3481,10 +3574,8 @@ function getFileDetails($file) {
 
 }
 
-function getClickZoomImageParameter($string='', $getvar='show') {
-    $string = base64_encode($string);
-    $string = rawurlencode($string);
-    return $getvar.'='.$string;
+function getClickZoomImageParameter($src='', $size='', $name='') {
+    return 'show='.rawurlencode(base64_encode(serialize(array('src' => $src, 'attr' => $size, 'name' => $name))));
 }
 
 function getPageInfoGetValue($type='string') {
@@ -3509,14 +3600,24 @@ function _getFeUserLoginStatus() {
     return true;
 }
 
-function _checkFrontendUserLogin($user='', $pass='', $validate_db=array('userdetail'=>1, 'backenduser'=>1)) {
-    if(empty($user) || empty($pass)) return false;
+function _checkFrontendUserLogin($user='', $pass='', $validate_db=array('userdetail'=>1, 'backenduser'=>1, 'email_login'=>0)) {
+    if(empty($user) || empty($pass)) {
+        return false;
+    }
     // check against database
     if(!empty($validate_db['userdetail'])) {
-        $sql  = 'SELECT * FROM '.DB_PREPEND.'phpwcms_userdetail WHERE ';
-        $sql .= "detail_login="._dbEscape($user)." AND ";
-        $sql .= "detail_password="._dbEscape($pass)." AND ";
-        $sql .= "detail_aktiv=1 LIMIT 1";
+        $sql = 'SELECT * FROM '.DB_PREPEND.'phpwcms_userdetail WHERE ';
+        if(!empty($validate_db['email_login']) && is_valid_email($user)) {
+            $sql .= '(';
+            $sql .= 'detail_login=' . _dbEscape($user);
+            $sql .= ' OR ';
+            $sql .= 'LOWER(detail_email)=' . _dbEscape(strtolower($user));
+            $sql .= ') AND ';
+        } else {
+            $sql .= '(detail_login=' . _dbEscape($user) . ') AND ';
+        }
+        $sql .= 'detail_password=' . _dbEscape($pass) . ' AND ';
+        $sql .= 'detail_aktiv=1 LIMIT 1';
         $result = _dbQuery($sql);
     }
     // hm, seems no user found - OK test against cms users
@@ -3524,40 +3625,54 @@ function _checkFrontendUserLogin($user='', $pass='', $validate_db=array('userdet
         $sql  = 'SELECT * FROM '.DB_PREPEND.'phpwcms_user ';
         $sql .= 'LEFT JOIN '.DB_PREPEND.'phpwcms_userdetail ON ';
         $sql .= 'usr_id = detail_pid WHERE ';
-        $sql .= "usr_login="._dbEscape($user)." AND ";
-        $sql .= "usr_pass="._dbEscape($pass)." AND ";
-        $sql .= "usr_aktiv=1 AND usr_fe IN (0,2) LIMIT 1";
+        if(!empty($validate_db['email_login']) && is_valid_email($user)) {
+            $sql .= '(';
+            $sql .= 'usr_login=' . _dbEscape($user);
+            $sql .= ' OR ';
+            $sql .= 'LOWER(usr_email)=' . _dbEscape(strtolower($user));
+            $sql .= ') AND ';
+        } else {
+            $sql .= '(usr_login=' . _dbEscape($user) . ') AND ';
+        }
+        $sql .= 'usr_pass=' . _dbEscape($pass) . ' AND ';
+        $sql .= 'usr_aktiv=1 AND usr_fe IN (0,2) LIMIT 1';
         $result = _dbQuery($sql);
     }
     return (isset($result[0]) && is_array($result)) ? $result[0] : false;
 }
 
-function _getFrontendUserBaseData(& $data) {
+function _getFrontendUserBaseData($data) {
     // use vaid user data to set some base fe user data
     // like name, login, email
     $userdata = array('login'=>'', 'name'=>'', 'email'=>'', 'url'=>'', 'source'=>'', 'id'=>0);
 
     if(isset($data['usr_login'])) {
-        $userdata['login']  = $data['usr_login'];
-        $userdata['name']   = $data['usr_name'];
-        $userdata['email']  = $data['usr_email'];
+        $userdata['login'] = $data['usr_login'];
+        $userdata['name'] = $data['usr_name'];
+        $userdata['email'] = $data['usr_email'];
         $userdata['source'] = 'BACKEND';
-        $userdata['id']     = $data['usr_id'];
-        if(trim($data['detail_firstname'].$data['detail_lastname'].$data['detail_company'])) {
-            $t                          = trim($data['detail_firstname'].' '.$data['detail_lastname']);
-            if(empty($t))   $t          = trim($data['detail_company']);
-            if($t) $userdata['name']    = $t;
-            $userdata['url']            = trim($data['detail_website']);
+        $userdata['id'] = $data['usr_id'];
+        if (trim($data['detail_firstname'] . $data['detail_lastname'] . $data['detail_company'])) {
+            $t = trim($data['detail_firstname'] . ' ' . $data['detail_lastname']);
+            if (empty($t)) {
+                $t = trim($data['detail_company']);
+            }
+            if ($t) {
+                $userdata['name'] = $t;
+            }
+            $userdata['url'] = trim($data['detail_website']);
         }
     } elseif($data['detail_login']) {
-        $t                  = trim($data['detail_firstname'].' '.$data['detail_lastname']);
-        if(empty($t)) $t    = $data['detail_company'];
-        $userdata['login']  = $data['detail_login'];
-        $userdata['name']   = $t;
-        $userdata['email']  = $data['detail_email'];
-        $userdata['url']    = $data['detail_website'];
+        $t = trim($data['detail_firstname'] . ' ' . $data['detail_lastname']);
+        if (empty($t)) {
+            $t = $data['detail_company'];
+        }
+        $userdata['login'] = $data['detail_login'];
+        $userdata['name'] = $t;
+        $userdata['email'] = $data['detail_email'];
+        $userdata['url'] = $data['detail_website'];
         $userdata['source'] = 'PROFILE';
-        $userdata['id']     = $data['detail_id'];
+        $userdata['id'] = $data['detail_id'];
     }
     return $userdata;
 }
@@ -3584,12 +3699,12 @@ function _checkFrontendUserAutoLogin() {
     // logout
     if(session_id() && (isset($_POST['feLogout']) || isset($_GET['feLogout']))) {
         unset($_SESSION[ session_id() ]);
-        setcookie('phpwcmsFeLoginRemember', '', time()-3600, '/',  getCookieDomain() );
+        setcookie('phpwcmsFeLoginRemember', '', time()-3600, '/',  getCookieDomain(), PHPWCMS_SSL, true);
     }
     define('FEUSER_LOGIN_STATUS', _getFeUserLoginStatus() );
 }
 
-function _getStructureLevelDisplayStatus(&$level_ID, &$current_ID) {
+function _getStructureLevelDisplayStatus($level_ID, $current_ID) {
     if($GLOBALS['content']['struct'][$level_ID]['acat_struct'] == $current_ID && $level_ID) {
         if($GLOBALS['content']['struct'][$level_ID]['acat_regonly'] && !FEUSER_LOGIN_STATUS) {
             return false;
@@ -3665,9 +3780,11 @@ function sanitize_replacement_tags( $string, $rt='', $bracket=array('{}', '[]') 
     }
     if( is_array($bracket) && count($bracket) && count($tag) ) {
         foreach($bracket as $value) {
-            if(strlen($value) < 2) continue;
-            $prefix = preg_quote($value{0}, '/');
-            $suffix = preg_quote($value{1}, '/');
+            if(strlen($value) < 2) {
+                continue;
+            }
+            $prefix = preg_quote(substr($value, 0, 1), '/');
+            $suffix = preg_quote(substr($value, 1, 1), '/');
             foreach($tag as $row) {
                 $string = preg_replace('/' . $prefix . $row[0] . $suffix . '(.*?)' . $prefix . '\/' . $row[1] . $suffix . '/si', '$1', $string);
             }
@@ -3782,7 +3899,7 @@ function getFrontendEditLink($type='', $id_1=0, $id_2=0, $uid=0) {
     return $link;
 }
 
-function setGetArticleAid(&$data) {
+function setGetArticleAid($data) {
 
     if(!empty($data['article_alias'])) {
         return $data['article_alias'];
@@ -3865,11 +3982,13 @@ function getArticleMenu($data=array()) {
         'wrap_tag'              => 'ul',
         'attribute_wrap_tag'    => '',
         'class_item_tag'        => '',
+        'class_item_link'       => '',
         'class_first_item_tag'  => '',
         'class_last_item_tag'   => '',
         'return_format'         => 'string', // string or array
         'articlemenu_options'   => array(
             'enable'        => false,
+            'hide_first'    => false,
             'image'         => false,
             'text'          => false,
             'width'         => 0,
@@ -3886,12 +4005,21 @@ function getArticleMenu($data=array()) {
     $articles   = get_actcat_articles_data( $data['level_id'] );
     $key        = 0;
     $total      = count($articles) - 1;
+
     foreach($articles as $item) {
+
+        if ($data['articlemenu_options']['hide_first']) {
+            $data['articlemenu_options']['hide_first'] = false;
+            continue;
+        }
 
         $class      = '';
         $class_a    = '';
         if($data['class_item_tag']) {
             $class .= $data['class_item_tag'].' ';
+        }
+        if($data['class_item_link']) {
+            $class_a .= $data['class_item_link'].' ';
         }
         if($key === 0 && $data['class_first_item_tag']) {
             $class .= $data['class_first_item_tag'].' ';
@@ -3903,7 +4031,7 @@ function getArticleMenu($data=array()) {
                 $class .= $data['class_active'][0].' ';
             }
             if(!empty($data['class_active'][1])) {
-                $class_a = ' class="'.$data['class_active'][1].'"'; // set active link class
+                $class_a .= $data['class_active'][1]; // set active link class
             }
         }
         $class = trim($class);
@@ -3962,8 +4090,8 @@ function getArticleMenu($data=array()) {
             $item['target'] = '';
         }
 
-        $li[$key]  = $data['item_prefix'] . '<'. $data['item_tag'] . ($class != '' ? ' class="' . $class . '"' : '' ) . '>';
-        $li[$key] .= '<a href="'.$item['href'].'"'.$class_a.$item['target'].'>';
+        $li[$key]  = $data['item_prefix'] . '<'. $data['item_tag'] . ($class ? ' class="' . $class . '"' : '' ) . '>';
+        $li[$key] .= '<a href="'.$item['href'].'"' . ($class_a ? ' class="' . $class_a . '"' : '') . $item['target'] . '>';
         $li[$key] .= $data['wrap_title_prefix'];
         $li[$key] .= html(getArticleMenuTitle($item));
         $li[$key] .= $data['wrap_title_suffix'];
@@ -3993,7 +4121,7 @@ function getArticleMenu($data=array()) {
  * @return string
  * @param array article data
  **/
-function getArticleMenuTitle(& $data) {
+function getArticleMenuTitle($data) {
     return empty($data['article_menutitle']) ? $data['article_title'] : $data['article_menutitle'];
 }
 
@@ -4158,7 +4286,7 @@ function render_CKEDitor_resized_images($match) {
         $alt = '';
     }
 
-    return '<img src="'.$src.'"'.$alt;
+    return '<img src="'.$src.'"'.$alt.PHPWCMS_LAZY_LOADING;
 }
 
 function get_structurelevel_single_article_alias($article_cid=0) {
@@ -4404,18 +4532,18 @@ function render_if_not_category($matches) {
     return $return === true ? str_replace('{IF_NOTCAT_ID}', $current, $matches[2]) : '';
 }
 
-function get_css_keywords($text) {
+function get_css_keywords($text, $return_as_string=true) {
 
     if(empty($text) || !is_string($text) || strpos($text, '*CSS-') === false) {
-        return array();
+        return $return_as_string ? '' : array();
     }
 
     preg_match_all('/\*CSS\-(.+?)\*/', $text, $css);
     if(isset($css[1]) && is_array($css[1])) {
-        return $css[1];
+        return $return_as_string ? implode(' ', $css[1]) : $css[1];
     }
 
-    return array();
+    return $return_as_string ? '' : array();
 }
 
 function get_attr_data_gallery($group='', $prefix=' ', $suffix='') {
@@ -4428,28 +4556,31 @@ function get_attr_data_gallery($group='', $prefix=' ', $suffix='') {
 
 }
 
-function rel_download($hash='', $filename='', $countonly=false, $htmlencode=true) {
+/**
+ * Init Parsedown or ParsedownExtra Class
+ */
+function init_markdown() {
 
-    $href = '';
-
-    if(PHPWCMS_REWRITE) {
-
-        $href .= 'dl/'.$hash.'/'.rawurlencode($filename);
-
-        if($countonly) {
-            $href .= '?countonly=1';
+    if(!isset($GLOBALS['phpwcms']['parsedown_class'])) {
+        require_once(PHPWCMS_ROOT . '/include/inc_ext/parsedown/Parsedown.php');
+        if (empty($GLOBALS['phpwcms']['markdown_extra'])) {
+            $GLOBALS['phpwcms']['parsedown_class'] = new Parsedown();
+        } else {
+            require_once(PHPWCMS_ROOT . '/include/inc_ext/parsedown-extra/ParsedownExtra.php');
+            $GLOBALS['phpwcms']['parsedown_class'] = new ParsedownExtra();
         }
-
-    } else {
-
-        $href .= 'download.php?f='.$hash;
-
-        if($countonly) {
-            $href .= ($htmlencode ? '&amp;' : '&') . 'countonly=1';
-        }
-
     }
 
-    return $href;
+}
+
+/**
+ * Init Textile Class
+ */
+function init_textile() {
+
+    if(!isset($GLOBALS['phpwcms']['textile_class'])) {
+        require_once(PHPWCMS_ROOT . '/include/inc_ext/classTextile.php');
+        $GLOBALS['phpwcms']['textile_class'] = new Textile();
+    }
 
 }

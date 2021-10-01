@@ -4,7 +4,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -126,7 +126,7 @@ function renderAds($match) {
 				}
 				$ad_media	.= ' id="'.$ad_so.'">';
 				if(is_file($ad['dir'].$ad['adcampaign_data']['image'])) {
-					$ad_media	.= '<img src="'. html_specialchars($ad_imgsrc) .'" border="0"'.$ad_wxh.$ad_alt.HTML_TAG_CLOSE;
+					$ad_media	.= '<img src="'. html_specialchars($ad_imgsrc) .'" '.$ad_wxh.$ad_alt.HTML_TAG_CLOSE;
 				} else {
 					$ad_media	.= $ad_title;
 				}

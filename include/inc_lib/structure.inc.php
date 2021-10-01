@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -20,7 +20,7 @@ function struct_list($struct_id, $counter=0) {
 
 		foreach($result as $row) {
 
-			echo "<tr><td nowrap=\"nowrap\"><img src=\"img/leer.gif\" width=\"15\" height=\"11\"></td>";
+			echo "<tr><td class=\"nowrap\"><img src=\"img/leer.gif\" width=\"15\" height=\"11\"></td>";
 			echo "<td class=\"dir\">".html($row["acat_name"])."</td>";
 			echo "<td><img src=\"img/button/add_22x11.gif\" width=\"22\" height=\"11\">";
 			echo "<img src=\"img/button/edit_22x11.gif\" width=\"22\" height=\"11\">";

@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -53,9 +53,10 @@ if($imageinfo != false && isset($imageinfo[2])) {
 
 	switch($imageinfo[2]) {
 		//1 = GIF, 2 = JPG, 3 = PNG
-		case 1: header("Content-Type: image/gif"); break;
-		case 2: header("Content-Type: image/jpeg"); break;
-		case 3: header("Content-Type: image/png"); break;
+		case IMAGETYPE_GIF: header("Content-Type: image/gif"); break;
+		case IMAGETYPE_JPEG: header("Content-Type: image/jpeg"); break;
+		case IMAGETYPE_PNG: header("Content-Type: image/png"); break;
+		case IMAGETYPE_WEBP: header("Content-Type: image/webp"); break;
 		default: header("Content-Type: image/gif");
 	}
 

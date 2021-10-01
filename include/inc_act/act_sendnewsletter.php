@@ -3,14 +3,14 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
  **/
 
-session_start();
-$phpwcms = array();
+$phpwcms = array('SESSION_START' => true);
+
 require_once '../../include/config/conf.inc.php';
 require_once '../inc_lib/default.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/helper.session.php';
@@ -19,10 +19,11 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/general.inc.php';
 checkLogin();
 validate_csrf_tokens();
 require_once PHPWCMS_ROOT.'/include/inc_ext/phpmailer/PHPMailerAutoload.php';
-//load default language EN
 require_once PHPWCMS_ROOT.'/include/inc_lang/backend/en/lang.inc.php';
-if($_SESSION["wcs_user_lang_custom"]) { //use custom lang if available -> was set in login.php
-    include PHPWCMS_ROOT.'/include/inc_lang/backend/'.substr($_SESSION["wcs_user_lang"],0,2).'/lang.inc.php';
+
+//use custom lang if available -> was set in login.php
+if(!empty($_SESSION["wcs_user_lang_custom"]) && ($temp_lang = substr($_SESSION["wcs_user_lang"],0,2)) && is_file(PHPWCMS_ROOT.'/include/inc_lang/backend/'.$temp_lang.'/lang.inc.php')) {
+    include PHPWCMS_ROOT.'/include/inc_lang/backend/'.$temp_lang.'/lang.inc.php';
 }
 
 ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -251,7 +252,7 @@ if(!$newsletter) {
                 updateSentDate($newsletter["newsletter_id"]);
                 echo '<script type="text/javascript">'.LF.SCRIPT_CDATA_START.LF;
                 echo 'function loopIt() { self.location.href="act_sendnewsletter.php?';
-                echo 'newsletter_id='.$newsletter["newsletter_id"].'&'.get_token_get_string('csrftoken').'&';
+                echo 'newsletter_id='.$newsletter["newsletter_id"].'&'.get_token_get_string().'&';
                 echo 'send_confirm=confirmed&loop='.$loop.'&pause='.$pause.'"; }'.LF;
                 echo 'window.setTimeout("loopIt()", '. ($pause * 1000) .')'.LF;
                 echo LF.SCRIPT_CDATA_END.LF.'</script></body></html>';
@@ -273,7 +274,7 @@ if(!$newsletter) {
     echo 'no permission';
 }
 
-function build_email_text($text, &$value) {
+function build_email_text($text, $value) {
 
     //build right message part
     $refkey = rawurlencode($value['address_key']);
@@ -285,7 +286,6 @@ function build_email_text($text, &$value) {
     $text = str_replace('###DELETE_LINK###', PHPWCMS_URL.'verify.php?u='.$refkey, $text);
 
     return $text;
-
 }
 
 function updateSentDate($id=0) {

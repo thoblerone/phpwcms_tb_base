@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -12,8 +12,8 @@
 //19-11-2004 Fernando Batista -> Copy article, Copy strutures http://fernandobatista.net
 //31-03-2005 Fernando Batista -> Copy/Cut Article Content http://fernandobatista.net
 
-session_start();
-$phpwcms = array();
+$phpwcms = array('SESSION_START' => true);
+
 require_once '../../include/config/conf.inc.php';
 require_once '../inc_lib/default.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/helper.session.php';
@@ -26,7 +26,7 @@ require_once PHPWCMS_ROOT.'/include/inc_lib/backend.functions.inc.php';
 if(empty($_SESSION['REFERER_URL'])) {
     die('Goood bye.');
 } else {
-    $ref = empty($_SESSION['REFERER_URL']) ? PHPWCMS_URL.'phpwcms.php?'.get_token_get_string('csrftoken') : $_SESSION['REFERER_URL'];
+    $ref = empty($_SESSION['REFERER_URL']) ? PHPWCMS_URL.'phpwcms.php?'.get_token_get_string() : $_SESSION['REFERER_URL'];
 }
 
 if($_SESSION["wcs_user_admin"] === 1) { // Only for admin users
@@ -121,7 +121,7 @@ if($_SESSION["wcs_user_admin"] === 1) { // Only for admin users
     $acat_sort_fallback = isset($_POST["acat_sort"]) ? intval(trim($_POST["acat_sort"])) : 0;
     $acat_sort_temp     = isset($_POST["acat_sort_temp"]) ? intval($_POST["acat_sort_temp"]) : 0;
     $acat_lang          = empty($_POST["acat_lang"]) ? '' : clean_slweg($_POST["acat_lang"]);
-    $acat_lang_type     = $acat_lang == '' || empty($_POST["acat_lang_type"]) ? '' : in_array($_POST["acat_lang_type"], array('category', 'article')) ? $_POST["acat_lang_type"] : '';
+    $acat_lang_type     = $acat_lang === '' || empty($_POST["acat_lang_type"]) ? '' : (in_array($_POST["acat_lang_type"], array('category', 'article')) ? $_POST["acat_lang_type"] : '');
     $acat_lang_id       = $acat_lang_type == '' || empty($_POST["acat_lang_id"]) ? 0 : intval($_POST["acat_lang_id"]);
 
     if($acat_sort_fallback === 0 && $acat_sort_temp > 0) {
@@ -440,7 +440,7 @@ _setConfig('structure_array_vmode_editor', '', 'frontend_render', 1);
 _setConfig('structure_array_vmode_admin', '', 'frontend_render', 1);
 
 if(isset($_POST['SubmitClose'])) {
-    headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string('csrftoken').'&do=admin&p=6&'.get_token_get_string('csrftoken'));
+    headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string().'&do=admin&p=6');
 } else {
     headerRedirect($ref);
 }
@@ -464,7 +464,7 @@ function get_struct_del_id($s_id=0) {
     if(isset($result[0]['acat_id'])) {
         foreach($result as $row) {
             $GLOBALS["struct_del"][] = $row['acat_id'];
-            get_struct_del_id('acat_id');
+            get_struct_del_id($row['acat_id']);
         }
     }
 }
@@ -539,7 +539,7 @@ function copy_article_to_level($do) {
 
             if(empty($GLOBALS['phpwcms']['disallow_open_copied_article']) && isset($do[3]) && $do[3] == 'open') {
 
-                headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string('csrftoken').'&do=articles&p=2&s=1&id='.$article_insert_id);
+                headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string().'&do=articles&p=2&s=1&id='.$article_insert_id);
 
             }
 

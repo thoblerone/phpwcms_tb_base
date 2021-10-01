@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -14,7 +14,7 @@ $phpwcms = array();
 require_once 'include/config/conf.inc.php';
 
 if( !empty($phpwcms['SESSION_FEinit']) ) {
-    @session_start();
+    $phpwcms['SESSION_START'] = true;
 }
 
 require_once 'include/inc_lib/default.inc.php';

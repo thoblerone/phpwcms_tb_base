@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -142,7 +142,7 @@ initJsCalendar();
     <tr bgcolor="#D9DEE3"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="4" /></td></tr>
 
     <tr bgcolor="#D9DEE3">
-        <td align="right" class="chatlist" nowrap="nowrap"><a href="phpwcms.php?do=admin&amp;p=6&amp;struct=<?php
+        <td align="right" class="chatlist nowrap" nowrap="nowrap"><a href="phpwcms.php?do=admin&amp;p=6&amp;struct=<?php
 
         if(empty($content['article']['acat_id'])) {
             echo 'index';
@@ -159,7 +159,7 @@ initJsCalendar();
     <tr bgcolor="#D9DEE3"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2" /></td>
     </tr>
     <tr bgcolor="#D9DEE3">
-        <td align="right" class="chatlist" nowrap="nowrap"><a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=1&amp;id=<?php
+        <td align="right" class="chatlist nowrap" nowrap="nowrap"><a href="phpwcms.php?do=articles&amp;p=2&amp;s=1&amp;aktion=1&amp;id=<?php
 
         echo $content["aid"];
         ?>" onclick="return confirm('<?php echo $BL['be_dialog_warn_nosave'];
@@ -202,7 +202,7 @@ initJsCalendar();
     $temp_select                = '';
     $temp_count                 = 0;
     $contentpart_temp_selected  = 0;
-    $user_selected_cp           = isset($_SESSION["wcs_user_cp"]) && count($_SESSION["wcs_user_cp"])  ? true : false;
+    $user_selected_cp           = isset($_SESSION["wcs_user_cp"]) && count($_SESSION["wcs_user_cp"]);
 
     if(is_array($article["article_cntpart"]) && count($article["article_cntpart"])) {
 
@@ -382,7 +382,7 @@ if($content['cp_setting_mode']):
     if(isset($template_default['attributes']['cpgroup_custom']) && is_array($template_default['attributes']['cpgroup_custom']) && count($template_default['attributes']['cpgroup_custom'])):
         foreach($template_default['attributes']['cpgroup_custom'] as $tab_type_value => $value):
 ?>
-                        <option value="<?php echo $tab_type_value ?>"<?php is_selected($tab_type_value, $content["tab_type"]); ?>><?php echo html($value['title']) ?></option>
+            <option value="<?php echo $tab_type_value ?>"<?php is_selected($tab_type_value, $content["tab_type"]); ?>><?php echo html($value['title']) ?></option>
 <?php
         endforeach;
     endif;
@@ -390,15 +390,14 @@ if($content['cp_setting_mode']):
                     </select>
                     <script>
 
-                        var cTabStatus = <?php echo $content["tab_type"] ? 'true' : 'false' ?>, loadblock = true;
+                        var cTabStatus = <?php echo $content["tab_type"] ? 'true' : 'false' ?>,
+                            loadblock = true;
 
                         function checkTabStatus(tabVal) {
 
-                            var tabValue = tabVal.options[tabVal.selectedIndex].value;
+                            cTabStatus = tabVal.options[tabVal.selectedIndex].value !== '0';
 
-                            cTabStatus = tabValue !== '0';
-
-                            if(cTabStatus == false) {
+                            if(!cTabStatus) {
                                 document.getElementById('ctab1').style.display = 'none';
                                 document.getElementById('ctab2').style.display = 'none';
                             } else {
@@ -414,12 +413,12 @@ if($content['cp_setting_mode']):
                         }
 
                         function checkCntBlockPaginate(obj) {
-                            var paginate = document.getElementById("cpaginate_page");
-                            var block = obj.options[obj.selectedIndex].value;
-                            var system1 = document.getElementById('system1');
-                            var ctab = document.getElementById('ctab');
+                            var paginate = document.getElementById("cpaginate_page"),
+                                block = obj.options[obj.selectedIndex].value,
+                                system1 = document.getElementById('system1'),
+                                ctab = document.getElementById('ctab');
 
-                            if(block == 'SYSTEM') {
+                            if(block === 'SYSTEM') {
                                 system1.style.display = 'table-row';
                                 ctab.value = '0';
                                 ctab.disabled = true;
@@ -435,8 +434,8 @@ if($content['cp_setting_mode']):
 
                             }
 
-                            if(block != "CONTENT") {
-                                if(paginate.value != "0" && loadblock == false) {
+                            if(block !== 'CONTENT') {
+                                if(paginate.value !== "0" && !loadblock) {
                                     if(!confirm("<?php echo $BL['be_cnt_subsection_warning'] ?>")) {
                                         obj.selectedIndex = 0;
                                         return false;
@@ -450,9 +449,9 @@ if($content['cp_setting_mode']):
 
                         function checkCp() {
 
-                            var ctab = document.getElementById('ctab');
-                            var ctab_title = document.getElementById('ctab_title');
-                            var ctab_number = document.getElementById('ctab_number');
+                            var ctab = document.getElementById('ctab'),
+                                ctab_title = document.getElementById('ctab_title'),
+                                ctab_number = document.getElementById('ctab_number');
 
                             if(ctab.selectedIndex > 0 && ctab_title.value === '' && ctab_number.value === '') {
                                 return confirm('<?php echo PHPWCMS_CHARSET === 'utf-8' ? $BL['confirm_cp_tab_warning'] : utf8_decode($BL['confirm_cp_tab_warning']); ?>');
@@ -647,11 +646,11 @@ echo $_save_close_buttons;
         <table summary="" border="0" cellspacing="0" cellpadding="0" bgcolor="#E7E8EB">
             <tr>
                 <td class="v10"><label for="ccb">&nbsp;<?php echo $BL['be_article_cnt_before'] ?></label></td>
-                <td><input name="ccb" type="checkbox" id="ccb" value="1" <?php if($content["before"] !== '') echo "checked"; ?> onclick="if(!this.checked){this.form.cbefore.value='';}else{ if(this.form.cbefore.value=='') this.checked=false;}" /></td>
+                <td><input name="ccb" type="checkbox" id="ccb" value="1" <?php if($content["before"] !== '') echo "checked"; ?> onclick="if(!this.checked){this.form.cbefore.value='';}else if(this.form.cbefore.value===''){this.checked=false;}" /></td>
                 <td><input name="cbefore" type="text" id="cbefore" class="width40" value="<?php echo $content["before"] ?>" size="5" maxlength="5" onkeyup="validate_before_after(this, 'ccb');" /></td>
                 <td class="chatlist">&nbsp;<?php echo empty($template_default['article']['div_spacer_unit']) ? 'px' : $template_default['article']['div_spacer_unit']; ?>&nbsp;&nbsp;</td>
                 <td class="v10"><label for="cca">&nbsp;<?php echo $BL['be_article_cnt_after'] ?></label></td>
-                <td><input name="cca" type="checkbox" id="cca" value="1" <?php if($content["after"] !== '') echo "checked"; ?> onclick="if(!this.checked){this.form.cafter.value='';}else{ if(this.form.cafter.value=='') this.checked=false;}" /></td>
+                <td><input name="cca" type="checkbox" id="cca" value="1" <?php if($content["after"] !== '') echo "checked"; ?> onclick="if(!this.checked){this.form.cafter.value='';}else if(this.form.cafter.value===''){this.checked=false;}" /></td>
                 <td class="tdtop1 tdbottom1"><input name="cafter" type="text" id="cafter" class="width40" value="<?php echo $content["after"] ?>" size="5" maxlength="5" onkeyup="validate_before_after(this, 'cca');" /></td>
                 <td class="chatlist">&nbsp;<?php echo empty($template_default['article']['div_spacer_unit']) ? 'px' : $template_default['article']['div_spacer_unit']; ?>&nbsp;</td>
                 <td bgcolor="#ffffff">&nbsp;</td>
@@ -692,7 +691,7 @@ echo $_save_close_buttons;
                     <td class="chatlist">&nbsp;<br />
                         <input name="set_livedate" type="checkbox" id="set_livedate" value="1"<?php is_checked(1, $set_livedate) ?> onclick="document.articlecontent.clivedate.value = this.checked ? '<?php echo $content["livedate"]; ?>' : '';" />
                     </td>
-                    <td class="chatlist tdbottom3" nowrap="nowrap">YYYY-MM-DD HH:MM:SS<br />
+                    <td class="chatlist tdbottom3 nowrap" nowrap="nowrap">YYYY-MM-DD HH:MM:SS<br />
                         <input name="clivedate" type="text" id="clivedate" class="width150" value="<?php echo $content["livedate"]; ?>" />
                     </td>
                     <td class="chatlist tdbottom3">&nbsp;<br />
@@ -726,7 +725,7 @@ echo $_save_close_buttons;
                     <td class="chatlist">&nbsp;<br />
                         <input name="set_killdate" type="checkbox" id="set_killdate" value="1"<?php is_checked(1, $set_killdate) ?> onclick="document.articlecontent.ckilldate.value = this.checked ? '<?php echo $content["killdate"] ?>' : '';" />
                     </td>
-                    <td class="chatlist tdbottom3" nowrap="nowrap">YYYY-MM-DD HH:MM:SS<br />
+                    <td class="chatlist tdbottom3 nowrap" nowrap="nowrap">YYYY-MM-DD HH:MM:SS<br />
                         <input name="ckilldate" type="text" id="ckilldate" class="width150" value="<?php echo $content["killdate"]; ?>" />
                     </td>
                     <td class="chatlist tdbottom3">&nbsp;<br />
@@ -767,15 +766,18 @@ echo $_save_close_buttons;
             <tr>
 
                 <td><input name="cvisible" type="checkbox" id="cvisible" value="1"<?php is_checked(1, $content["visible"]); ?> /></td>
-                <td><label for="cvisible"><?php echo $BL['be_admin_struct_visible'] ?>&nbsp;&nbsp;</label></td>
+                <td><label for="cvisible"><?php echo $BL['be_admin_struct_visible'] ?>&nbsp;&nbsp;</label>&nbsp;</td>
 
-                <td bgcolor="#F3F5F8">&nbsp;</td>
+                <td>
+                    <select name="cgranted" id="cgranted" class="v11">
+                        <option value="0"<?php is_selected(0, $content["granted"]); ?>><?php echo $BL['be_visible_for_everybody'] ?></option>
+                        <option value="1"<?php is_selected(1, $content["granted"]); ?>><?php echo $BL['be_granted_feuser'] ?></option>
+                        <option value="2"<?php is_selected(2, $content["granted"]); ?>><?php echo $BL['be_hidden_for_feuser'] ?></option>
+                    </select>
+                </td>
 
-                <td><input name="cgranted" type="checkbox" id="cgranted" value="1"<?php is_checked(1, $content["granted"]); ?> /></td>
-                <td><label for="cgranted"><?php echo $BL['be_granted_feuser'] ?></label>&nbsp;</td>
-
-                <td bgcolor="#F3F5F8" class="chatlist" align="right">&nbsp;&nbsp;<?php echo $BL['be_cnt_sortvalue'] ?>:&nbsp;</td>
-                <td bgcolor="#F3F5F8"><input name="csorting" type="text" id="csorting" value="<?php echo $content["sorting"] ?>" class="width40" maxlength="10" onkeyup="if(!parseInt(this.value,10))this.value='0';" /></td>
+                <td class="chatlist" align="right">&nbsp;&nbsp;<?php echo $BL['be_cnt_sortvalue'] ?>:&nbsp;</td>
+                <td><input name="csorting" type="text" id="csorting" value="<?php echo $content["sorting"] ?>" class="width40" maxlength="10" onkeyup="if(!parseInt(this.value,10))this.value='0';" /></td>
 
             </tr>
         </table></td>

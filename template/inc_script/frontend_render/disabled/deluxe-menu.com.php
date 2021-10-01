@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -183,7 +183,7 @@ if(strpos($content["all"],'{DELUXE_MENU') !== false) {
 
 
     /*******************************************************************************/
-    function createDeluxeMenuJSCode($start_id=0, $counter=0, & $param) {
+    function createDeluxeMenuJSCode($start_id=0, $counter=0, $param=array()) {
 
         $li             = '';
         $TAB            = str_repeat('  ', $counter);
@@ -226,8 +226,14 @@ if(strpos($content["all"],'{DELUXE_MENU') !== false) {
 
     $GLOBALS['DeluxeMenuParam']['start_at_ID'] = 0;
     $content['all'] = str_replace('{DELUXE_MENU}', '{DELUXE_MENU:0}', $content['all']);
-    $content['all'] = preg_replace_callback('/\{DELUXE_MENU:(.*?)\}/', create_function('$matches', '$GLOBALS["DeluxeMenuParam"]["start_at_ID"]=$matches[1]; return "{DELUXE_MENU}";'), $content['all']);
-
+    $content['all'] = preg_replace_callback(
+        '/\{DELUXE_MENU:(.*?)\}/',
+        function($matches) {
+            $GLOBALS["DeluxeMenuParam"]["start_at_ID"] = $matches[1];
+            return "{DELUXE_MENU}";
+        },
+        $content['all']
+    );
     $DeluxeMenuParam['start_at_ID'] = intval($GLOBALS['DeluxeMenuParam']['start_at_ID']);
 
     $DeluxeMenuParam['js'] .= createDeluxeMenuJSCode($DeluxeMenuParam['start_at_ID'], $counter=0, $DeluxeMenuParam);

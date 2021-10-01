@@ -3,26 +3,18 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
  **/
 
-session_start();
-
-if(empty($_SESSION["wcs_user_id"])) {
-
-	die('{"success":false}');
-
-}
-
-$phpwcms = array();
-require '../../include/config/conf.inc.php';
-require '../inc_lib/default.inc.php';
+$phpwcms = array('SESSION_START' => true);
+require_once '../../include/config/conf.inc.php';
+require_once '../inc_lib/default.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/helper.session.php';
 
-if(!validate_csrf_get_token('csrftoken')) {
+if(empty($_SESSION["wcs_user_id"]) || !validate_csrf_get_token()) {
 	die('{"success":false}');
 }
 
@@ -99,12 +91,14 @@ if(!empty($result['success']) && !empty($_GET['file_public'])) {
 
         require_once PHPWCMS_ROOT.'/include/inc_lib/classes/class.svg-reader.php';
 
-        if($file_svg = @SVGMetadataExtractor::getMetadata($userftppath.$result['filename'])) {;
+        if($file_svg = @SVGMetadataExtractor::getMetadata($userftppath.$result['filename'])) {
             $data['f_type'] = 'image/svg+xml';
             $data['f_svg'] = 1;
             $data['f_image_width'] = $file_svg['width'];
             $data['f_image_height'] = $file_svg['height'];
         }
+
+
 
     }
 

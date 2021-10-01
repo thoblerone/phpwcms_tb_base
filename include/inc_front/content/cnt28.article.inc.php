@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -26,7 +26,7 @@ if($crow['acontent_attr_id']) {
     $crow['attr_class_id'][] = 'id="'.html($crow['acontent_attr_id']).'"';
 }
 
-if(($crow['attr_class_id'] = implode(' ', $crow['attr_class_id']))) {;
+if(($crow['attr_class_id'] = implode(' ', $crow['attr_class_id']))) {
     $CNT_TMP .= '<div '.$crow['attr_class_id'].'>';
     $crow['attr_class_id_close'] = '</div>';
 } else {
@@ -61,19 +61,18 @@ if(!empty($crow["acontent_template"]) && is_file(PHPWCMS_TEMPLATE.'inc_cntpart/f
     $_loginData['remember']     = 0;
     $_loginData['remind_data']  = '';
 
-
     $_loginData['felogin_profile_registration'] = empty($_loginData['felogin_profile_registration']) ? 0 : 1;
     $_loginData['felogin_profile_manage']       = empty($_loginData['felogin_profile_manage']) ? 0 : 1;
     $_loginData['validate_db']['userdetail']    = empty($_loginData['felogin_validate_userdetail'])  ? 0 : 1;
     $_loginData['validate_db']['backenduser']   = empty($_loginData['felogin_validate_backenduser']) ? 0 : 1;
+    $_loginData['validate_db']['email_login']   = empty($_loginData['felogin_accept_email_login']) ? 0 : 1;
 
     // handle Login
     if(isset($_POST['feLogin'])) {
 
-        $_loginData['login']                        = slweg($_POST['feLogin']);
-        $_loginData['password']                     = slweg($_POST['fePassword']);
-        $_loginData['remember']                     = empty($_POST['feRemember']) ? 0 : 1;
-
+        $_loginData['login']        = slweg($_POST['feLogin']);
+        $_loginData['password']     = slweg($_POST['fePassword']);
+        $_loginData['remember']     = empty($_POST['feRemember']) ? 0 : 1;
         $_loginData['query_result'] = _checkFrontendUserLogin($_loginData['login'], md5($_loginData['password']), $_loginData['validate_db']);
 
         // ok, and now check if we got valid login data
@@ -84,9 +83,15 @@ if(!empty($crow["acontent_template"]) && is_file(PHPWCMS_TEMPLATE.'inc_cntpart/f
 
             if($_loginData['remember'] && !empty($_loginData['felogin_cookie_expire'])) {
 
-                setcookie(  'phpwcmsFeLoginRemember',
-                            $_loginData['login'].'##-|-##'.md5($_loginData['password']).'##-|-##'.$_loginData['validate_db']['userdetail'].'##-|-##'.$_loginData['validate_db']['backenduser'],
-                            time()+$_loginData['felogin_cookie_expire'], '/', getCookieDomain() );
+                setcookie(
+                    'phpwcmsFeLoginRemember',
+                    $_loginData['login'].'##-|-##'.md5($_loginData['password']).'##-|-##'.$_loginData['validate_db']['userdetail'].'##-|-##'.$_loginData['validate_db']['backenduser'],
+                    time()+$_loginData['felogin_cookie_expire'],
+                    '/',
+                    getCookieDomain(),
+                    PHPWCMS_SSL,
+                    true
+                );
 
             }
 
@@ -105,24 +110,29 @@ if(!empty($crow["acontent_template"]) && is_file(PHPWCMS_TEMPLATE.'inc_cntpart/f
         if($_loginData['remind_data'] && !$_loginData['remind_login_known'] && is_valid_email($_loginData['remind_data']) ) {
 
             if($_loginData['validate_db']['userdetail']) {
-                $sql  = 'SELECT detail_login AS LOGIN, detail_email AS EMAIL FROM '.DB_PREPEND."phpwcms_userdetail WHERE LOWER(detail_email)=";
+                $sql  = 'SELECT detail_id, detail_login AS LOGIN, detail_email AS EMAIL FROM '.DB_PREPEND."phpwcms_userdetail WHERE LOWER(detail_email)=";
                 $sql .= _dbEscape(strtolower($_loginData['remind_data']))." LIMIT 1";
                 $result = _dbQuery($sql);
             }
 
             // hm, seems no user found - OK test against cms users
             if($_loginData['validate_db']['backenduser'] && !isset($result[0])) {
-                $sql  = 'SELECT usr_login AS LOGIN, usr_email AS EMAIL FROM '.DB_PREPEND.'phpwcms_user WHERE ';
+                $sql  = 'SELECT usr_id, usr_login AS LOGIN, usr_email AS EMAIL FROM '.DB_PREPEND.'phpwcms_user WHERE ';
                 $sql .= "LOWER(usr_email)="._dbEscape(strtolower($_loginData['remind_data']))." LIMIT 1";
                 $result = _dbQuery($sql);
             }
 
             if(isset($result[0])) {
-                $_loginData['remind_login'] = $result[0];
+                if (is_valid_email($result[0]['LOGIN'])) {
+                    $_loginData['remind_data'] = $result[0]['LOGIN'];
+                } else {
+                    $_loginData['remind_login'] = $result[0];
+                }
             }
+        }
 
         // otherwise check login and send password
-        } elseif($_loginData['remind_data']) {
+        if($_loginData['remind_data'] && empty($_loginData['remind_login'])) {
 
             if($_loginData['validate_db']['userdetail']) {
                 $sql  = 'SELECT detail_id, detail_login AS LOGIN, detail_email AS EMAIL FROM '.DB_PREPEND."phpwcms_userdetail WHERE ";
@@ -162,7 +172,7 @@ if(!empty($crow["acontent_template"]) && is_file(PHPWCMS_TEMPLATE.'inc_cntpart/f
 
             $_loginData['reminder'] = $_loginData['reminder_success'];
 
-            $_loginData['LOGIN_URL'] = rel_url(array(), array('profile_manage', 'profile_register', 'profile_reminder') );
+            $_loginData['LOGIN_URL'] = rel_url(array(), array('profile_manage', 'profile_register', 'profile_reminder', 'feLogout') );
 
             $_loginData['reminder_email'] = str_replace('{LOGIN_URL}', PHPWCMS_URL . $_loginData['LOGIN_URL'], $_loginData['reminder_email']);
 
@@ -173,17 +183,14 @@ if(!empty($crow["acontent_template"]) && is_file(PHPWCMS_TEMPLATE.'inc_cntpart/f
                 $_loginData['reminder_to']      = $_loginData['remind_password']['EMAIL'];
 
                 $_loginData['reminder_email_body'] = returnTagContent( $_loginData['reminder_email'], 'PASSWORD_EMAIL' );
-                $_loginData['reminder_email_body'] = $_loginData['reminder_email_body']['tag'];
-
             } else {
 
                 $_loginData['reminder_email']   = str_replace('{LOGIN}', $_loginData['remind_login']['LOGIN'], $_loginData['reminder_email']);
                 $_loginData['reminder_to']      = $_loginData['remind_login']['EMAIL'];
 
                 $_loginData['reminder_email_body'] = returnTagContent( $_loginData['reminder_email'], 'LOGIN_EMAIL' );
-                $_loginData['reminder_email_body'] = $_loginData['reminder_email_body']['tag'];
-
             }
+            $_loginData['reminder_email_body'] = $_loginData['reminder_email_body']['tag'];
 
             $_loginData['reminder_email_subject'] =  returnTagContent( $_loginData['reminder_email'], 'SUBJECT' ) ;
             $_loginData['reminder_email_subject'] =  trim( $_loginData['reminder_email_subject']['tag'] );
@@ -215,10 +222,8 @@ if(!empty($crow["acontent_template"]) && is_file(PHPWCMS_TEMPLATE.'inc_cntpart/f
             headerRedirect($linkto);
 
         // user is logged in
-        } elseif(isset($_POST['feLogin'])) {
-
+        } elseif(isset($_POST['feLogin']) && empty($_POST['feNoRedirect'])) {
             headerRedirect(decode_entities(FE_CURRENT_URL));
-
         }
 
         // manage account
@@ -259,7 +264,7 @@ if(!empty($crow["acontent_template"]) && is_file(PHPWCMS_TEMPLATE.'inc_cntpart/f
     // check register profile
     if($_loginData['felogin_profile_registration']) {
         // possible -> set link to form
-        $_loginData['uri'] = rel_url( array('profile_register'=>$_loginData['get_profile_register']), array('profile_manage', 'profile_reminder') );
+        $_loginData['uri'] = rel_url( array('profile_register'=>$_loginData['get_profile_register']), array('profile_manage', 'profile_reminder', 'feLogout') );
         $_loginData['template'] = render_cnt_template($_loginData['template'], 'REGISTER_PROFILE', $_loginData['uri'] );
     } else {
         // not possible
@@ -276,7 +281,7 @@ if(!empty($crow["acontent_template"]) && is_file(PHPWCMS_TEMPLATE.'inc_cntpart/f
         // possible -> set link to form
         $_loginData['uri'] = rel_url(
             array('profile_manage'=>$_loginData['get_profile_manage']),
-            array('profile_register', 'profile_reminder'),
+            array('profile_register', 'profile_reminder', 'feLogout'),
             empty($_loginData['felogin_profile_manage_redirect']) ? '' : $_loginData['felogin_profile_manage_redirect']
         );
         $_loginData['template'] = render_cnt_template($_loginData['template'], 'MANAGE_PROFILE', $_loginData['uri'] );
@@ -286,10 +291,10 @@ if(!empty($crow["acontent_template"]) && is_file(PHPWCMS_TEMPLATE.'inc_cntpart/f
         $_loginData['template'] = render_cnt_template($_loginData['template'], 'MANAGE_PROFILE', '' );
     }
 
-    $_loginData['uri'] = rel_url( array('profile_reminder'=>'1'), array('profile_manage', 'profile_register') );
+    $_loginData['uri'] = rel_url( array('profile_reminder'=>'1'), array('profile_manage', 'profile_register', 'feLogout') );
     $_loginData['template'] = render_cnt_template($_loginData['template'], 'REMINDER_FORM', $_loginData['uri'] );
 
-    $_loginData['uri'] = rel_url( array(), array('profile_manage', 'profile_register', 'profile_reminder') );
+    $_loginData['uri'] = rel_url( array(), array('profile_manage', 'profile_register', 'profile_reminder', 'feLogout') );
     $CNT_TMP .=  str_replace(array('{FORM_TARGET}', '{LOGIN_URL}'), $_loginData['uri'], $_loginData['template']);
 
 }

@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -36,7 +36,7 @@ function initMathSpam() {
     '";
 }
 function setFieldValue(el) {
-    if(el.options[el.selectedIndex].value == "mathspam") {
+    if(el.options[el.selectedIndex].value === "mathspam") {
         initMathSpam();
     }
 }
@@ -307,23 +307,12 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
 
                                 // parallel building of the placeholder tag menu for the template
                                 switch ($content['form']["fields"][$key]['type']) {
-
                                     case 'submit':
-                                        $for_placeholder = false;
-                                        break;
-
                                     case 'reset':
-                                        $for_placeholder = false;
-                                        break;
-
                                     case 'break':
-                                        $for_placeholder = false;
-                                        break;
-
                                     case 'breaktext':
                                         $for_placeholder = false;
                                         break;
-
                                 }
 
                                 $for_select_2 .= '<option value="';
@@ -554,7 +543,7 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
                     echo 'document.articlecontent.successInfo.options[document.articlecontent.successInfo.selectedIndex].value);" style="margin:3px;" /></td>';
                 }
                 ?>
-                <td bgcolor="#FFFFFF">&nbsp;</td>
+                <td bgcolor="#FFFFFF"><img src="img/leer.gif" alt="" width="4" height="23" /></td>
                 <td><input type="radio" name="cform_onsuccess_redirect" id="cform_onsuccess_redirect1" value="1"<?php echo is_checked('1', $content['form']["onsuccess_redirect"], 0, 0) ?> title="redirect on success"/></td>
                 <td class="v10"><label for="cform_onsuccess_redirect1">Redirect</label>&nbsp;&nbsp;</td>
             </tr>
@@ -574,7 +563,7 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
                 <td class="v10"><label for="cform_onerror_redirect0">Text&nbsp;</label>&nbsp;</td>
                 <td><input type="radio" name="cform_onerror_redirect" id="cform_onerror_redirect2" value="2"<?php echo is_checked('2', $content['form']["onerror_redirect"], 0, 0) ?> title="redirect on success"/></td>
                 <td class="v10"><label for="cform_onerror_redirect2">HTML&nbsp;</label>&nbsp;</td>
-                <td bgcolor="#FFFFFF" style="padding-bottom: 5px;">&nbsp;</td>
+                <td bgcolor="#FFFFFF"><img src="img/leer.gif" alt="" width="4" height="23" /></td>
                 <td><input type="radio" name="cform_onerror_redirect" id="cform_onerror_redirect1" value="1"<?php echo is_checked('1', $content['form']["onerror_redirect"], 0, 0) ?> title="redirect on success"/></td>
                 <td class="v10"><label for="cform_onerror_redirect1">Redirect</label>&nbsp;&nbsp;
                 </td>
@@ -620,11 +609,11 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
                 <td colspan="2" class="tdtop5"><table summary="" cellpadding="0" cellspacing="0" border="0" bgcolor="#E7E8EB">
                     <tr>
                         <td><input type="radio" name="cform_template_format_doubleoptin" id="cform_template_text_doubleoptin" value="0"<?php is_checked(0, $content['form']["template_format_doubleoptin"]) ?> onchange="this.form.submit();" /></td>
-                        <td class="f10"><label for="cform_template_text_copy">TEXT&nbsp;&nbsp;</label></td>
+                        <td class="f10"><label for="cform_template_text_copy">TEXT&nbsp;</label></td>
                         <td><input type="radio" name="cform_template_format_doubleoptin" id="cform_template_html_doubleoptin" value="1"<?php is_checked(1, $content['form']["template_format_doubleoptin"]) ?> onchange="this.form.submit();" /></td>
                         <td class="f10"><label for="cform_template_html_doubleoptin">HTML&nbsp;</label></td>
                         <?php
-                        if(!$content['form']["template_format_doubleoptin"] && $for_select != '') {
+                        if(!$content['form']["template_format_doubleoptin"] && $for_select !== '') {
                             echo '<td style="padding:2px;"><select name="phc_doubleoptin" id="phc_doubleoptin" class="v10 width200" ';
                             echo 'onchange="insertAtCursorPos(document.articlecontent.cform_template_doubleoptin, ';
                             echo 'document.articlecontent.phc_doubleoptin.options[document.articlecontent.phc_doubleoptin.selectedIndex].value);">';
@@ -638,18 +627,18 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
                             echo 'document.articlecontent.phc_doubleoptin.options[document.articlecontent.phc_doubleoptin.selectedIndex].value);" style="margin:3px;" alt="" /></td>';
                         }
                         ?>
+                        <td><img src="img/leer.gif" alt="" width="1" height="23" /></td>
                     </tr>
                 </table></td>
             </tr>
-            <tr id="optintemplate2"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2" /></td></tr>
             <tr id="optintemplate3">
-                <td colspan="2"><?php
+                <td colspan="2" class="tdbottom3"><?php
                     if($content['form']["template_format_doubleoptin"]) {
                         $wysiwyg_editor = array(
                             'value'     => $content['form']["template_doubleoptin"],
                             'field'     => 'cform_template_doubleoptin',
                             'height'    => '200px',
-                            'width'     => '536px',
+                            'width'     => '100%',
                             'rows'      => '10',
                             'editor'    => $_SESSION["WYSIWYG_EDITOR"],
                             'lang'      => 'en'
@@ -688,7 +677,7 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
                     echo 'document.articlecontent.successInfo.options[document.articlecontent.successInfo.selectedIndex].value);" style="margin:3px;" /></td>';
                 }
                 ?>
-                <td bgcolor="#FFFFFF">&nbsp;</td>
+                <td bgcolor="#FFFFFF"><img src="img/leer.gif" alt="" width="4" height="23" /></td>
                 <td><input type="radio" name="cform_onsuccess_redirect" id="cform_onsuccess_redirect1" value="1"<?php echo is_checked('1', $content['form']["onsuccess_redirect_doubleoptin"], 0, 0) ?> title="redirect on success" /></td>
                 <td class="v10"><label for="cform_onsuccess_redirect1">Redirect</label>&nbsp;&nbsp;</td>
             </tr>
@@ -708,7 +697,7 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
                 <td class="v10"><label for="cform_onerror_redirect_doubleoptin0">Text&nbsp;</label>&nbsp;</td>
                 <td><input type="radio" name="cform_onerror_redirect_doubleoptin" id="cform_onerror_redirect_doubleoptin2" value="2"<?php echo is_checked('2', $content['form']["onerror_redirect_doubleoptin"], 0, 0) ?> title="redirect on success" /></td>
                 <td class="v10"><label for="cform_onerror_redirect_doubleoptin2">HTML&nbsp;</label>&nbsp;</td>
-                <td bgcolor="#FFFFFF" style="padding-bottom: 5px;">&nbsp;</td>
+                <td bgcolor="#FFFFFF"><img src="img/leer.gif" alt="" width="4" height="23" /></td>
                 <td><input type="radio" name="cform_onerror_redirect_doubleoptin" id="cform_onerror_redirect_doubleoptin1" value="1"<?php echo is_checked('1', $content['form']["onerror_redirect_doubleoptin"], 0, 0) ?> title="redirect on success" /></td>
                 <td class="v10"><label for="cform_onerror_redirect_doubleoptin1">Redirect</label>&nbsp;&nbsp;</td>
             </tr>
@@ -765,21 +754,21 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
                 <td colspan="2" class="chatlist" align="right"><?php echo $BL['be_cnt_form_class'] ?>:&nbsp;</td>
                 <td><input type="text" name="cform_class" class="width120" value="<?php echo html($content['form']["class"]) ?>"/></td>
                 <td class="chatlist" align="right">&nbsp;<?php echo $BL['be_cnt_label_wrap'] ?>:&nbsp;</td>
-                <td colspan="4"><input type="text" name="cform_label_wrap" class="v10 width85" value="<?php echo html($content['form']["label_wrap"]) ?>"/></td>
+                <td colspan="4"><input type="text" name="cform_label_wrap" class="width120" value="<?php echo html($content['form']["label_wrap"]) ?>"/></td>
             </tr>
             <tr>
                 <td colspan="2" class="chatlist" align="right"><?php echo $BL['be_cnt_req_mark'] ?>:&nbsp;</td>
                 <td><input type="text" name="cform_reqmark" class="width120" value="<?php echo html($content['form']["cform_reqmark"]) ?>"/></td>
                 <td class="chatlist" align="right">&nbsp;<?php echo $BL['be_cnt_error_class'] ?>:&nbsp;</td>
-                <td colspan="4"><input type="text" name="cform_error_class" class="v10 width85" value="<?php echo html($content['form']["error_class"]) ?>"/></td>
+                <td colspan="4"><input type="text" name="cform_error_class" class="width120" value="<?php echo html($content['form']["error_class"]) ?>"/></td>
             </tr>
             <tr>
                 <td colspan="2" class="chatlist" align="right"><?php echo $BL['be_cnt_function_validate'] ?>:&nbsp;</td>
                 <td><input type="text" name="cform_function_validate" class="width120" value="<?php echo html($content['form']["cform_function_validate"]) ?>"/></td>
-                <td class="chatlist" align="right" class="nowrap">
+                <td class="chatlist nowrap" align="right" class="nowrap">
                     <?php echo $BL['be_article_cnt_anchor'] . ' &ndash; ' . $BL['be_cnt_target']; ?>:<input type="checkbox" name="cform_anchor_off" id="cform_anchor_off" value="0"<?php is_checked(0, $content['form']["anchor_off"]) ?> />
                 </td>
-                <td colspan="4"><input type="text" name="cform_anchor_name" class="v10 width85" value="<?php echo html($content['form']["anchor_name"]) ?>" placeholder="jumpForm<?php echo empty($content["id"]) ? '' : $content["id"]; ?>"/></td>
+                <td colspan="4"><input type="text" name="cform_anchor_name" class="width120" value="<?php echo html($content['form']["anchor_name"]) ?>" placeholder="jumpForm<?php echo empty($content["id"]) ? '' : $content["id"]; ?>"/></td>
             </tr>
             <tr>
                 <td colspan="8"><img src="img/leer.gif" alt="" width="1" height="3"/></td>
@@ -980,7 +969,7 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
                     echo '<td><input type="text" name="cform_field_size[' . $field_counter . ']" class="width40" value="';
                     echo html($content['form']["fields"][$key]['size']) . '"title="SIZE for Text/COLUMNS for Textarea"></td>';
                     echo '<td><input type="text" name="cform_field_max[' . $field_counter . ']" class="width40" value="';
-                    echo html($content['form']["fields"][$key]['max']) . '" title="MAXLENGTH for Text/ROWS for Textarea and List"></td>';
+                    echo html($content['form']["fields"][$key]['max']) . '" title="MAXLENGTH for Text/ROWS for Textarea and List OR B3/B4/B5 for Checkbox/Radio"></td>';
                     echo '<td><input type="checkbox" name="cform_field_required[' . $field_counter . ']"';
                     echo is_checked('1', $content['form']["fields"][$key]['required'], 0, 0) . ' value="1" title="' . $BL['be_cnt_mark_as_req'] . '"></td>';
                     echo '<td><input type="checkbox" name="cform_field_delete[' . $field_counter . ']" value="1" title="' . $BL['be_cnt_mark_as_del'] . '"></td>';
@@ -1044,10 +1033,10 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
                     echo '<td colspan="2" class="chatlist" align="right">&nbsp;' . $BL['be_cnt_css_class'] . ':&nbsp;</td>';
                     echo '<td><input type="text" name="cform_field_class[' . $field_counter . ']" value="';
                     echo html($content['form']["fields"][$key]['class']) . '" class="width120"></td>';
-                    echo '<td colspan="5"><table summary="" cellpadding="0" cellspacing="0" border="0" style="width:202px;"><tr>';
-                    echo '<td class="chatlist" style="width:82px;" align="right">&nbsp;' . $BL['be_cnt_css_style'] . ':&nbsp;</td>';
-                    echo '<td class="width120"><input type="text" name="cform_field_style[' . $field_counter . ']" value="';
-                    echo html($content['form']["fields"][$key]['style']) . '" class="width120"></td></tr></table></td>';
+                    echo '<td colspan="5"><table summary="" cellpadding="0" cellspacing="0" border="0"><tr>';
+                    echo '<td class="chatlist" align="right">&nbsp;&nbsp;' . $BL['be_cnt_css_style'] . ':&nbsp;</td>';
+                    echo '<td><input type="text" name="cform_field_style[' . $field_counter . ']" value="';
+                    echo html($content['form']["fields"][$key]['style']) . '" class="width150"></td></tr></table></td>';
                     echo "</tr>";
 
                     // if field row 4
@@ -1113,7 +1102,7 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
                 <td><input type="text" name="cform_field_name[0]" class="width120"/></td>
                 <td><input type="text" name="cform_field_label[0]" class="width120"/></td>
                 <td><input type="text" name="cform_field_size[0]" class="width40" title="SIZE for Text/COLUMNS for Textarea"/></td>
-                <td><input type="text" name="cform_field_max[0]" class="width40" title="MAXLENGTH for Text/ROWS for Textarea and List"/></td>
+                <td><input type="text" name="cform_field_max[0]" class="width40" title="MAXLENGTH for Text/ROWS for Textarea and List OR B3/B4/B5 for Checkbox/Radio"/></td>
                 <td><input type="checkbox" name="cform_field_required[0]" value="1" title="mark as required field"/></td>
                 <td>&nbsp;<input type="hidden" name="cform_order[0]" value="<?php echo $field_counter ?>"/></td>
             </tr>
@@ -1132,12 +1121,12 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
             </tr>
             <tr bgcolor="#E7E8EB">
                 <td colspan="2" class="chatlist" align="right">&nbsp;<?php echo $BL['be_cnt_css_class'] ?>:&nbsp;</td>
-                <td><input type="text" name="cform_field_class[0]" class="width120"/></td>
+                <td><input type="text" name="cform_field_class[0]" class="width120" /></td>
                 <td colspan="5">
-                    <table summary="" cellpadding="0" cellspacing="0" border="0" style="width:202px;">
+                    <table summary="" cellpadding="0" cellspacing="0" border="0">
                         <tr>
-                            <td class="chatlist" style="width:82px;" align="right">&nbsp;<?php echo $BL['be_cnt_css_style'] ?>:&nbsp;</td>
-                            <td class="width120"><input type="text" name="cform_field_style[0]" class="width120"/></td>
+                            <td class="chatlist" align="right">&nbsp;&nbsp;<?php echo $BL['be_cnt_css_style'] ?>:&nbsp;</td>
+                            <td class="width120"><input type="text" name="cform_field_style[0]" class="width150"/></td>
                         </tr>
                     </table>
                 </td>
@@ -1262,13 +1251,13 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
     <td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2"/></td>
 </tr>
 <tr>
-    <td colspan="2"><?php
+    <td colspan="2" class="tdbottom3"><?php
         if ($content['form']["template_format"]) {
             $wysiwyg_editor = array(
                 'value' => $content['form']["template"],
                 'field' => 'cform_template',
                 'height' => '200px',
-                'width' => '536px',
+                'width' => '100%',
                 'rows' => '10',
                 'editor' => $_SESSION["WYSIWYG_EDITOR"],
                 'lang' => 'en'
@@ -1282,9 +1271,6 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
         }
 
         ?></td>
-</tr>
-<tr>
-    <td colspan="2"><img src="img/leer.gif" alt="" width="1" height="3"/></td>
 </tr>
 <tr>
     <td align="right" class="chatlist"><?php echo $BL['php_function'] ?>:&nbsp;</td>
@@ -1350,13 +1336,13 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
     <td colspan="2"><img src="img/leer.gif" alt="" width="1" height="2"/></td>
 </tr>
 <tr id="copytemplate3">
-    <td colspan="2"><?php
+    <td colspan="2" class="tdbottom3"><?php
         if ($content['form']["template_format_copy"]) {
             $wysiwyg_editor = array(
                 'value' => $content['form']["template_copy"],
                 'field' => 'cform_template_copy',
                 'height' => '200px',
-                'width' => '536px',
+                'width' => '100%',
                 'rows' => '10',
                 'editor' => $_SESSION["WYSIWYG_EDITOR"],
                 'lang' => 'en'
@@ -1369,9 +1355,6 @@ $BE['BODY_CLOSE'][] = '<script type="text/javascript">document.getElementById("t
 
         }
     ?></td>
-</tr>
-<tr>
-    <td colspan="2"><img src="img/leer.gif" alt="" width="1" height="3"/></td>
 </tr>
 <tr>
     <td align="right" class="chatlist"><?php echo $BL['php_function'] ?>:&nbsp;</td>
@@ -1399,7 +1382,7 @@ if ($for_select_2 != '') {
 
 ?>
 <tr>
-    <td colspan="2">
+    <td colspan="2" class="tdbottom3">
         <textarea name="cform_customform" id="cform_customform" rows="5" class="code width540 autosize"><?php echo html($content['form']["customform"]) ?></textarea>
         <script type="text/javascript">
             function toggleDoubleOptInOptions() {

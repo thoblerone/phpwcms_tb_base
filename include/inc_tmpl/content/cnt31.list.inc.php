@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -31,12 +31,14 @@ foreach($image_list['images'] as $img_info) {
 
 	if($img_info['thumb_id']) {
 		$image_data .= '<img src="'.PHPWCMS_URL.PHPWCMS_RESIZE_IMAGE.'/'.$phpwcms['img_list_width'];
-		$image_data .= 'x'.$phpwcms['img_list_height'].'/'.$img_info['thumb_id'].'" alt="" /> ';
+		$image_data .= 'x'.$phpwcms['img_list_height'].'/'.$img_info['thumb_id'].'" ';
+		$image_data .= 'alt="" height="'.$phpwcms['img_list_height'].'" style="width:auto" /> ';
 	}
 
 	if($img_info['zoom_id']) {
 		$image_data .= '<img src="'.PHPWCMS_URL.PHPWCMS_RESIZE_IMAGE.'/'.$phpwcms['img_list_width'];
-		$image_data .= 'x'.$phpwcms['img_list_height'].'/'.$img_info['zoom_id'].'" alt="" /> ';
+		$image_data .= 'x'.$phpwcms['img_list_height'].'/'.$img_info['zoom_id'].'" ';
+		$image_data .= 'alt="" height="'.$phpwcms['img_list_height'].'" style="width:auto" /> ';
 	}
 
 }

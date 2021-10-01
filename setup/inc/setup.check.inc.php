@@ -1,4 +1,17 @@
 <?php
+/**
+ * phpwcms content management system
+ *
+ * @author Oliver Georgi <og@phpwcms.org>
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
+ * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
+ * @link http://www.phpwcms.org
+ *
+ **/
+
+if (!defined('PHP8')) {
+    die("You Cannot Access This Script Directly, Have a Nice Day.");
+}
 
 if(!empty($step)) {
 
@@ -9,7 +22,7 @@ if(!empty($step)) {
             // fine continue with step 2
             session_write_close();
             if(!empty($_SERVER['HTTP_HOST']) && !empty($_SERVER['REQUEST_URI'])) {
-                header('Location: http://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['REQUEST_URI']).'/setup.php?step=2');
+                header('Location: http'.(!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' ? 's' : '').'://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['REQUEST_URI']).'/setup.php?step=2');
             } else {
                 header("Location: setup.php?step=2");
             }
@@ -72,7 +85,7 @@ if(!empty($step)) {
             }
             $db = mysqli_connect($db_host, $phpwcms["db_user"], $phpwcms["db_pass"], $phpwcms["db_table"]);
 
-            if($db) {;
+            if($db) {
 
                 if($result = mysqli_query($db, "SELECT VERSION()")) {
 
@@ -85,7 +98,7 @@ if(!empty($step)) {
 
                     mysqli_free_result($result);
 
-                    if($result = mysqli_query($db, 'SELECT * FROM '. ($phpwcms["db_prepend"] ? $phpwcms["db_prepend"].'_' : '').'phpwcms_user')) {
+                    if($result = mysqli_query($db, 'SELECT * FROM '. ($phpwcms["db_prepend"] ? mysqli_real_escape_string($db, $phpwcms["db_prepend"]) . '_' : '') . 'phpwcms_user')) {
 
                         $_db_prepend_error = true;
                         mysqli_free_result($result);
@@ -128,7 +141,7 @@ if(!empty($step)) {
 
                             // now read and display sql queries
 
-                            $_db_prepend = ($phpwcms["db_prepend"] ? $phpwcms["db_prepend"].'_' : '');
+                            $_db_prepend = $phpwcms["db_prepend"] ? mysqli_real_escape_string($db, $phpwcms["db_prepend"]) . '_' : '';
 
                             $sql_data = read_textfile($DOCROOT . '/setup/default_sql/phpwcms_init.sql');
                             $sql_data = $sql_data . read_textfile($DOCROOT . '/setup/default_sql/phpwcms_inserts.sql');
@@ -144,7 +157,7 @@ if(!empty($step)) {
                                 $db_create_err = array();
 
                                 mysqli_query($db, 'SET storage_engine=MYISAM');
-                                mysqli_query($db, "SET SQL_MODE=NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION");
+                                mysqli_query($db, "SET SQL_MODE=NO_ENGINE_SUBSTITUTION");
 
                                 $value  = "SET NAMES '". mysqli_real_escape_string($db, $phpwcms['db_charset'])."'";
                                 $value .= empty($phpwcms['db_collation']) ? '' : " COLLATE '".mysqli_real_escape_string($db, $phpwcms['db_collation'])."'";
@@ -219,8 +232,8 @@ if(!empty($step)) {
             } else {
                 mysqli_query($db, "SET SQL_MODE=NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION");
                 mysqli_query($db, "SET NAMES '".mysqli_real_escape_string($db, $phpwcms["charset"])."'");
-                $phpwcms["db_prepend"] = ($phpwcms["db_prepend"]) ? $phpwcms["db_prepend"]."_" : "";
-                $sql =  "INSERT INTO ".$phpwcms["db_prepend"]."phpwcms_user (usr_login, usr_pass, usr_email, ".
+                $_db_prepend = $phpwcms["db_prepend"] ? mysqli_real_escape_string($db, $phpwcms["db_prepend"]) . "_" : "";
+                $sql =  "INSERT INTO " . $_db_prepend . "phpwcms_user (usr_login, usr_pass, usr_email, ".
                         "usr_admin, usr_aktiv, usr_name, usr_fe, usr_wysiwyg ) VALUES ('".
                         mysqli_real_escape_string($db, $phpwcms["admin_user"])."', '".
                         mysqli_real_escape_string($db, md5($phpwcms["admin_pass"]))."', '".

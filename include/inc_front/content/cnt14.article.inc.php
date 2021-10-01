@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -95,11 +95,7 @@ if(is_array($crow['custom_fields']) && !empty($crow["custom_fields"]['cnt_fields
 			} elseif(isset($crow['fieldgroup'][$custom_field_key]['render']) && in_array($crow['fieldgroup'][$custom_field_key]['render'], $crow['field_render'])) {
 
 				if($crow['fieldgroup'][$custom_field_key]['render'] === 'markdown') {
-					if(!isset($phpwcms['parsedown_class'])) {
-						require_once(PHPWCMS_ROOT.'/include/inc_ext/parsedown/Parsedown.php');
-						require_once(PHPWCMS_ROOT.'/include/inc_ext/parsedown-extra/ParsedownExtra.php');
-						$phpwcms['parsedown_class'] = new ParsedownExtra();
-					}
+					init_markdown();
 					$crow["acontent_template"] = render_cnt_template($crow["acontent_template"], $custom_field_replacer, $phpwcms['parsedown_class']->text($custom_field_value));
 				} elseif($crow['fieldgroup'][$custom_field_key]['render'] === 'plain') {
 					$crow["acontent_template"] = render_cnt_template($crow["acontent_template"], $custom_field_replacer, plaintext_htmlencode($custom_field_value));

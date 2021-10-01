@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -156,19 +156,19 @@ $buttonAction .= '</tr></table>';
               <td class="v10"><?php echo phpwcms_strtotime($article["article_date"], $BL['be_longdatetime'], '') ?>&nbsp;&nbsp;<span style="color:#727889"><?php echo $BL['be_fprivedit_created'] ?>:</span>&nbsp;<?php echo date($BL['be_longdatetime'], $article["article_created"]) ?></td>
             </tr>
             <tr>
-              <td class="v10" style="color:#727889" nowrap="nowrap"><?php echo $BL['be_article_cnt_start'] ?>:&nbsp;</td>
+              <td class="v10 nowrap" style="color:#727889" nowrap="nowrap"><?php echo $BL['be_article_cnt_start'] ?>:&nbsp;</td>
               <td class="v10">
                   <?php echo $set_begin ? phpwcms_strtotime($article["article_begin"], $BL['be_longdatetime'], '') : $BL['be_not_set']; ?>&nbsp;&nbsp;<span style="color:#727889"><?php echo $BL['be_article_cnt_end'] ?>:</span>
                   <?php echo $set_end ? phpwcms_strtotime($article["article_end"], $BL['be_longdatetime'], '') : $BL['be_not_set']; ?>
               </td>
             </tr>
             <tr>
-              <td class="v10" style="color:#727889" nowrap="nowrap"><?php echo $BL['be_cnt_sortvalue'] ?>:&nbsp;</td>
+              <td class="v10 nowrap" style="color:#727889" nowrap="nowrap"><?php echo $BL['be_cnt_sortvalue'] ?>:&nbsp;</td>
               <td class="v10"><?php echo $article["article_sort"] ?>&nbsp;&nbsp;<span style="color:#727889"><?php echo $BL['be_priorize'] ?>:</span>&nbsp;<?php echo $article["article_priorize"] ?></td>
             </tr>
 
             <tr>
-              <td class="v10" style="color:#727889" nowrap="nowrap"><?php echo $BL['be_ftptakeover_status'] ?>:&nbsp;</td>
+              <td class="v10 nowrap" style="color:#727889" nowrap="nowrap"><?php echo $BL['be_ftptakeover_status'] ?>:&nbsp;</td>
               <td class="v10"><?php echo ($article["article_nositemap"] == 1 ? '&check;' : '-') . ' ' . $BL['be_ctype_sitemap'] ?></td>
             </tr>
             <tr>
@@ -209,7 +209,7 @@ $buttonAction .= '</tr></table>';
 <?php
 
 $temp_count = 0;
-$user_selected_cp = isset($_SESSION["wcs_user_cp"]) && count($_SESSION["wcs_user_cp"])  ? true : false;
+$user_selected_cp = isset($_SESSION["wcs_user_cp"]) && count($_SESSION["wcs_user_cp"]);
 
 if(is_array($article["article_cntpart"]) && count($article["article_cntpart"])) {
 
@@ -400,7 +400,7 @@ if(!$temp_count) {
                     if($row['acontent_tab'] && $contentpart_tab != $row['acontent_tab']) {
                         $contentpart_tab        = $row['acontent_tab'];
                         $contentpart_tabbed     = explode('_', $contentpart_tab, 2);
-                        $contentpart_tab_title  = empty($contentpart_tabbed[1]) ? '' : $contentpart_tabbed[1];
+                        $contentpart_tab_title  = isset($contentpart_tabbed[1]) ? trim($contentpart_tabbed[1]) : '';
                         $contentpart_tab_number = explode('|', $contentpart_tabbed[0]);
                         $contentpart_tab_type   = empty($contentpart_tab_number[1]) ? 1 : $contentpart_tab_number[1];
                         $contentpart_tab_number = intval($contentpart_tab_number[0]);
@@ -418,7 +418,10 @@ if(!$temp_count) {
                             echo $BL['be_ctype_tabs'];
                         }
                         echo ' / ' . $BL['be_cnt_paginate_subsection'] . ': ';
-                        echo empty($contentpart_tab_title) ? '[' . $contentpart_tab_number . ']' : html($contentpart_tab_title);
+                        if($contentpart_tab_title !== '') {
+                            echo html($contentpart_tab_title) . ' ';
+                        }
+                        echo '[' . $contentpart_tab_number . ']';
 
                  ?>&nbsp;</td>
                 <td><img src="img/leer.gif" alt="" width="1" height="15" /></td>
@@ -440,7 +443,7 @@ if(!$temp_count) {
             <tr><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="3" /></td></tr>
 
             <tr>
-              <td align="right" style="padding-right:5px;"><img src="img/symbole/content_9x11<?php if($row["acontent_granted"]) echo '_granted'; ?>.gif" alt="" width="9" height="11" border="0" /></td>
+              <td align="right" style="padding-right:5px;"><img src="img/symbole/content_9x11<?php if($row["acontent_granted"]) { echo $row["acontent_granted"] == 2 ? '_hidden_granted' : '_granted'; } ?>.gif" alt="" width="9" height="11" border="0" /></td>
               <td><table border="0" cellpadding="0" cellspacing="0" summary="" width="100%">
                 <tr>
                   <td width="180" style="font-size:9px;font-weight:bold;text-transform:uppercase;"><?php
@@ -455,9 +458,9 @@ if(!$temp_count) {
 
 
                   ?></td>
-                  <td width="23" nowrap="nowrap"><?php echo $sbutton_string[$row["acontent_id"]]; ?></td>
-                  <td class="v09" style="color:#727889;padding:0 4px 0 5px" width="60" nowrap="nowrap">[ID:<?php echo $row["acontent_id"] ?>]</td>
-                  <td class="v09" nowrap="nowrap"><?php
+                  <td width="23" class="nowrap"><?php echo $sbutton_string[$row["acontent_id"]]; ?></td>
+                  <td class="v09 nowrap" style="color:#727889;padding:0 4px 0 5px" width="60" nowrap="nowrap">[ID:<?php echo $row["acontent_id"] ?>]</td>
+                  <td class="v09 nowrap" nowrap="nowrap"><?php
 
                   echo date($BL['be_shortdatetime'], $row["acontent_date"]).'&nbsp;';
 

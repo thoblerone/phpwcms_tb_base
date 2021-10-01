@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -32,7 +32,10 @@ $content["after"]           = intval($_POST["cafter"]);
 $content["top"]             = isset($_POST["ctop"]) ? 1 : 0;
 $content["anchor"]          = isset($_POST["canchor"]) ? 1 : 0;
 $content["id"]              = intval($_POST["cid"]);
-$content["granted"]         = empty($_POST["cgranted"]) ? 0 : 1;
+$content["granted"]         = empty($_POST["cgranted"]) ? 0 : intval($_POST["cgranted"]);
+if ($content["granted"] < 0 || $content["granted"] > 2) {
+    $content["granted"] = 0;
+}
 $content["tid"]             = empty($_POST["ctid"]) || !in_array(intval($_POST["ctid"]), array(0, 1, 2, 3)) ? 0 : intval($_POST["ctid"]);
 $content["attr_class"]      = empty($_POST["cattr_class"]) ? '' : clean_slweg($_POST["cattr_class"]);
 $content["attr_id"]         = empty($_POST["cattr_id"]) ? '' : trim(preg_replace('/[^A-Za-z0-9_\/\w\-\:\.]/', '', preg_replace('/\s+/', '-', clean_slweg($_POST["cattr_id"]))), '-');

@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -27,14 +27,14 @@ initMootoolsAutocompleter();
 <table border="0" cellpadding="0" cellspacing="0" width="100%" summary="">
 
     <tr>
-        <td align="right" class="chatlist" nowrap="nowrap"><?php echo $BL['be_cnt_last_edited']  ?>:&nbsp;</td>
+        <td align="right" class="chatlist nowrap" nowrap="nowrap"><?php echo $BL['be_cnt_last_edited']  ?>:&nbsp;</td>
         <td class="v10"><?php echo html(date($BL['be_fprivedit_dateformat'], strtotime($plugin['data']['calendar_changed']))) ?></td>
     </tr>
 
     <?php if(!empty($plugin['data']['calendar_created'])) { ?>
 
     <tr>
-        <td align="right" class="chatlist" nowrap="nowrap"><?php echo $BL['be_fprivedit_created']  ?>:&nbsp;</td>
+        <td align="right" class="chatlist nowrap" nowrap="nowrap"><?php echo $BL['be_fprivedit_created']  ?>:&nbsp;</td>
         <td class="v10"><?php echo html(date($BL['be_fprivedit_dateformat'], strtotime($plugin['data']['calendar_created']))) ?></td>
     </tr>
 
@@ -244,7 +244,7 @@ initMootoolsAutocompleter();
             'value'     => $plugin['data']['calendar_text'],
             'field'     => 'calendar_text',
             'height'    => '400px',
-            'width'     => '524px',
+            'width'     => '100%',
             'rows'      => '15',
             'editor'    => $_SESSION["WYSIWYG_EDITOR"],
             'lang'      => 'en'
@@ -408,7 +408,7 @@ window.addEvent('domready', function(){
 function setCalendarAllDay() {
 
     var calendarAllDay = $('calendar_allday');
-    if(calendarAllDay.checked == true) {
+    if(calendarAllDay.checked) {
         toggleDisplayById('endDate0', 'none');
         toggleDisplayById('endDate1', 'none');
         toggleDisplayById('endDate2', 'none');

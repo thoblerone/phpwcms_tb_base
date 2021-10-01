@@ -3,21 +3,22 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
  **/
 
-session_start();
-
-$phpwcms = array();
+$phpwcms = array('SESSION_START' => true);
 require_once 'include/config/conf.inc.php';
 
-if(empty($_SESSION["wcs_user_lang"])) {
-    session_destroy();
-    headerRedirect($phpwcms['site'].$phpwcms["root"]);
+require_once 'include/inc_lib/default.inc.php';
+require_once PHPWCMS_ROOT.'/include/inc_lib/helper.session.php';
 
+if(empty($_SESSION["wcs_user_lang"])) {
+    $_SESSION = array();
+    @session_destroy();
+    headerRedirect($phpwcms['site'].$phpwcms["root"]);
 } else {
     require 'include/inc_lang/backend/en/lang.ext.inc.php';
     $cust_lang = 'include/inc_lang/backend/'.substr($_SESSION["wcs_user_lang"],0,2).'/lang.ext.inc.php';
@@ -25,18 +26,16 @@ if(empty($_SESSION["wcs_user_lang"])) {
         include $cust_lang;
     }
 }
-require_once 'include/inc_lib/default.inc.php';
-require_once PHPWCMS_ROOT.'/include/inc_lib/helper.session.php';
-require_once PHPWCMS_ROOT.'/include/inc_lib/dbcon.inc.php';
 
+require_once PHPWCMS_ROOT.'/include/inc_lib/dbcon.inc.php';
 require_once "include/inc_lib/general.inc.php";
 checkLogin();
 require_once "include/inc_lib/backend.functions.inc.php";
 require_once "include/inc_lib/imagick.convert.inc.php";
 require_once "include/inc_lib/autolink.inc.php";
 
-$file_id    = (isset($_GET["fid"])) ? intval($_GET["fid"]) : 0;
-$public     = (isset($_GET["public"])) ? true : false;
+$file_id    = isset($_GET["fid"]) ? intval($_GET["fid"]) : 0;
+$public     = isset($_GET["public"]);
 $error      = 1;
 
 if($file_id) {
@@ -92,7 +91,7 @@ if($file_id) {
     <script type="text/javascript">
         function ResizeAndCenter(){
             var width = 590;
-            var height = <?php if($thumb_image != false): ?>(screen.availHeight < 490) ? 420 : 570<?php else: ?>300<?php endif; ?>;
+            var height = <?php if(!empty($thumb_image)): ?>(screen.availHeight < 490) ? 420 : 570<?php else: ?>300<?php endif; ?>;
             window.moveTo(5,5);
             window.resizeTo(width,height);
         }

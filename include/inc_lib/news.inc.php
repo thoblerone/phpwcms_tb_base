@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -55,7 +55,7 @@ class phpwcmsNews {
 
         $this->BL               = &$BL;
         $this->phpwcms          = &$phpwcms;
-        $this->csrf_token       = get_token_get_string('csrftoken');
+        $this->csrf_token       = get_token_get_string();
         $this->base_url         = PHPWCMS_URL.'phpwcms.php?'.$this->csrf_token.'&amp;do=articles&amp;p=3';
         $this->base_url_decoded = PHPWCMS_URL.'phpwcms.php?'.$this->csrf_token.'&do=articles&p=3';
 
@@ -443,6 +443,8 @@ class phpwcmsNews {
 
     public function getFiles($mode='backend') {
 
+        $data = array();
+
         if( is_array($this->data['cnt_files']['id']) && count($this->data['cnt_files']['id'])) {
 
             $where  = 'f_id IN (' . implode(',', $this->data['cnt_files']['id']) . ') AND ';
@@ -453,31 +455,20 @@ class phpwcmsNews {
 
             $result = _dbGet('phpwcms_file', '*', $where);
 
-            // now sort result
+            // Link results and keep sorting
             if(isset($result[0])) {
-
-                $data = array();
-                foreach($this->data['cnt_files']['id'] as $value) {
-                    $value = intval($value);
-                    $data[$value] = array();
+                foreach($this->data['cnt_files']['id'] as $key => $file_id) {
+                    foreach($result as $file_data) {
+                        if(intval($file_data['f_id']) === intval($file_id)) {
+                            $data[$key] = $file_data;
+                            continue;
+                        }
+                    }
                 }
-                foreach($result as $value) {
-                    $id = intval($value['f_id']);
-                    $data[ $id ] = $value;
-                }
-                return $data;
-
-            } else {
-
-                return array();
-
             }
-
-        } else {
-
-            return array();
-
         }
+
+        return $data;
     }
 
     public function edit() {

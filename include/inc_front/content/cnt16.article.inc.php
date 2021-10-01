@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -29,7 +29,7 @@ if($crow['acontent_attr_id']) {
     $crow['attr_class_id'][] = 'id="'.html($crow['acontent_attr_id']).'"';
 }
 
-if(($crow['attr_class_id'] = implode(' ', $crow['attr_class_id']))) {;
+if(($crow['attr_class_id'] = implode(' ', $crow['attr_class_id']))) {
     $CNT_TMP .= '<div '.$crow['attr_class_id'].'>';
     $crow['attr_class_id_close'] = '</div>';
 } else {
@@ -69,14 +69,14 @@ if(isset($_POST['ecard_chooser'])) {
 			"thumb_name"	=>	md5($ecard['images'][$ecard["chooser"]][2].$ecard['images'][$ecard["chooser"]][4].$ecard['images'][$ecard["chooser"]][5].$phpwcms["sharpen_level"].$phpwcms['colorspace'])
         ));
 
-		$list_img_temp  = '<img src="'.$thumb_image['src'].'" '.$thumb_image[3].' alt="'.html($ecard['images'][$ecard["chooser"]][1]).'" />';
+		$list_img_temp  = '<img src="'.$thumb_image['src'].'" '.$thumb_image[3].' alt="'.html($ecard['images'][$ecard["chooser"]][1]).'"'.PHPWCMS_LAZY_LOADING.HTML_TAG_CLOSE;
 
-		$ecard["send"] = str_replace('###ECARD_TITLE###', html_specialchars(chop($ecard["capt"][$ecard["chooser"]])), $ecard["send"]);
+		$ecard["send"] = str_replace('###ECARD_TITLE###', html(chop($ecard["capt"][$ecard["chooser"]])), $ecard["send"]);
 		$ecard["send"] = str_replace('###ECARD_IMAGE###', $list_img_temp, $ecard["send"]);
-		$ecard["send"] = str_replace('###RECIPIENT_NAME###', ($ecard["recipient_name"]) ? html_specialchars($ecard["recipient_name"]) : html_specialchars($ecard["recipient_email"]), $ecard["send"]);
-		$ecard["send"] = str_replace('###RECIPIENT_EMAIL###', html_specialchars($ecard["recipient_email"]), $ecard["send"]);
-		$ecard["send"] = str_replace('###SENDER_MESSAGE###', nl2br(html_specialchars($ecard["sender_msg"])), $ecard["send"]);
-		$ecard["send"] = str_replace('###ECARD_SUBJECT###', html_specialchars($ecard["subject"]), $ecard["send"]);
+		$ecard["send"] = str_replace('###RECIPIENT_NAME###', html($ecard["recipient_name"] ? $ecard["recipient_name"] : $ecard["recipient_email"]), $ecard["send"]);
+		$ecard["send"] = str_replace('###RECIPIENT_EMAIL###', html($ecard["recipient_email"]), $ecard["send"]);
+		$ecard["send"] = str_replace('###SENDER_MESSAGE###', nl2br(html($ecard["sender_msg"])), $ecard["send"]);
+		$ecard["send"] = str_replace('###ECARD_SUBJECT###', html($ecard["subject"]), $ecard["send"]);
 
 		$ecard["mailer"] = new PHPMailer();
 		$ecard["mailer"]->Mailer = $phpwcms['SMTP_MAILER'];
@@ -119,7 +119,7 @@ if(isset($_POST['ecard_chooser'])) {
 			"max_height"	=>	$phpwcms["img_prev_height"],
 			"thumb_name"	=>	md5($ecard['images'][$ecard["chooser"]][2].$phpwcms["img_prev_width"].$phpwcms["img_prev_height"].$phpwcms["sharpen_level"].$phpwcms['colorspace'].'ecard')
 		));
-		$list_img_temp  = '<img src="'.PHPWCMS_URL.$thumb_image['src'].'" '.$thumb_image[3].' alt="'.html_specialchars($ecard['images'][$ecard["chooser"]][1]).'" />';
+		$list_img_temp  = '<img src="'.PHPWCMS_URL.$thumb_image['src'].'" '.$thumb_image[3].' alt="'.html($ecard['images'][$ecard["chooser"]][1]).'"'.PHPWCMS_LAZY_LOADING.HTML_TAG_CLOSE;
 
 		if($ecard["mail"]) {
 			$ecard["mail"] = str_replace('###ECARD_TITLE###', html_specialchars(chop($ecard["capt"][$ecard["chooser"]])), $ecard["mail"]);

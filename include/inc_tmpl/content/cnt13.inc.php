@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -434,6 +434,6 @@ if(count($content['search']['module_search'])) {
   <tr><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="3" /></td>
 </tr>
   <tr>
-    <td align="right" class="chatlist tdtop3" nowrap="nowrap"><?php echo $BL['be_cnt_noresult'] ?>:&nbsp;</td>
+    <td align="right" class="chatlist tdtop3 nowrap" nowrap="nowrap"><?php echo $BL['be_cnt_noresult'] ?>:&nbsp;</td>
     <td valign="top"><textarea name="csearch_text_noresult" rows="6" class="width440 autosize" id="csearch_text_noresult"><?php echo isset($content["search"]["text_noresult"]) ? $content["search"]["text_noresult"] : '' ?></textarea></td>
   </tr>

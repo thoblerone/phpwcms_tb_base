@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -66,9 +66,9 @@ $an = $indexpage['acat_name'];
 $a  = "<tr onMouseOver=\"this.bgColor='#CCFF00';\" onMouseOut=\"this.bgColor='#FFFFFF';\">\n";
 $a .= '<td width="461">';
 $a .= "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" summary=\"\">\n<tr>\n";
-$a .= '<td nowrap="nowrap">';
-$a .= ($child_count) ? "<a href=\"phpwcms.php?do=articles&amp;open=0:".(($_SESSION["structure"][0])?0:1)."\">" : "";
-$a .= "<img src=\"img/symbole/plus_".(($child_count) ? (($_SESSION["structure"][0]) ? "close" : "open") : "empty");
+$a .= '<td class="nowrap">';
+$a .= ($child_count) ? "<a href=\"phpwcms.php?do=articles&amp;open=0:".(empty($_SESSION["structure"][0])?1:0)."\">" : "";
+$a .= "<img src=\"img/symbole/plus_".($child_count ? (empty($_SESSION["structure"][0]) ? "open" : "close") : "empty");
 $a .= ".gif\" width=\"15\" height=\"15\" border=\"0\" alt=\"\">".(($child_count) ? "</a>" : "");
 
 $a .= "<img src=\"img/symbole/page_1.gif\" width=\"11\" height=\"15\" ";
@@ -83,7 +83,7 @@ $a .= "<td><img src=\"img/leer.gif\" width=\"2\" height=\"15\" alt=\"\" /></td>\
 $a .= '<td class="dir" width="97%"><strong>'.$an."</strong></td>\n</tr>\n</table></td>\n";
 
 echo $a;
-echo '<td width="77" nowrap="nowrap">';
+echo '<td width="77" class="nowrap">';
 
 $struct[0]["acat_id"]       = 0;
 $struct[0]["acat_aktiv"]    = 1;
@@ -93,7 +93,7 @@ echo listmode_edits($listmode, $struct, 0, $an, $copy_article_content, $cut_arti
 
 echo "</td>\n</tr>\n";
 
-if($_SESSION["structure"][0]) {
+if(is_array($_SESSION["structure"]) && !empty($_SESSION["structure"][0])) {
     struct_articlelist(0, 0, $copy_article_content, $cut_article_content, $copy_article, $cut_article, $indexpage['acat_order']);//$template_default["article_order"]
     struct_list(0, $copy_article_content, $cut_article_content, $copy_id, $copy_article, $cut_id, $cut_article, $listmode);
 }

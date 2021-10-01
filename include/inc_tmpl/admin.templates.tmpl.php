@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -59,10 +59,20 @@ $template = array(
         'anonymize' => PHPWCMS_GDPR_MODE  ? 1 : 0,
         'optout' => PHPWCMS_GDPR_MODE  ? 1 : 0,
     ),
+    'tracking_gtm' => array(
+        'enable' => 0,
+        'id' => '',
+    ),
     'tracking_piwik' => array(
         'enable' => 0,
         'id' => '',
         'url' => ''
+    ),
+    'donottrack' => 0,
+    'require_consent' => array(
+        'enable' => 0,
+        'cookie_name' => 'cookieconsent_dismissed',
+        'cookie_value' => 'yes'
     ),
 );
 
@@ -185,6 +195,11 @@ if(isset($result[0]['template_id'])) {
         if(empty($template['tracking_ga']['id'])) {
             $template['tracking_ga']['enable'] = 0;
         }
+        $template['tracking_gtm']['enable'] = empty($_POST['template_gtm']) ? 0 : 1;
+        $template['tracking_gtm']['id'] = clean_slweg($_POST["template_gtm_id"]);
+        if(empty($template['tracking_gtm']['id'])) {
+            $template['tracking_gtm']['enable'] = 0;
+        }
         $template['tracking_piwik']['enable'] = empty($_POST['template_piwik']) ? 0 : 1;
         $template['tracking_piwik']['id'] = intval($_POST["template_piwik_id"]);
         $template['tracking_piwik']['url'] = clean_slweg($_POST["template_piwik_url"]);
@@ -194,6 +209,12 @@ if(isset($result[0]['template_id'])) {
         if(empty($template['tracking_piwik']['id']) || empty($template['tracking_piwik']['url'])) {
             $template['tracking_piwik']['enable'] = 0;
         }
+        $template['donottrack'] = empty($_POST["template_donottrack"]) ? 0 : 1;
+        $template['require_consent'] = array(
+            'enable' => empty($_POST["template_require_consent"]) ? 0 : 1,
+            'cookie_name' => clean_slweg($_POST['template_require_cookie_name']),
+            'cookie_value' => clean_slweg($_POST['template_require_cookie_value'])
+        );
 
         // now browse custom blocks if available
         if(!empty($_POST['customblock'])) {
@@ -236,7 +257,7 @@ if(isset($result[0]['template_id'])) {
             _dbQuery("UPDATE ".DB_PREPEND."phpwcms_template SET template_default=0 WHERE template_id != ".$template["id"], 'UPDATE');
         }
         update_cache();
-        headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string('csrftoken').'&do=admin&p=11&s='.$template["id"]);
+        headerRedirect(PHPWCMS_URL.'phpwcms.php?'.get_token_get_string().'&do=admin&p=11&s='.$template["id"]);
     }
 
     if($template["id"]) {
@@ -246,7 +267,7 @@ if(isset($result[0]['template_id'])) {
         if(isset($result[0]['template_id'])) {
             if(($result[0]["template_var"] = @unserialize($result[0]["template_var"]))) {
                 $template = array_merge($template, $result[0]["template_var"]);
-            };
+            }
             $template["id"] = intval($result[0]["template_id"]);
             $template["default"] = $result[0]["template_default"];
 
@@ -478,6 +499,11 @@ foreach($phpwcms['js_lib'] as $key => $value) {
         </tr>
 
         <tr>
+          <td><input type="checkbox" name="template_donottrack" id="template_donottrack" value="1"<?php is_checked($template['donottrack'], 1); ?> /></td>
+          <td class="v10"><label for="template_donottrack"><?php echo $BL['be_respect_donottrack']; ?></label></td>
+        </tr>
+
+        <tr>
             <td><input type="checkbox" name="template_ga" id="template_ga" value="1"<?php is_checked($template['tracking_ga']['enable'], 1); ?> /></td>
             <td class="v10"><label for="template_ga"><?php echo $BL['be_google_analytics_enable']; ?></label></td>
         </tr>
@@ -498,6 +524,22 @@ foreach($phpwcms['js_lib'] as $key => $value) {
                         <td class="chatlist">&nbsp;</td>
                         <td><input type="checkbox" name="template_ga_optout" id="template_ga_optout" value="1"<?php is_checked(isset($template['tracking_ga']['optout']) ? $template['tracking_ga']['optout'] : 0, 1); ?> /></td>
                         <td class="chatlist nowrap"><label for="template_ga_optout">&nbsp;<?php echo $BL['be_tracking_optout']; ?></label></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td><input type="checkbox" name="template_gtm" id="template_gtm" value="1"<?php is_checked($template['tracking_gtm']['enable'], 1); ?> /></td>
+            <td class="v10"><label for="template_gtm"><?php echo $BL['be_google_tag_manager_enable']; ?></label></td>
+        </tr>
+        <tr id="gtm-tracking"<?php if(empty($template['tracking_gtm']['enable'])): ?> style="display:none;"<?php endif; ?>>
+            <td>&nbsp;</td>
+            <td class="tdtop3 tdbottom5">
+                <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                        <td align="right" class="chatlist tdtop3 nowrap"><?php echo $BL['be_tracking_id']; ?>:&nbsp;</td>
+                        <td class="tdbottom3" colspan="2"><input type="text" name="template_gtm_id" maxlength="15" class="width150" placeholder="GTM-XXXXXXX" value="<?php echo html($template['tracking_gtm']['id']) ?>" /></td>
                     </tr>
                 </table>
             </td>
@@ -527,7 +569,7 @@ foreach($phpwcms['js_lib'] as $key => $value) {
             <td><input type="checkbox" name="template_cookie_consent" id="template_cookie_consent" value="1"<?php is_checked($template['cookie_consent']['enable'], 1); ?> /></td>
             <td class="v10"><label for="template_cookie_consent"><?php echo $BL['be_cookie_consent_enable'] ?></label></td>
         </tr>
-        <tr id="cookie-consent"<?php if(!$template['cookie_consent']['enable']): ?> style="display:none;"<?php endif; ?>>
+        <tr id="template-cc-form"<?php if(!$template['cookie_consent']['enable']): ?> style="display:none;"<?php endif; ?>>
             <td>&nbsp;</td>
             <td class="tdbottom5">
                 <?php if(count($phpwcms['allowed_lang'])): ?><div class="chatlist wrap tdbottom3 tdright10"><?php echo $BL['be_cookie_consent_translatable']; ?></div><?php endif; ?>
@@ -560,6 +602,26 @@ foreach($phpwcms['js_lib'] as $key => $value) {
         </tr>
 
         <tr>
+          <td><input type="checkbox" name="template_require_consent" id="template_require_consent" value="1"<?php is_checked($template['require_consent']['enable'], 1); ?> /></td>
+          <td class="v10"><label for="template_require_consent"><?php echo $BL['be_require_consent']; ?></label></td>
+        </tr>
+        <tr id="template-cr-form">
+          <td>&nbsp;</td>
+          <td class="tdbottom5">
+              <table cellpadding="0" cellspacing="0" border="0" class="tdtop3">
+                  <tr>
+                      <td align="right" class="chatlist tdtop3 nowrap"><?php echo $BL['be_consent_cookie_name']; ?>:&nbsp;</td>
+                      <td class="tdbottom3"><input type="text" name="template_require_cookie_name" maxlength="255"  class="width400" placeholder="<?php echo $BL['placeholder_require_cookie_name']; ?>" value="<?php echo html($template['require_consent']['cookie_name']) ?>" /></td>
+                  </tr>
+                  <tr>
+                      <td align="right" class="chatlist tdtop4 nowrap"><?php echo $BL['be_consent_cookie_value']; ?>:&nbsp;</td>
+                      <td class="tdbottom3"><input type="text" name="template_require_cookie_value" maxlength="255" class="width400" placeholder="<?php echo $BL['placeholder_require_cookie_value']; ?>" value="<?php echo html($template['require_consent']['cookie_value']) ?>" /></td>
+                  </tr>
+              </table>
+          </td>
+        </tr>
+
+        <tr>
             <td><input type="checkbox" name="template_frontendjs" id="template_frontendjs" value="1"<?php is_checked($template['frontendjs'], 1); ?> /></td>
             <td class="v10"><label for="template_frontendjs"><?php echo $BL['frontendjs_load'] ?></label></td>
         </tr>
@@ -578,7 +640,7 @@ foreach($phpwcms['js_lib'] as $key => $value) {
 
 
     <tr bgcolor="#F3F5F8">
-      <td align="right" class="chatlist" nowrap="nowrap">&nbsp;<?php echo $BL['be_fe_login_url'] ?>:&nbsp;</td>
+      <td align="right" class="chatlist nowrap" nowrap="nowrap">&nbsp;<?php echo $BL['be_fe_login_url'] ?>:&nbsp;</td>
       <td><input name="template_felogin_url" type="text" class="code width600" id="template_felogin_url" value="<?php echo empty($template["feloginurl"]) ? '' : html_entities($template["feloginurl"]) ?>" size="50" /></td>
     </tr>
     <tr bgcolor="#F3F5F8"><td colspan="2"><img src="img/leer.gif" alt="" width="1" height="8" /></td></tr>
@@ -728,21 +790,35 @@ if(!empty($jsOnChange))  {
 <script type="text/javascript">
 
     $(function(){
-        $('#template_cookie_consent').change(function(){
+        $('#template_cookie_consent').on('change', function(){
             if($(this).is(':checked')) {
-                $('#cookie-consent').show();
+                $('#template-cc-form').show();
             } else {
-                $('#cookie-consent').hide();
+                $('#template-cc-form').hide();
             }
         });
-        $('#template_ga').change(function(){
+        $('#template_require_consent').on('change', function(){
+            if($(this).is(':checked')) {
+                $('#template-cr-form').show();
+            } else {
+                $('#template-cr-form').hide();
+            }
+        });
+        $('#template_ga').on('change', function(){
             if($(this).is(':checked')) {
                 $('#ga-tracking').show();
             } else {
                 $('#ga-tracking').hide();
             }
         });
-        $('#template_piwik').change(function(){
+        $('#template_gtm').on('change', function(){
+            if($(this).is(':checked')) {
+                $('#gtm-tracking').show();
+            } else {
+                $('#gtm-tracking').hide();
+            }
+        });
+        $('#template_piwik').on('change', function(){
             if($(this).is(':checked')) {
                 $('#piwik-tracking').show();
             } else {

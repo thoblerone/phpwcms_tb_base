@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -82,7 +82,7 @@ if(is_array($tmpllist) && count($tmpllist)) {
 
 		} else {
 
-			if($content["text"]{0} == LF || $content["text"]{0} == "\r") {
+			if(substr($content["text"], 0, 1) === LF || substr($content["text"], 0, 1) === "\r") {
 				echo ' '; // keep 1st linebreak;
 			}
 			echo html($content["text"]);

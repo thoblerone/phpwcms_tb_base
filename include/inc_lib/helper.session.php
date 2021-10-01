@@ -3,11 +3,19 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
  **/
+if (!defined('PHPWCMS_ROOT')) {
+    die("You Cannot Access This Script Directly, Have a Nice Day.");
+}
+
+// Cookie settings
+if (!empty($phpwcms['SESSION_START'])) {
+    _initSession();
+}
 
 /**
  * Set session var.
@@ -341,7 +349,7 @@ function rand_uniqid($in, $to_num=false, $pad_up=false, $passkey=null) {
  */
 function tokenize_forms($html) {
 
-	return preg_replace_callback('/<form(.*?)>(.*?)<\\/form>/s', 'get_tokenized_form', $html);
+    return preg_replace_callback('/<form(.*?)>/s', 'get_tokenized_form', $html);
 
 }
 
@@ -356,7 +364,7 @@ function tokenize_forms($html) {
  */
 function get_tokenized_form($match, $token_prefix='csrf_') {
 
-	$form  = '<form'.$match[1].'>';
+	$form = $match[0];
 
 	if(strpos($match[1], 'data-csrf="off"') === false) {
 
@@ -368,11 +376,7 @@ function get_tokenized_form($match, $token_prefix='csrf_') {
 
 	}
 
-	$form .= $match[2];
-	$form .= '</form>';
-
 	return $form;
-
 }
 
 /**
@@ -384,7 +388,7 @@ function get_tokenized_form($match, $token_prefix='csrf_') {
  */
 function tokenize_urls($html) {
 
-	$get_token = get_token_get_string('csrftoken');
+	$get_token = get_token_get_string();
 
 	if($get_token) {
 
@@ -444,7 +448,7 @@ function validate_csrf_tokens($token_prefix='csrf_') {
 
 	} else {
 
-		validate_csrf_get_token('csrftoken');
+		validate_csrf_get_token();
 
 	}
 
@@ -478,7 +482,7 @@ function validate_csrf_tokens($token_prefix='csrf_') {
  */
 function validate_csrf_get_token($token_name='csrftoken', $logout=true) {
 
-	if($_SERVER['REQUEST_METHOD'] === 'GET' && count($_GET)) {
+	if($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 		if(empty($_GET[$token_name])) {
 			if($logout) {

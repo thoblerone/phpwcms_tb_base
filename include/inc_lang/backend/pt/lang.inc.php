@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -67,7 +67,7 @@ $BL['be_func_struct_edit']              = 'editar artigo';
 $BL['be_func_struct_sedit']             = 'editar o nível da estrutura';
 $BL['be_func_struct_cut']               = 'cortar artigo';
 $BL['be_func_struct_nocut']             = 'desligar cortar artigo';
-$BL['be_func_struct_svisible']          = 'mudar visível/invisível';;
+$BL['be_func_struct_svisible']          = 'mudar visível/invisível';
 $BL['be_func_struct_spublic']           = 'mudar público/privado';
 $BL['be_func_struct_sort_up']           = 'ordenar para cima';
 $BL['be_func_struct_sort_down']         = 'ordenar para baixo';

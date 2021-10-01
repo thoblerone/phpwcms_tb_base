@@ -3,11 +3,15 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
  **/
+
+if (!defined('PHP8')) {
+    die("You Cannot Access This Script Directly, Have a Nice Day.");
+}
 
 $_SESSION['admin_set'] = false;
 $setup_recommend = true;
@@ -68,7 +72,7 @@ $setup_recommend = true;
 
             echo '<strong>' . $mysql_version . '</strong>';
 
-            $mysql_version = explode('.', $mysql_version);
+            $mysql_version = explode('.', preg_replace('/[^0-9.]/', '', str_replace(array('mysqlnd ', ' (client lib)'), '', strtolower($mysql_version))));
             $mysql_version[0] = (int)$mysql_version[0];
             $mysql_version[1] = empty($mysql_version[1]) ? 0 : (int)$mysql_version[1];
 

@@ -3,25 +3,39 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
  **/
 
-session_start();
-
-$phpwcms    = array();
+$phpwcms    = array('SESSION_START' => true);
 $BL         = array();
-$basepath   = str_replace('\\', '/', dirname(__FILE__));
 
 // Check if config is still at the old position
-if(!is_file($basepath.'/include/config/conf.inc.php') && is_file($basepath.'/config/phpwcms/conf.inc.php')) {
+if(!is_file(__DIR__.'/include/config/conf.inc.php') && is_file(__DIR__.'/config/phpwcms/conf.inc.php')):
+    if(!@rename(__DIR__.'/config/phpwcms', __DIR__.'/include/config')):
 
-    if(!@rename($basepath.'/config/phpwcms', $basepath.'/include/config')):
-?>
-    <html><body>
-        <h4 style="color:#cc3300">
+?><!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>phpwcms configuration error</title>
+        <style>
+            body {
+                background-color: #fff;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                font-size: 18px;
+                color: #000;
+            }
+            h1 {
+                font-size: 28px;
+                color:#cc3300;
+            }
+        </style>
+    </head>
+    <body>
+        <h4 style="">
             <strong>Your configuration is placed at the wrong position.</strong>
         </h4>
         <p>
@@ -29,15 +43,15 @@ if(!is_file($basepath.'/include/config/conf.inc.php') && is_file($basepath.'/con
             directory <code>config/phpwcms</code> to directory <code>include/config</code>. The fallback
             to do it automatically has failed. Please do it manually before you continue.
         </p>
-    </body></html>
+    </body>
+</html>
 <?php
         die();
-
     endif;
-}
+endif;
 
-require_once $basepath.'/include/config/conf.inc.php';
-require_once $basepath.'/include/inc_lib/default.inc.php';
+require_once __DIR__.'/include/config/conf.inc.php';
+require_once __DIR__.'/include/inc_lib/default.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/helper.session.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/dbcon.inc.php';
 require_once PHPWCMS_ROOT.'/include/inc_lib/general.inc.php';
@@ -55,30 +69,26 @@ if(phpwcms_revision_check_temp($phpwcms["revision"]) !== true) {
 }
 
 // define vars
-$err        = 0;
-$wcs_user   = '';
+$err = 0;
+$wcs_user = '';
 
 // where user should be redirected too after login
-if(!empty($_POST['ref_url'])) {
-    $ref_url = xss_clean($_POST['ref_url']);
-} elseif(!empty($_GET['ref'])) {
-    $ref_url = xss_clean(rawurldecode($_GET['ref']));
+if(isset($_POST['ref_url']) || isset($_GET['ref'])) {
+    $ref_url = xss_clean(isset($_GET['ref']) ? rawurldecode($_GET['ref']) : $_POST['ref_url']);
+    if (substr($ref_url, 0, strlen(PHPWCMS_URL)) !== PHPWCMS_URL) {
+        $ref_url = '';
+    }
 } else {
     $ref_url = '';
 }
 
-if($_SERVER['REQUEST_METHOD'] === 'POST' && count($_POST) && $_POST['logintoken'] !== get_token_get_value('csrftoken')) {
-    $csrf_error = true;
-} else {
-    $csrf_error = false;
-}
+$csrf_error = $_SERVER['REQUEST_METHOD'] === 'POST' && (empty($_POST['logintoken']) || $_POST['logintoken'] !== get_token_get_value());
 
-define('LOGIN_TOKEN', generate_get_token('csrftoken'));
+define('LOGIN_TOKEN', generate_get_token());
 
 // reset all inactive users
-$sql  = "UPDATE ".DB_PREPEND."phpwcms_userlog SET ";
-$sql .= "logged_in = 0, logged_change = '".time()."' ";
-$sql .= "WHERE logged_in = 1 AND ( ".time()." - logged_change ) > ".intval($phpwcms["max_time"]);
+$sql  = "UPDATE " . DB_PREPEND . "phpwcms_userlog SET logged_in=0, logged_change='" . time() . "' ";
+$sql .= "WHERE logged_in=1 AND (" . time() . "-logged_change) > ".intval($phpwcms["max_time"]);
 _dbQuery($sql, 'UPDATE');
 
 //load default language EN
@@ -86,16 +96,17 @@ require_once PHPWCMS_ROOT.'/include/inc_lang/backend/en/lang.inc.php';
 
 //define language and check if language file is available
 if(isset($_COOKIE['phpwcmsBELang'])) {
-    $temp_lang = strtoupper( substr( trim( $_COOKIE['phpwcmsBELang'] ), 0, 2 ) );
-    if( isset( $BL[ $temp_lang ] ) ) {
+    $temp_lang = strtoupper(substr(trim($_COOKIE['phpwcmsBELang']), 0, 2));
+    if (isset($BL[$temp_lang])) {
         $_SESSION["wcs_user_lang"] = strtolower($temp_lang);
     } else {
-        setcookie('phpwcmsBELang', '', time()-3600 );
+        setcookie('phpwcmsBELang', '', time() - 3600, '/', getCookieDomain(), PHPWCMS_SSL, true);
     }
 }
 if(isset($_POST['form_lang'])) {
-    $_SESSION["wcs_user_lang"] = strtolower(substr(clean_slweg($_POST['form_lang']), 0, 2));
-    set_language_cookie();
+    $temp_lang = strtolower(substr(clean_slweg($_POST['form_lang']), 0, 2));
+    $_SESSION["wcs_user_lang"] = $temp_lang;
+    set_language_cookie($temp_lang);
 }
 if(empty($_SESSION["wcs_user_lang"])) {
     $_SESSION["wcs_user_lang"] = strtolower( isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) ? substr( $_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2 ) : $phpwcms["default_lang"] );
@@ -105,8 +116,8 @@ if(empty($_SESSION["wcs_user_lang"])) {
 if(isset($BL[strtoupper($_SESSION["wcs_user_lang"])]) && is_file(PHPWCMS_ROOT.'/include/inc_lang/backend/'.$_SESSION["wcs_user_lang"].'/lang.inc.php')) {
     $_SESSION["wcs_user_lang_custom"] = 1;
 } else {
-    $_SESSION["wcs_user_lang"]          = 'en'; //by ono
-    $_SESSION["wcs_user_lang_custom"]   = 0;
+    $_SESSION["wcs_user_lang"] = 'en'; //by ono
+    $_SESSION["wcs_user_lang_custom"] = 0;
 }
 if(!empty($_SESSION["wcs_user_lang_custom"])) {
     //use custom lang if available -> was set in login.php
@@ -120,7 +131,7 @@ if(!empty($_SESSION["wcs_user_lang_custom"])) {
 //WYSIWYG EDITOR:
 //0 = no wysiwyg editor (default)
 //1 = CKEditor
-$phpwcms["wysiwyg_editor"]  = empty($phpwcms["wysiwyg_editor"]) ? 0 : 1;
+$phpwcms["wysiwyg_editor"] = empty($phpwcms["wysiwyg_editor"]) ? 0 : 1;
 $_SESSION["WYSIWYG_EDITOR"] = $phpwcms["wysiwyg_editor"];
 
 destroyBackendSessionData();
@@ -134,8 +145,8 @@ if(isset($_POST['form_aktion']) && $_POST['form_aktion'] == 'login' && $json_che
     $wcs_user           = slweg($_POST['form_loginname']);
     $wcs_pass           = slweg($_POST['md5pass']);
 
-    $sql_query  = "SELECT * FROM ".DB_PREPEND."phpwcms_user WHERE usr_login="._dbEscape($wcs_user)." AND ";
-    $sql_query .= "usr_pass="._dbEscape($wcs_pass)." AND usr_aktiv=1 AND (usr_fe=1 OR usr_fe=2)";
+    $sql_query  = "SELECT * FROM " . DB_PREPEND . "phpwcms_user WHERE usr_login=" . _dbEscape($wcs_user) . " AND ";
+    $sql_query .= "usr_pass=" . _dbEscape($wcs_pass) . " AND usr_aktiv=1 AND (usr_fe=1 OR usr_fe=2)";
 
     if(!$csrf_error) {
 
@@ -155,14 +166,30 @@ if(isset($_POST['form_aktion']) && $_POST['form_aktion'] == 'login' && $json_che
             $_SESSION["wcs_user_thumb"]     = 1;
             if(empty($_POST['customlang']) && !empty($result[0]["usr_lang"])) {
                 $_SESSION["wcs_user_lang"]  = $result[0]["usr_lang"];
+                set_language_cookie($result[0]["usr_lang"]);
+            } elseif (!empty($_SESSION["wcs_user_lang"])) {
+                set_language_cookie($_SESSION["wcs_user_lang"]);
+            } else {
+                set_language_cookie();
             }
 
-            set_language_cookie();
+            $_SESSION["structure"] = @unserialize($result[0]["usr_var_structure"]);
+            $_SESSION["klapp"]     = @unserialize($result[0]["usr_var_privatefile"]);
+            $_SESSION["pklapp"]    = @unserialize($result[0]["usr_var_publicfile"]);
+            $result[0]["usr_vars"] = @unserialize($result[0]["usr_vars"]);
 
-            $_SESSION["structure"]      = @unserialize($result[0]["usr_var_structure"]);
-            $_SESSION["klapp"]          = @unserialize($result[0]["usr_var_privatefile"]);
-            $_SESSION["pklapp"]         = @unserialize($result[0]["usr_var_publicfile"]);
-            $result[0]["usr_vars"]      = @unserialize($result[0]["usr_vars"]);
+            if(!is_array($_SESSION["structure"])) {
+                $_SESSION["structure"] = array();
+            }
+            if(!is_array($_SESSION["klapp"])) {
+                $_SESSION["klapp"] = array();
+            }
+            if(!is_array($_SESSION["pklapp"])) {
+                $_SESSION["pklapp"] = array();
+            }
+            if(!is_array($result[0]["usr_vars"])) {
+                $result[0]["usr_vars"] = array();
+            }
 
             // Fallback to CKeditor?
             $_SESSION["WYSIWYG_EDITOR"] = empty($result[0]["usr_wysiwyg"]) ? false : true;
@@ -216,7 +243,9 @@ if(isset($_POST['form_aktion']) && $_POST['form_aktion'] == 'login' && $json_che
 
         }
 
-        headerRedirect($backend_redirect . get_token_get_string('csrftoken') . '&' . session_name().'='.session_id());
+        $_SESSION['PHPWCMS_BROWSER_HASH'] = $phpwcms['USER_AGENT']['hash'];
+
+        headerRedirect($backend_redirect . get_token_get_string() . '&' . session_name().'='.session_id());
 
     } else {
 
@@ -240,7 +269,7 @@ $reason_types = array(
 );
 
 ?><!DOCTYPE html>
-<html>
+<html lang="<?php echo $_SESSION["wcs_user_lang"]; ?>">
 <head>
     <meta charset="<?php echo PHPWCMS_CHARSET ?>">
     <title><?php echo $BL['be_page_title'] . ' - ' . PHPWCMS_HOST ?></title>
@@ -249,6 +278,20 @@ $reason_types = array(
 <?php if((isset($_SESSION["wcs_user_lang"]) && ($_SESSION["wcs_user_lang"] == 'ar' || $_SESSION["wcs_user_lang"] == 'he')) || ($phpwcms['default_lang'] == 'ar' || $phpwcms['default_lang'] == 'he')): ?>
     <style>* {direction: rtl;}</style>
 <?php endif; ?>
+    <style>
+        .alert-img {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            float: left;
+            position: relative;
+        }
+        .alert-offset {
+            margin-left: 40px;
+            margin-top: 8px;
+            margin-bottom: 5px;
+        }
+    </style>
     <script src="include/inc_js/jquery/jquery.min.js"></script>
     <script src="include/inc_js/phpwcms.min.js"></script>
     <script src="include/inc_js/md5.js"></script>
@@ -256,7 +299,11 @@ $reason_types = array(
 <body>
 <div style="margin:0 auto;width:500px;padding-top:50px;">
 
-    <h2><a href="index.php" target="_top"><img src="img/backend/phpwcms-signet-be.png" alt="phpwcms" style="margin:0 18px 12px 18px;border:0;" /></a></h2>
+    <h2>
+        <a href="index.php" target="_top" class="d-inline-block" style="padding:0 18px 12px 15px;">
+            <img src="img/backend/phpwcms-logo.png" srcset="img/backend/phpwcms-logo.svg" alt="phpwcms" width="202" height="56" />
+        </a>
+    </h2>
 
     <div style="border-radius:15px;background:#fff;padding:15px;box-shadow:2px 2px 10px rgba(0,0,0,.25);">
 
@@ -264,15 +311,17 @@ $reason_types = array(
 
 <?php if(isset($_GET['reason'])): ?>
         <div class="alert <?php echo $reason_types[ (isset($_GET['type']) && isset($reason_types[$_GET['type']])) ? $_GET['type'] : 'default' ]; ?>">
-            <?php if($_GET['reason'] === 'csrf-post-failed'): ?>
-                <?php echo $BL['CSRF_POST_FAILED']; ?>
-            <?php elseif($_GET['reason'] === 'csrf-post-invalid'): ?>
-                <?php echo $BL['CSRF_POST_INVALID']; ?>
-            <?php elseif($_GET['reason'] === 'csrf-get-failed'): ?>
-                <?php echo $BL['CSRF_GET_FAILED']; ?>
-            <?php elseif($_GET['reason'] === 'csrf-get-invalid'): ?>
-                <?php echo $BL['CSRF_GET_INVALID']; ?>
-            <?php endif; ?>
+            <?php
+                if($_GET['reason'] === 'csrf-post-failed') {
+                    echo $BL['CSRF_POST_FAILED'];
+                } elseif($_GET['reason'] === 'csrf-post-invalid') {
+                    echo $BL['CSRF_POST_INVALID'];
+                } elseif($_GET['reason'] === 'csrf-get-failed') {
+                    echo $BL['CSRF_GET_FAILED'];
+                } elseif($_GET['reason'] === 'csrf-get-invalid') {
+                    echo $BL['CSRF_GET_INVALID'];
+                }
+            ?>
         </div>
 <?php endif; ?>
 
@@ -283,7 +332,7 @@ $reason_types = array(
             <strong><a href="http://www.phpwcms.org" target="_blank" style="text-decoration:none;">phpwcms</a></strong>
             Copyright &copy; 2002&#8212;<?php echo date('Y'); ?>
             Oliver Georgi. Extensions are copyright of their respective owners.
-            Visit <a href="http://www.phpwcms.org" target="_blank">http://www.phpwcms.org</a> for
+            Visit <a href="https://www.phpwcms.org" target="_blank">phpwcms.org</a> for
             details. phpwcms is free software released under <a href="http://www.fsf.org/licensing/licenses/gpl.html" target="_blank">GPL</a>
             and comes WITHOUT ANY WARRANTY. Obstructing the appearance of this notice is prohibited  by law.
         </p>
@@ -295,7 +344,7 @@ $reason_types = array(
 ob_start();
 
 ?>
-<form action="<?php echo PHPWCMS_URL.get_login_file() ?>" method="post" name="login_formular" id="login_formular" onsubmit="return login(this);" autocomplete="off">
+<form action="<?php echo PHPWCMS_URL.get_login_file() ?>" method="post" id="login_formular" onsubmit="return login(this);"<?php if(empty($phpwcms['login_autocomplete'])): ?> autocomplete="off"<?php endif; ?>>
 <input type="hidden" name="json" id="json" value="0" />
 <input type="hidden" name="customlang" id="customlang" value="<?php if(!empty($_POST['customlang'])): ?>1<?php endif; ?>" />
 <input type="hidden" name="md5pass" id="md5pass" value="" autocomplete="off" />
@@ -305,31 +354,46 @@ ob_start();
 <?php
 
     if(file_exists(PHPWCMS_ROOT.'/setup')) {
-        echo '<div class="alert alert-warning">'.$BL["setup_dir_exists"].'</div>';
-    }
-    if(file_exists(PHPWCMS_ROOT.'/phpwcms_code_snippets')) {
-        echo '<div class="alert alert-danger">'.$BL["phpwcms_code_snippets_dir_exists"].'</div>';
+        echo '<div class="alert alert-danger">';
+        echo '<svg focusable="false" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="alert-img"><path fill="currentColor" d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z" class=""></path></svg>';
+        echo '<div class="alert-offset">' . $BL["setup_dir_exists"];
+        echo '</div></div>';
     }
 
     if(isset($_POST['json']) && $_POST['json'] == 2) {
         $err = 0;
     }
 
-    echo '<div class="alert alert-danger"'.($err ? '' : ' style="display:none;"') . ' id="jserr">'.$BL["login_error"].'</div>';
+    if(file_exists(PHPWCMS_ROOT.'/phpwcms_code_snippets')) {
+        echo '<div class="alert alert-danger">'.$BL["phpwcms_code_snippets_dir_exists"].'</div>';
+    }
+
+    if(($phpwcms['image_library'] === 'gd' || $phpwcms['image_library'] === 'gd2') && (!extension_loaded('gd') || !function_exists('gd_info'))) {
+        echo '<div class="alert alert-danger" style="font-weight:normal;">'.$BL['gd_not_loaded'].'</div>';
+    }
+
+    echo '<div class="alert alert-danger"';
+    if(!$err) {
+        echo ' style="display:none;"';
+    }
+    echo ' id="jserr">';
+    echo $BL["login_error"];
+    echo '</div>';
 
 ?>
     <table border="0" cellpadding="0" cellspacing="0" summary="Login Form" style="margin:15px 0 20px 10px">
         <tr>
-          <td align="right" nowrap="nowrap" class="v10"><?php echo $BL["login_username"] ?>:&nbsp;</td>
-          <td class="v10"><input name="form_loginname" type="text" id="form_loginname" class="width250" size="30" maxlength="30" value="<?php echo html_specialchars($wcs_user); ?>" required="required" /></td>
-          </tr>
+            <td align="right" nowrap="nowrap" class="v10 nowrap"><?php echo $BL["login_username"] ?>:&nbsp;</td>
+            <td class="v10"><input name="form_loginname" type="text" id="form_loginname" class="width250" size="30" maxlength="30" value="<?php echo html_specialchars($wcs_user); ?>" required="required" /></td>
+        </tr>
         <tr>
-          <td align="right" nowrap="nowrap" class="v10"><?php echo $BL["login_userpass"] ?>:&nbsp;</td>
-          <td class="v10"><input name="form_password" type="password" id="form_password" class="width250" size="30" maxlength="40" required="required" autocomplete="new-password" /></td>
-          </tr>
+            <td align="right" nowrap="nowrap" class="v10 nowrap"><?php echo $BL["login_userpass"] ?>:&nbsp;</td>
+            <td class="v10"><input name="form_password" type="password" id="form_password" class="width250" size="30" maxlength="40" required="required"<?php if(empty($phpwcms['login_autocomplete'])): ?> autocomplete="new-password"<?php endif; ?> /></td>
+        </tr>
         <tr>
-          <td align="right" nowrap="nowrap" class="v10"><?php echo $BL["login_lang"] ?>:&nbsp;</td>
-          <td class="v10"><select name="form_lang" id="form_lang" onchange="getObjectById('json').value='2';login(this.form);">
+            <td align="right" nowrap="nowrap" class="v10 nowrap"><?php echo $BL["login_lang"] ?>:&nbsp;</td>
+            <td class="v10">
+                <select name="form_lang" id="form_lang" onchange="getObjectById('json').value='2';login(this.form);">
 <?php
 
 // check available languages installed and build language selector menu
@@ -351,27 +415,33 @@ ksort($lang_options);
 echo implode('', $lang_options);
 
 ?>
-          </select></td>
-          </tr>
+                </select>
+            </td>
+        </tr>
         <tr>
-          <td>&nbsp;</td>
-          <td><input name="submit_form" type="submit" value="<?php echo $BL["login_button"] ?>" class="button" /></td>
-          </tr>
+            <td>&nbsp;</td>
+            <td><input name="submit_form" type="submit" value="<?php echo $BL["login_button"] ?>" class="button" /></td>
+        </tr>
     </table>
     </form>
 <?php
 
 $formAll = str_replace( array("'", "\r", "\n", '<'), array("\'", '', " ", "<'+'"), ob_get_clean() );
 
-?><script>
+?>
+<script>
     getObjectById('loginFormArea').innerHTML = '<?php echo $formAll ?>';
     getObjectById('form_loginname').focus();
-</script>
-<?php if(!empty($phpwcms['browser_check']['be'])): ?>
-<script>
-    $buoop = {<?php if(!empty($phpwcms['browser_check']['vs'])) { echo 'vs:'.$phpwcms['browser_check']['vs']; } ?>};
-</script>
-<script src="//browser-update.org/update.js"></script>
-<?php endif; ?>
+<?php if(!empty($phpwcms['browser_check']['be'])):
+    $buoop = array('insecure' => isset($phpwcms['browser_check']['insecure']) ? boolval($phpwcms['browser_check']['insecure']) : true);
+    if(!empty($phpwcms['browser_check']['vs'])) {
+        $buoop['vs'] = $phpwcms['browser_check']['vs'];
+    }
+    if(!empty($phpwcms['browser_check']['required'])) {
+        $buoop['required'] = '{' . trim($phpwcms['browser_check']['required'], '{}') . '}';
+    }
+?>
+    var $buoop = <?php echo json_encode($buoop); ?>;
+</script><script src="https://browser-update.org/update.min.js"><?php endif; ?></script>
 </body>
 </html>

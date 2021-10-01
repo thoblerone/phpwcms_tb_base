@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2019, Oliver Georgi
+ * @copyright Copyright (c) 2002-2021, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -170,26 +170,26 @@ if($_newsletter['pages_total'] > 1) {
 			echo '<td class="dir"><strong>'.html($row["newsletter_subject"])."</strong></td>\n";
 
 			// create date
-			echo '<td nowrap="nowrap" class="v10" align="center">&nbsp;';
+			echo '<td nowrap="nowrap" class="v10 nowrap" align="center">&nbsp;';
 			if($row['cdate']) {
 				echo @date($BL['be_shortdatetime'], $row['cdate']);
 			}
 			echo '&nbsp;</td>';
 			// last sending
-			echo '<td nowrap="nowrap" class="v10" align="center">&nbsp;';
+			echo '<td nowrap="nowrap" class="v10 nowrap" align="center">&nbsp;';
 			if($row['lastsend']) {
 				@date($BL['be_shortdatetime'], $row['lastsend']);
 			}
 			echo '&nbsp;</td>';
 
-			echo '<td nowrap="nowrap" class="v10" align="center">'.$count_recipient.'/'.$count_queue.'/'.$count_sent;
+			echo '<td nowrap="nowrap" class="v10 nowrap" align="center">'.$count_recipient.'/'.$count_queue.'/'.$count_sent;
 			if($count_sent && !$count_queue && $row["newsletter_active"]) {
 				echo '<img src="img/symbole/valid.gif" border="0" alt="valid" style="margin: 0 0 0 3px" />';
 			}
 			echo '&nbsp;</td>';
 
 			// buttons
-			echo '<td align="right" nowrap="nowrap" class="button_td">';
+			echo '<td align="right" nowrap="nowrap" class="button_td nowrap">';
 
 			// duplicate
 			echo '<a href="phpwcms.php?do=messages&amp;p=3&amp;duplicate_nl='.$row["newsletter_id"];
