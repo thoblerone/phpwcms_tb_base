@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2021, Oliver Georgi
+ * @copyright Copyright (c) 2002-2022, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -64,7 +64,9 @@ $_SESSION['REFERER_URL'] = PHPWCMS_URL.get_login_file();
 
 // make compatibility check
 if(phpwcms_revision_check_temp($phpwcms["revision"]) !== true) {
-    _dbQuery('SET storage_engine=MYISAM', 'SET');
+    if (!PHPWCMS_DB_VERSION_57PLUS) {
+        _dbQuery('SET storage_engine=MYISAM', 'SET');
+    }
     $revision_status = phpwcms_revision_check($phpwcms["revision"]);
 }
 

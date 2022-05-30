@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2021, Oliver Georgi
+ * @copyright Copyright (c) 2002-2022, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -125,8 +125,6 @@ if(!empty($db_init)) {
 ?>
     <tr><td colspan="3" style="padding: 10px 0 10px 0;"><h1><span class="number">5.</span> Default phpwcms database schema</h1></td></tr>
 <?php
-
-
 
     if(empty($db_no_create) && !empty($_db_prepend_error) && isset($_POST['db_sql_hidden'])) {
         echo '<tr><td>&nbsp;</td><td colspan="2">';

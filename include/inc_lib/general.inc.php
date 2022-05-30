@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2021, Oliver Georgi
+ * @copyright Copyright (c) 2002-2022, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  **/
@@ -1105,6 +1105,13 @@ function convertStringToArray($string = '', $seperator = ',', $mode = 'UNIQUE', 
     }
 
     return $string;
+}
+
+function get_unique_array($array, $diff=array('', null, false)) {
+    if ($diff) {
+        $array = array_diff($array, $diff);
+    }
+    return array_unique($array);
 }
 
 function decode_entities($text) {

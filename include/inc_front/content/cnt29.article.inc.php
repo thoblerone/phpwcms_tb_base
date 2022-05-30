@@ -3,7 +3,7 @@
  * phpwcms content management system
  *
  * @author Oliver Georgi <og@phpwcms.org>
- * @copyright Copyright (c) 2002-2021, Oliver Georgi
+ * @copyright Copyright (c) 2002-2022, Oliver Georgi
  * @license http://opensource.org/licenses/GPL-2.0 GNU GPL-2
  * @link http://www.phpwcms.org
  *
@@ -121,6 +121,8 @@ if($image['template']) {
         $image['thumb_class'] = trim($image['thumb_class'].' '.$image['center_image_class']);
     }
 
+    $total = 0;
+
     if(is_array($image['images']) && ($image['count'] = count($image['images']))) {
 
         // Start lightbox
@@ -135,7 +137,6 @@ if($image['template']) {
 
         $x      = 0;
         $col    = 0;
-        $total  = 0;
 
         // Randomize?
         if(!empty($image['random']) && $image['count'] > 1) {
