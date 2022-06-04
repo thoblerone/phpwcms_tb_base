@@ -1,0 +1,78 @@
+﻿<!--CALENDAR_LIST_ENTRY_START//-->
+
+	<div class="tsfTrainingsbuchEintrag [CALENDAR_LOCATION]withlocation{CALENDAR_LOCATION}[/CALENDAR_LOCATION]">
+		<div class="tsfTrainingsbuchDate">
+			<div class="tsfTrainingsbuchDate_day">
+				<acronym class="published" title="{FORMAT_DATE:j}. {FORMAT_DATE:M} {FORMAT_DATE:Y}">
+					<span class="pub-month">[PHP]echo htmlentities("{FORMAT_DATE:M}");[/PHP]</span>
+					<span class="pub-date">{FORMAT_DATE:j}<br />
+					{FORMAT_DATE:D}</span>
+
+				</acronym>
+
+			</div><!-- tsfTrainingsbuchDate_day ende -->
+			<div class="tsfTrainingsbuchDate_detail">
+				[CALENDAR_DATE]{FORMAT_DATE:l}, {CALENDAR_DATE}<!--<br />Eintrag ID: {CALENDAR_ID}-->[/CALENDAR_DATE]
+			</div> <!-- tsfTrainingsbuchDate_detail ende -->
+		</div><!-- tsfTrainingsbuchDate ende -->
+		<div class="tsfTrainingsbuchDetail [CALENDAR_LOCATION]withlocation{CALENDAR_LOCATION}[/CALENDAR_LOCATION]">
+			[CALENDAR_ICAL]
+				<div class="tsfTrainingsbuchiCal">
+					{CALENDAR_ICAL}
+				</div>
+			[/CALENDAR_ICAL]
+			[CALENDAR_TITLE]
+				<div class="tsfTrainingsbuchDetail_Time"><a href="/index.php?aid=263&name=[PHP]echo urlencode("{CALENDAR_TITLE}");[/PHP]">
+					{CALENDAR_TITLE} <img src="/img/icons/read_email.gif" /></a> [CALENDAR_DESCRIPTION]({CALENDAR_DESCRIPTION})[/CALENDAR_DESCRIPTION]
+				</div>
+				[CALENDAR_TIME]<div class="tsfTrainingsbuchDetail_Time">			
+					[LANG_TIME]{LANG_TIME}: [/LANG_TIME]{CALENDAR_TIME}
+				</div>[/CALENDAR_TIME]<!-- tsfTrainingsbuchDetail_Time Ende -->
+				[CALENDAR_LOCATION]<div class="tsfTrainingsbuchDetail_Location location{CALENDAR_LOCATION}">[LANG_LOCATION]{LANG_LOCATION}: [/LANG_LOCATION]{CALENDAR_LOCATION}</div>[/CALENDAR_LOCATION]
+			[CALENDAR_TEASER]<div class="tsfTrainingsbuchDetail_Location">Bemerkung: {CALENDAR_TEASER}</div>[/CALENDAR_TEASER]			
+			<!-- User ID: {CALENDAR_USERID}-->
+			[PHP]
+			if (!empty($_SESSION[ session_id().'_userdata']) && $_SESSION[ session_id().'_userdata']["id"]=={CALENDAR_USERID})
+			{
+				echo('
+					<form a__ction="/trainingsbuch.html"  method="post" name="editTermin" style="clear:both">
+					<input type="hidden" maxlength="40" size="20" value="{CALENDAR_TITLE}" id="Name" name="Name" readonly>
+					<input type="hidden" maxlength="40" size="20" value="{FORMAT_DATE:Y-m-d}" id="Datum" name="Datum">
+					<input type="hidden" maxlength="40" size="20" value="{CALENDAR_TIME}" id="Zeit" name="Zeit">
+					<input type="hidden" maxlength="40" size="20" value="{CALENDAR_ID}" id="IDTermin" name="IDTermin">
+					<input type="hidden" maxlength="40" size="20" value="{CALENDAR_LOCATION}" id="Ort" name="Ort">
+					<input type="hidden" value="{CALENDAR_TEASER}" id="Bemerkung" name="Bemerkung">
+					<input type="submit" value="Eintrag bearbeiten" name="edit" />
+				</form>');
+			}
+			[/PHP]	
+			[/CALENDAR_TITLE]
+			
+		</div> <!-- tsfTrainingsbuchDetail ende -->
+	</div> <!--tsfTrainingsbuchEintrag ende-->
+	
+<!--CALENDAR_LIST_ENTRY_END//-->
+
+<!--CALENDAR_LIST_ENTRY_SPACE_START//-->
+
+	<!-- space between CALENDAR items -->
+	<div style="clear:both;"></div>
+	<div class="tsfTrainingsbuchSpace"><hr></div>
+	
+<!--CALENDAR_LIST_ENTRY_SPACE_END//-->
+
+<!--CALENDAR_LIST_TOP_START//-->
+<h3>Trainingsbuch</h3>
+  <div class="tsfTrainingsbuch">
+    <div class="tsfTrainingsbuchHead">
+      <div style="float:left;">{PRINT_LINK} {ICAL_LINK}</div><div style="float:right;"> [LANG_SELECTION]{LANG_SELECTION}:[/LANG_SELECTION] {SELECTION_DROPDOWN}</div><div style="clear:left;"></div>
+    </div>
+[CALENDAR_ENTRIES]{CALENDAR_ENTRIES}[/CALENDAR_ENTRIES]
+
+<!--CALENDAR_LIST_TOP_END//-->
+
+<!--CALENDAR_LIST_BOTTOM_START//-->
+
+  </div><div style="clear:both;"></div>
+
+<!--CALENDAR_LIST_BOTTOM_END//-->

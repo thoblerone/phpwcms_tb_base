@@ -1,0 +1,92 @@
+<!--DETAIL_SETTINGS_START//-->
+; dimensions for small and larger image
+swidth	= 25
+sheight = 50
+lwidth	= 150
+lheight = 225
+
+; crop images and image quality or not
+crop	= 0
+q	= 90
+<!--DETAIL_SETTINGS_END//-->
+
+
+
+
+<!--DETAIL_LIST_HEAD_START//-->
+[PHP]
+   $GLOBALS['block']['css']['mod_personel'] = '/../../include/inc_module/templates/css/style.css';
+[/PHP]
+[CP_TITLE]<h3 style="display : block; background-color : #0099cc; color : white; border-bottom: 3px solid white; ">
+	{CP_TITLE}</h3>[/CP_TITLE]
+
+
+<div style="position:relative;">
+	[FILTER]
+	<div class="detail_filter_top">
+		{FILTER}
+		
+	</div>
+	[/FILTER]
+<!--DETAIL_LIST_HEAD_END//-->
+
+
+<!--DETAIL_LIST_SPACER_START//-->
+	<div class="detail_list_space"></div>
+<!--DETAIL_LIST_SPACER_END//-->
+
+
+<!--DETAIL_LIST_ENTRY_START//-->
+	<div class="detail_list_entry" id="detail-listitem-{DETAIL_ID}" style="padding-left : 0px;">
+		
+	<div class="detail_list_entry" id="detail-listitem-{DETAIL_ID}" style="float : left;margin : 0;padding : 0;color : #666666;  clear : both; width : 290px; ">
+		<table cellpadding="2" cellspacing="0">
+		<tr>
+		<td><span style="color : white;"><a href="{LINK}">{TITLE}&nbsp;{FIRSTNAME}&nbsp;{LASTNAME}</a></span></td>
+		<td><span style="color : white;"><a href="{LINK}">{FUNCTION}</a></span></td>
+		<td><span style="color : white;"><a href="{LINK}">{PHONE}</a><span></td>
+		</tr>
+		</table>
+	</div>
+		
+		
+		
+	</div>
+		
+		
+	
+<!--DETAIL_LIST_ENTRY_END//-->
+
+
+<!--DETAIL_LIST_FOOTER_START//-->
+	[FILTER]
+	<div class="detail_filter_bottom">
+		{FILTER}
+	</div>
+	[/FILTER]
+	<div id="onclicktext" style="position:absolute;width:180px;top:0;right:0;"></div>
+</div>
+<!--DETAIL_LIST_FOOTER_END//-->
+
+
+
+<!--DETAIL_HEAD_START//-->
+
+
+<!--DETAIL_HEAD_END//-->
+
+
+<!--DETAIL_ENTRY_START//-->
+	<div class="detail_list_entry" id="detail-entry-{DETAIL_ID}">
+		[TITLE]<h2>{TITLE}</h2>[/TITLE]
+		<div>{FIRSTNAME}</div>
+		[FIRSTNAME]<div>{FIRSTNAME}</div>[/FIRSTNAME]
+	</div>
+<!--DETAIL_ENTRY_END//-->
+
+<!--DETAIL_FOOTER_START//-->
+	<div>
+		<a href="{BACKLINK}">Zur&uuml;ck</a>
+	</div>
+<!--DETAIL_FOOTER_END//-->
+

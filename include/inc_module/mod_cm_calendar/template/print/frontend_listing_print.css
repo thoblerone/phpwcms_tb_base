@@ -1,0 +1,85 @@
+/* CSS Document */
+body {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 10px;
+	margin: 15 15 15 15;
+}
+
+td, tr, th, p {
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 10px
+}
+
+ul { margin: 0px 0px 0px 20px; }
+li { font-size: 11px; list-style: disc; }
+
+a, a:link, a:visited, a:active {
+	color: #000000;
+	text-decoration: underline
+}
+a:hover {
+	color: #000000;
+	text-decoration: underline;
+}
+#printlink {
+  width:200px;
+  padding:10px;
+  font-weight:bold;
+}
+
+@media print { 
+  /* ... hide the link ... */
+  #printlink {
+    display: none;
+  }
+}
+
+/*calendar listing*/
+.cmCalListing {
+  width:400px;
+}
+
+.cmCalListingHead {
+  width:400px;
+}
+
+.cmCalListingEntry {
+
+}
+
+.cmCalListingEntry h2{
+  font-size:14px;
+  font-weight:bold;
+}
+
+.cmCalListingDate {
+  float:left;
+  width:100px;
+  height:80px;
+  background:#cdcdcd;
+  font-size:12px;
+  font-weight:bold;
+  padding:5px;
+  position:relative;
+}
+
+.cmCalListingDetail {
+  float:left;
+  width:270px;
+  padding:5px;
+}
+.cmCalListingiCal{
+  float:right;
+  width:20px;
+  height:20px;
+}
+
+.cmCalListingSpace {
+  clear:left;
+  border-bottom:1px solid #000000;
+}
+
+.cmCalListingDropdown {
+
+}
+

@@ -1,0 +1,60 @@
+<!--CALENDAR_LIST_ENTRY_START//-->
+
+	<div class="tsfTrainingsbuchEintrag">
+		<div class="tsfTrainingsbuchDate">
+			<div class="tsfTrainingsbuchDate_day">
+				<acronym class="published" title="{FORMAT_DATE:j}. [PHP]echo htmlentities("{FORMAT_DATE:M}")[/PHP] {FORMAT_DATE:Y}">
+					<span class="pub-month">[PHP]echo htmlentities("{FORMAT_DATE:M}")[/PHP]</span>
+					<span class="pub-date">{FORMAT_DATE:j}<br />
+					{FORMAT_DATE:D}</span>
+
+				</acronym>
+
+			</div><!-- tsfTrainingsbuchDate_day ende -->
+			<div class="tsfTrainingsbuchDate_detail">
+				[CALENDAR_DATE][PHP]echo htmlentities("{FORMAT_DATE:l}")[/PHP], {CALENDAR_DATE}<!--<br />Eintrag ID: {CALENDAR_ID}-->[/CALENDAR_DATE]
+				[CALENDAR_TIME]{CALENDAR_TIME}[/CALENDAR_TIME]
+			</div> <!-- tsfTrainingsbuchDate_detail ende -->
+		</div><!-- tsfTrainingsbuchDate ende -->
+		<div class="tsfTrainingsbuchDetail">
+			[CALENDAR_ICAL]
+				<div class="tsfTrainingsbuchiCal">
+					Kalender-Link: {CALENDAR_ICAL}
+				</div>
+			[/CALENDAR_ICAL]
+			[CALENDAR_TEASER]
+				<div class="tsfTrainingsbuchDetail_Title">
+					<h1>{CALENDAR_TEASER}</h1>
+				</div><!-- tsfTrainingsbuchDetail_Title Ende -->
+					
+			<!-- [CALENDAR_TITLE]{CALENDAR_TITLE}[/CALENDAR_TITLE]-->
+			[/CALENDAR_TEASER]
+			[CALENDAR_LOCATION]<div class="tsfTrainingsbuchDetail_Location"><!--[LANG_LOCATION]{LANG_LOCATION}: [/LANG_LOCATION]-->{CALENDAR_LOCATION}</div>[/CALENDAR_LOCATION]
+		</div> <!-- tsfTrainingsbuchDetail ende -->
+	</div> <!--tsfTrainingsbuchEintrag ende-->
+	
+<!--CALENDAR_LIST_ENTRY_END//-->
+
+<!--CALENDAR_LIST_ENTRY_SPACE_START//-->
+
+	<!-- space between CALENDAR items -->
+	<div style="clear:both;"></div>
+	<div class="tsfTrainingsbuchSpace"><hr></div>
+	
+<!--CALENDAR_LIST_ENTRY_SPACE_END//-->
+
+<!--CALENDAR_LIST_TOP_START//-->
+<h3>Termine</h3>
+  <div class="tsfTrainingsbuch">
+    <div class="tsfTrainingsbuchHead">
+      <div style="float:right;"> [LANG_SELECTION]{LANG_SELECTION}:[/LANG_SELECTION] {SELECTION_DROPDOWN}</div><div style="clear:left;"></div>
+    </div>
+[CALENDAR_ENTRIES]{CALENDAR_ENTRIES}[/CALENDAR_ENTRIES]
+
+<!--CALENDAR_LIST_TOP_END//-->
+
+<!--CALENDAR_LIST_BOTTOM_START//-->
+
+  </div><div style="clear:both;"></div>
+
+<!--CALENDAR_LIST_BOTTOM_END//-->

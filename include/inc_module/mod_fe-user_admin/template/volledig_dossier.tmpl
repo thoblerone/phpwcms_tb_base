@@ -1,0 +1,125 @@
+<!--DETAIL_SETTINGS_START//-->
+; dimensions for small and larger image
+swidth	= 25
+sheight = 50
+lwidth	= 150
+lheight = 225
+
+; crop images and image quality or not
+crop	= 0
+q	= 90
+<!--DETAIL_SETTINGS_END//-->
+
+
+<!--DETAIL_LIST_HEAD_START//-->
+
+[CP_TITLE]<h3 style="display : block; background-color : #0099cc; color : white; border-bottom: 3px solid white; ">
+	{CP_TITLE}</h3>[/CP_TITLE]
+
+
+<div style="position:relative;">
+	[FILTER]
+	<div class="detail_filter_top">
+		{FILTER}
+		
+	</div>
+	[/FILTER]
+<!--DETAIL_LIST_HEAD_END//-->
+
+
+<!--DETAIL_LIST_SPACER_START//-->
+	<div class="detail_list_space"></div>
+<!--DETAIL_LIST_SPACER_END//-->
+
+
+<!--DETAIL_LIST_ENTRY_START//-->
+	<div class="detail_list_entry" style="color : blue;" id="detail-listitem-{DETAIL_ID}">
+		
+		<a href="{LINK}" style="color : red;"><h2>{TITLE}&nbsp;{FIRSTNAME}&nbsp;{LASTNAME}</h2></a>
+		<h5>{COMPANY}</h5>
+		{FUNCTION}--
+
+		<p>{BACKLINK}</p>
+		
+	</div>
+<!--DETAIL_LIST_ENTRY_END//-->
+
+
+<!--DETAIL_LIST_FOOTER_START//-->
+	[FILTER]
+	<div class="detail_filter_bottom">
+		{FILTER}
+	</div>
+	[/FILTER]
+	<div id="onclicktext" style="position:absolute;width:180px;top:0;right:0;"></div>
+</div>
+<!--DETAIL_LIST_FOOTER_END//-->
+
+
+
+<!--DETAIL_HEAD_START//-->
+[CP_TITLE]<h3>{CP_TITLE}</h3>[/CP_TITLE]
+
+
+
+
+<!--DETAIL_HEAD_END//-->
+
+
+
+<!--DETAIL_ENTRY_START//-->
+	<div class="detail_list_entry" id="detail-entry-{DETAIL_ID}" style="color : #666666; padding : 15px;">
+		<a href="{LINK}"><h1 style="padding-left : 0px;display : block; background : transparent; color : #0099cc; border-bottom: 3px solid white;">{TITLE}&nbsp;{FIRSTNAME}&nbsp;{LASTNAME}</h1></a>
+		<div class="userdetail_block" style="background-color : #d3ebf5;">
+		
+			<div style="float : left;width : 150px;padding : 10px; ">
+			[IMAGE_LARGE]
+				[ZOOM_ELSE]
+					[IMAGE_URL]<a href="{IMAGE_URL}"{IMAGE_URL_TARGET}>[/IMAGE_URL]
+						<img src="img/cmsimage.php/{LWIDTH}x{LHEIGHT}x{CROP}x{Q}/{IMAGE_ID}" alt="{TITLE}" border="0" />
+					[IMAGE_URL]</a>[/IMAGE_URL]
+					[CAPTION]<p>{CAPTION}</p>[/CAPTION]
+				[/ZOOM_ELSE]
+				[ZOOM]
+					<a href="img/cmsimage.php/600x400/{IMAGE_ID}" target="_blank"{LIGHTBOX} title="">
+						<img src="img/cmsimage.php/{LWIDTH}x{LHEIGHT}x{CROP}x{Q}/{IMAGE_ID}" alt="{TITLE} {FIRSTNAME} {LASTNAME} {FUNCTION}" border="0" />
+					</a>
+				[/ZOOM]		
+			[/IMAGE_LARGE]
+			</div>			
+		
+			<div style="width : 200px;padding : 10px; ">
+				<h5 class="userdetail">Functie :</h5>{FUNCTION}<br/><br/>
+				<h5 class="userdetail">Bedrijf :</h5>{COMPANY}<br/><br/>
+				<h5 class="userdetail">Telefoon :</h5>{PHONE}<br/><br/>
+				<h5 class="userdetail">Email :</h5><a href="mailto:{EMAIL}">{EMAIL}</a><br/><br/>
+				<br/><br/><br/><br/>
+			</div>
+		</div>
+		<br/>
+		<div class="userdetail_block">	
+			<!--<h5 class="userdetail">VAR1 {VARCHAR1}</h5>
+			<h5 class="userdetail">VAR2{VARCHAR2}</h5>
+			<h5 class="userdetail">VAR3 {VARCHAR3}</h5>
+			<h5 class="userdetail">VAR4 {VARCHAR4}</h5>
+			<h5 class="userdetail">VAR5 {VARCHAR5}</h5>-->
+
+			<h5 class="userdetail">Kennis van:</h5> {TEXTVAR1}<br/><br/>
+			<h5 class="userdetail">Je kan bij me terecht voor: </h5> {TEXTVAR2}<br/><br/>
+			<h5 class="userdetail">Ik ben er op:</h5> {TEXTVAR3}<br/><br/>
+			<h5 class="userdetail">Opleiding:</h5> {TEXTVAR4}<br/><br/>
+			<h5 class="userdetail">Overig:</h5> {TEXTVAR5}<br/><br/>
+			
+			<br/>	
+			&laquo;&nbsp;{BACKLINK}<br/><br/>
+		</div>
+	</div>
+<!--DETAIL_ENTRY_END//-->
+<!--DETAIL_ENTRY_END//-->
+
+<!--DETAIL_FOOTER_START//-->
+	<div>
+		
+	</div>
+<!--DETAIL_FOOTER_END//-->
+

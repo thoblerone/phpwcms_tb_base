@@ -1,0 +1,32 @@
+﻿.published {
+	background: url("/include/inc_module/mod_cm_calendar/template/css/clip-bottom.png") no-repeat scroll right bottom transparent;
+    /*
+    border-bottom: medium none;
+	*/
+    display: block;
+    float: left;
+    font-family: Arial,Helvetica,sans-serif;
+    overflow: hidden;
+    text-align: center;
+    width: 2.2em;
+	margin-right: 1em;
+	color: black;
+}
+.pub-month {
+    background: url("/include/inc_module/mod_cm_calendar/template/css/clip-top.png") repeat-x scroll center top transparent;
+    display: block;
+    font-size: 1em;
+    margin: 0;
+    padding: 10px 0 0;	
+}
+.pub-date { 
+	display:block; 
+	font-size:1.2em;
+	margin:0; 
+	padding:0;  
+}
+
+.tsfTrainingsbuchiCal {
+	float: left;
+	padding-right: 0.5em;
+}

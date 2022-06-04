@@ -1,10 +1,10 @@
 <?php
-$indexpage['acat_name'] = 'Home';
+$indexpage['acat_name'] = 'Startseite';
 $indexpage['acat_title'] = '';
-$indexpage['acat_info'] = '';
+$indexpage['acat_info'] = 'Begleiten Sie uns auf den folgenden Seiten in unsere Welt voll Rhythmus, Bewegung und Eleganz. Die Tanzsportfreunde Essen e.V. bieten Ihnen unter dem Motto \\\\\\\\\\\\\\"... wo das Tanzen Freu(n)de macht!\\\\\\\\\\\\\\" einzigartige Möglichkeiten, einfach mal für eine oder ein paar Stunden die Seele baumeln zu lassen. Unser Prinzip ist ... mehr als Tanzen ... mehr als Sport ... unter Freunden!';
 $indexpage['acat_alias'] = 'index';
 $indexpage['acat_aktiv'] = 1;
-$indexpage['acat_template'] = 1;
+$indexpage['acat_template'] = 7;
 $indexpage['acat_hidden'] = 0;
 $indexpage['acat_ssl'] = 0;
 $indexpage['acat_regonly'] = 0;
@@ -22,7 +22,7 @@ $indexpage['acat_paginate'] = 0;
 $indexpage['acat_overwrite'] = '';
 $indexpage['acat_archive'] = 0;
 $indexpage['acat_class'] = '';
-$indexpage['acat_keywords'] = '';
+$indexpage['acat_keywords'] = 'Linedance, Hip Hop, Ballett Kinder, Ballett Erwachsene, Videoclip Dancing, Jazz Modern Dance, Gesellschaftstanz, Turniertanz, Kindertanz, Zumba';
 $indexpage['acat_cpdefault'] = 0;
 $indexpage['acat_disable301'] = 0;
 $indexpage['acat_opengraph'] = 1;

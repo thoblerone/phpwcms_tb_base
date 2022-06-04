@@ -1,0 +1,130 @@
+<!--DETAIL_SETTINGS_START//-->
+; dimensions for small and larger image
+swidth	= 25
+sheight = 50
+lwidth	= 150
+lheight = 225
+
+; crop images and image quality or not
+crop	= 0
+q	= 90
+<!--DETAIL_SETTINGS_END//-->
+
+
+<!--DETAIL_LIST_HEAD_START//-->
+
+[CP_TITLE]<h3 style="display : block; background-image : url('/img/lblue_menu_background.png');
+	background-repeat : repeat-x;  color : white; border-bottom: 3px solid white; ">
+	{CP_TITLE}</h3>[/CP_TITLE]
+
+
+<div style="position:relative;">
+	[FILTER]
+	<div class="detail_filter_top">
+		{FILTER}
+		
+	</div>
+	[/FILTER]
+<!--DETAIL_LIST_HEAD_END//-->
+
+
+<!--DETAIL_LIST_SPACER_START//-->
+	<div class="detail_list_space">&nbsp;</div>
+<!--DETAIL_LIST_SPACER_END//-->
+
+
+<!--DETAIL_LIST_ENTRY_START//-->
+	<div class="detail_list_entry" id="detail-listitem-{DETAIL_ID}" style="color : #666666; margin : 0 0 3px 10px;padding : 10px;  clear : both; width : 290px; ">
+		
+		<a href="{LINK}"><h3 style="border-bottom : 2px; background : transparent; color : white;">{TITLE}&nbsp;{FIRSTNAME}&nbsp;{LASTNAME}</h3></a>
+		<table>
+			<tr>
+			    <td width="75px" style="display : block;">[IMAGE_SMALL]
+					{IMAGE_SMALL}	
+				[/IMAGE_SMALL]</td>
+			    <td><h5>Functie:{FUNCTION}</h5>
+				<h5>Telefoon:{PHONE}</h5></td>
+			</tr>
+		</table>
+
+		
+		
+		
+		
+		
+	</div>
+<!--DETAIL_LIST_ENTRY_END//-->
+
+
+<!--DETAIL_LIST_FOOTER_START//-->
+	[FILTER]
+	<div class="detail_filter_bottom">
+		{FILTER}
+	</div>
+	[/FILTER]
+	<div id="onclicktext" style="position:absolute;width:180px;top:0;right:0;"></div>
+</div>
+<!--DETAIL_LIST_FOOTER_END//-->
+
+<!--DETAIL_PAGINATOR_START//-->
+	<div>
+		<a href="{BACKLINK}">Zur&uuml;ck</a>
+	</div>
+<!--DETAIL_PAGINATOR_END//-->
+
+
+
+<!--DETAIL_HEAD_START//-->
+
+
+<!--DETAIL_HEAD_END//-->
+
+
+<!--DETAIL_ENTRY_START//-->
+	<div class="detail_list_entry" id="detail-entry-{DETAIL_ID}" style="color : #666666;">
+		<a href="{LINK}"><h3>{TITLE}&nbsp;{FIRSTNAME}&nbsp;{LASTNAME}</h3></a>
+		<div style="float : left; width : 150px;">
+		[IMAGE_LARGE]
+			[ZOOM_ELSE]
+				[IMAGE_URL]<a href="{IMAGE_URL}"{IMAGE_URL_TARGET}>[/IMAGE_URL]
+					<img src="img/cmsimage.php/100x100x1/{IMAGE_ID}" alt="{IMAGE}" border="0" />
+				[IMAGE_URL]</a>[/IMAGE_URL]
+				[CAPTION]<p>{CAPTION}</p>[/CAPTION]
+			[/ZOOM_ELSE]
+			[ZOOM]
+				<a href="img/cmsimage.php/600x400/{IMAGE_ID}" target="_blank"{LIGHTBOX} title="">
+					<img src="img/cmsimage.php/100x100x1/{IMAGE_ID}" alt="{IMAGE_NAME}" border="0" />
+				</a>
+			[/ZOOM]		
+		[/IMAGE_LARGE]
+				
+		</div>
+
+		<div>
+		<h5 class="userdetail">Functie :{FUNCTION}</h5>
+		<h5 class="userdetail">Bedrijf :{COMPANY}</h5>
+		<h5 class="userdetail">TEL :{PHONE}</h5>
+		<h5 class="userdetail">VAR1 {VARCHAR1}</h5>
+		<h5 class="userdetail">VAR2{VARCHAR2}</h5>
+		<h5 class="userdetail">VAR3 {VARCHAR3}</h5>
+		<h5 class="userdetail">VAR4 {VARCHAR4}</h5>
+		<h5 class="userdetail">VAR5 {VARCHAR5}</h5>
+		<h5 class="userdetail">TEXT1 {TEXTVAR1}</h5>
+		<h5 class="userdetail">TEXT2 {TEXTVAR2}</h5>
+		<h5 class="userdetail">TEXT3 {TEXTVAR3}</h5>
+		<h5 class="userdetail">TEXT4 {TEXTVAR4}</h5>
+		<h5 class="userdetail">TEXT5 {TEXTVAR5}</h5>
+		
+		<br/>	
+
+		{LINK}
+		</div>
+	</div>
+<!--DETAIL_ENTRY_END//-->
+
+<!--DETAIL_FOOTER_START//-->
+	<div>
+		<a href="{BACKLINK}">Zur&uuml;ck</a>
+	</div>
+<!--DETAIL_FOOTER_END//-->
+
