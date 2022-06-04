@@ -149,7 +149,7 @@ if($fe_action) {
 
     }
 
-    //dumpVar($fe_fields);
+    // dumpVar($fe_fields);
 
     if($content['cat_id'] == 0) {
         if($aktion[1]) {
@@ -287,7 +287,7 @@ if($fe_action) {
     }
 
     $fe_reg[] = '<form action="' .$_uri. '" method="post">';
-
+dumpVar($fe_fields);
     foreach($fe_fields as $fe_field) {
 
         switch($fe_field['type']) {
@@ -381,11 +381,11 @@ if($fe_action) {
             $queryResult = _dbQuery($sql, 'INSERT');
             if(!empty($queryResult['INSERT_ID'])) {
                 $fe_reg  = '<p class="success">Vielen Dank '.html_specialchars($udata['user_firstname'].' '.$udata['user_name']).'! Ihre Registrierungsanfrage wurden erfolgreich &uuml;bertragen.</p>';
-                $fe_reg .= '<p>Ihnen wird in wenigen Augenblicken eine Best�tigung an die E-Mail <b>'.html_specialchars($udata['user_email']).'</b> zugesendet.</p>';
+                $fe_reg .= '<p>Ihnen wird in wenigen Augenblicken eine Best&auml;tigung an die E-Mail <b>'.html_specialchars($udata['user_email']).'</b> zugesendet.</p>';
 
                 $fe_text  = 'Hallo '.trim($udata['user_title'] . ' ' . trim( $udata['user_firstname'].' '.$udata['user_name']) ) . LF . LF;
                 $fe_text .= 'Ihre Registrierung haben wir erhalten.' . LF;
-                $fe_text .= 'Wir pr�fen Ihre Daten und melden uns umgehend bei Ihnen.' . LF . LF;
+                $fe_text .= 'Wir pr&uuml;fen Ihre Daten und melden uns umgehend bei Ihnen.' . LF . LF;
 
                 if(empty($udata['user_profile_7'][4])) {
                     $fe_text .= 'Sie m�chten keinen Zugriff auf unser Partnerbackend. ' .LF . 'Allerdings haben wir folgende Zugangsdaten f�r Sie hinterlegt:' . LF;
@@ -394,9 +394,9 @@ if($fe_action) {
                 }
                 $fe_text .= '  Login:    ' . $udata['user_login'] . LF;
                 $fe_text .= '  Passwort: ' . $udata['user_password'] . LF . LF;
-                $fe_text .= 'Ihr Passwort ist nicht reproduizierbar verschl�sselt in unserem System abgelegt worden.' . LF . LF . LF;
-                $fe_text .= 'Mit besten Gr��en' . LF;
-                $fe_text .= 'phpwcms, Oliver' . LF;
+                $fe_text .= 'Ihr Passwort ist nicht reproduzierbar verschl�sselt in unserem System abgelegt worden.' . LF . LF . LF;
+				$fe_text .= 'Mit besten Grüßen' . LF;
+				$fe_text .= '   TSF Essen, Webtechnik' . LF;
 
                 $fe_text1  = 'Neue Benutzerregistrierung' . LF;
                 $fe_text1 .= '--------------------------' . LF . LF;
@@ -421,7 +421,10 @@ if($fe_action) {
                 $fe_text1 .= 'Ort:     ' . $udata['user_city'] . LF;
                 $fe_text1 .= 'Telefon: ' . $udata['user_tel'] . LF;
                 $fe_text1 .= 'E-Mail:  ' . $udata['user_email'] . LF;
-
+				$fe_text1 .= LF;
+				$fe_text1 .= 'Mit besten Grüßen' . LF;
+				$fe_text1 .= '   TSF Essen, Webtechnik' . LF;				
+				$fe_text1 .= LF;
                 $fe_text1 .= LF . '-----------------------------------------------------------' . LF;
                 if(!PHPWCMS_GDPR_MODE) {
                     $fe_text1 .= 'IP: ' . getRemoteIP();
@@ -440,15 +443,16 @@ if($fe_action) {
                 sendEmail(array(
                     'recipient'     => strtolower($udata['user_email']),
                     'toName'        => trim($udata['user_firstname'].' '.$udata['user_name']),
-                    'subject'       => 'phpwcms Registration',
+					'subject'		=> 'TSF Trainingsbuch: Ihre Anmeldung',
                     'text'          => $fe_text,
-                    'from'          => 'og@phpwcms.org',
-                    'fromName'      => 'phpwcms',
-                    'sender'        => 'og@phpwcms.org' ));
+					'from'			=> 'technik@tanzsportfreunde-essen.de',
+					'fromName'		=> 'Tanzsportfreunde Essen Webserver',
+					'sender'		=> 'technik@tanzsportfreunde-essen.de' ));
+
 
                 sendEmail(array(
-                    'recipient'     => 'slackero+phpwcms-registration@gmail.com',
-                    'subject'       => 'New registration',
+					'recipient'		=> 'feedback@tanzsportfreunde-essen.de',
+					'subject'		=> 'TSF Trainingsbuch: Neue Anmeldung',
                     'text'          => $fe_text1,
                     'from'          => strtolower($udata['user_email']),
                     'fromName'      => trim($udata['user_firstname'].' '.$udata['user_name']),
@@ -457,7 +461,7 @@ if($fe_action) {
 
 
             } else {
-                $fe_reg = '<p class="error">Beim Speichern Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich an den Webmaster.</p>' . LF . $fe_reg;
+                $fe_reg = '<p class="error">Beim Speichern Ihrer Daten ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut oder wenden Sie sich über das Kontaktformular an den Webmaster.</p>' . LF . $fe_reg;
             }
         }
     }
@@ -493,7 +497,7 @@ if($fe_action) {
             $queryResult = _dbQuery($sql, 'UPDATE');
             if(isset($queryResult['AFFECTED_ROWS'])) {
 
-                $fe_reg = '<p>Ihre Profildaten wurden erfolgreich aktualisiert</p>' . LF . $fe_reg;
+                $fe_reg = '<p>Ihre Profildaten wurden erfolgreich aktualisiert.</p>' . LF . '<p>Damit eine Namens&auml;nderung wirksam wird, loggen Sie sich bitte aus und wieder ein.</p>' . LF .  $fe_reg;
 
             } else {
 
