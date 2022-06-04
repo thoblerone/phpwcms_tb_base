@@ -1,0 +1,93 @@
+<!--DETAIL_SETTINGS_START//-->
+; dimensions for small and larger image
+swidth	= 25
+sheight = 50
+lwidth	= 150
+lheight = 225
+
+; crop images and image quality or not
+crop	= 0
+q	= 90
+<!--DETAIL_SETTINGS_END//-->
+
+
+<!--DETAIL_LIST_HEAD_START//-->
+
+[CP_TITLE]<h3>
+	{CP_TITLE}</h3>[/CP_TITLE]
+
+
+<div style="position:relative;">
+	[FILTER]
+	<div class="detail_filter_top">
+		{FILTER}
+		
+	</div>
+	[/FILTER]
+<!--DETAIL_LIST_HEAD_END//-->
+
+
+<!--DETAIL_LIST_SPACER_START//-->
+	<div class="detail_list_space">&nbsp;</div>
+<!--DETAIL_LIST_SPACER_END//-->
+
+
+<!--DETAIL_LIST_ENTRY_START//-->
+	<div class="detail_list_entry" id="detail-listitem-{DETAIL_ID}">
+<a href="{LINK}"><h3 class="userdetail_name">{LASTNAME}&nbsp;{FIRSTNAME}</h3></a><h5 class="userdetail_city">{CITY}, <i>({PROFESSION})</i></h5><h5 class="userdetail">eMail: <a href="mailto:{EMAIL}">{EMAIL}</a><br />
+	</h5></div>
+<!--DETAIL_LIST_ENTRY_END//-->
+
+
+<!--DETAIL_LIST_FOOTER_START//-->
+	[FILTER]
+	<div class="detail_filter_bottom">
+		{FILTER}
+	</div>
+	[/FILTER]
+	<div id="onclicktext" style="position:absolute;width:180px;top:0;right:0;"></div>
+</div>
+<!--DETAIL_LIST_FOOTER_END//-->
+
+<!--DETAIL_PAGINATOR_START//-->
+	<div style="margin-left:10px;">
+		<a href="      {BACKLINK}">Zur&uuml;ck</a>
+	</div>
+<!--DETAIL_PAGINATOR_END//-->
+
+
+
+<!--DETAIL_HEAD_START//-->
+
+
+<!--DETAIL_HEAD_END//-->
+
+
+<!--DETAIL_ENTRY_START//-->
+	<div style="margin-left:0px;">
+		<a href="index.php?facebook">Zur&uuml;ck</a>
+	</div>
+<br />
+<div class="detail_list_entry" id="detail-entry-{DETAIL_ID}" style="color : #666666;">
+<h3 class="userdetail_name">{LASTNAME}&nbsp;{FIRSTNAME}</h3><h5 class="userdetail">eMail:  <a href="mailto:{EMAIL}">{EMAIL}</a><br />
+	</h5>
+		<h5 class="userdetail">Kategorie:  <i>{PROFESSION}</i></h5><br />
+
+		<h5 class="userdetail">{STREET} {ADDNR}</h5>
+		<h5 class="userdetail">{ZIP} {CITY}</h5>
+
+		<h5 class="userdetail">TEL:  {PHONE}</h5>
+		<h5 class="userdetail">Handy:  {MOBILE}</h5>
+<br />
+		<h5 class="userdetail">Motto/Spruch:<br />{SIGNATURE}</h5>
+		
+		</div>
+	</div>
+<!--DETAIL_ENTRY_END//-->
+
+<!--DETAIL_FOOTER_START//-->
+	<div style="margin-left:20px;">
+		<a href="index.php?facebook">Zur&uuml;ck</a>
+	</div>
+<!--DETAIL_FOOTER_END//-->
+

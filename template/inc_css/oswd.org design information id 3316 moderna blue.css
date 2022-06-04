@@ -1,0 +1,336 @@
+
+body {
+	margin: 0;
+	padding: 0;
+	text-align: left;
+	font: 85% Arial, Tahoma, "Trebuchet MS", Verdana, sans-serif;
+}
+
+.clear
+{
+	clear: both;
+}
+.container {
+	width: 100%;
+	border: 0px solid #eee;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 0;
+	line-height: 1.5em;
+	max-width: 980px;
+}
+
+.banner {
+    background: url("/picture/upload/image/sonstiges/Kopfleiste_960.jpg") no-repeat scroll 0px 70px #FFFFFF;
+    color: #333333;
+    height: 165px;
+    margin-bottom: 20px;
+    padding: 0;	
+}
+
+.banner h1 {
+
+	/* eine kleine Eigenschaft, um editierbar zu bleiben */
+    letter-spacing: 5px;
+
+}
+
+.clearer
+{
+	clear: both;
+}
+
+		/* TOP NAVIGATION */
+.navlist {
+	width: 100%;
+	padding: 4px 5px 5px 0;
+	margin: 0 0 20px 0;
+	text-align: left;
+	letter-spacing: 3px;
+	color: #fff;
+	background: #2C486C;
+	font-weight: bold;
+}
+.navlist li {
+	list-style: none;
+	margin: 0;
+	display: inline;
+	line-height: 2em;
+}
+.navlist li a {
+	padding: 5px .75em;
+	margin: 0;
+	color: #fff;
+/* scheint zu viel zu sein 	
+	background: #2C486C;
+*/
+	text-decoration: none;
+}
+
+.navlist li a:link { 
+	color: #fff;
+	/* scheint zu viel zu sein 	
+	background: #2C486C;
+	*/
+}
+
+.navlist li a:visited {
+	color: #fff;
+	/* scheint zu viel zu sein 	
+	background: #2C486C;
+	*/
+}
+.navlist li a:hover {
+color: #000;
+background: #3E6DAD;
+}
+.navlist li a.current {
+color: #fff;
+background:#3E6DAD;
+}
+
+
+.menu {
+	padding-bottom: 0.5em;
+}
+		/* LEFT MENU */
+.menu ul {
+	list-style: none outside none;
+	display: inline;
+}
+.menu ul li {
+	line-height: 1.8em;
+	/*margin: 0 10px 0 0;*/
+	padding: 0;
+	/*list-style-type: square;*/
+	color: #3E6DAD;
+	background: inherit;
+}
+.menu ul li a {
+color: #1A3557;
+background: inherit;
+}
+.menu ul li a:hover {
+color: #3E6DAD;
+background: inherit;
+}
+
+.sub_first li  {
+	/*border:	1px solid red;*/
+}
+		/* MAIN CONTENT */
+.content {
+	padding: 0 25px 0 25px;
+	float: left;
+	border-left: 1px dashed #333333;
+	border-right: 1px dashed #333333;
+	color: #555;
+	background-color: #fff;
+	width: 550px;
+	margin-left: -1px;
+}
+
+.content_wide
+{
+	width: 718px;
+	height: 100%;
+	border-right: none;
+}
+		/* ARTICLES */
+.newsbox1 {
+	float:left;
+	width: 47%;
+	/* margin: 3px 0 5px 0; */
+	/* padding: 5px; */
+}
+.newsbox2 {
+    float: right;
+    /* margin: 3px 0 5px 20px; */
+    /* padding: 5px 40px; */
+    width: 47%;
+}
+.intro3 {
+	float:right;
+	width: 25%;
+	margin: 3px 0 5px 0;
+	padding: 5px;
+}
+
+		/* LEFT SIDEBAR */
+.sidebar-a {
+float: left;
+width: 150px;
+margin-right: 0px;
+padding: 0 5px 0 5px;
+color: #666;
+background-color: #fff;
+border-right: 1px dashed #333333;
+}
+
+		/* RIGHT SIDEBAR */
+.sidebar-b {
+float: right;
+width: 190px;
+margin: 0 0 0 5px;
+padding: 0 5px 15px 5px;
+color: #333;
+background-color:#EDFAFF;
+}
+
+		/* FOOTER */
+.footer {
+	clear: both;
+	padding: 5px;
+	margin: 0;
+	background-color: #2C486C;
+	color: #fff;
+	text-align: center;
+}
+.footer a {
+	text-decoration: none;
+	color: #fff;
+/* scheint zu viel zu sein
+	background-color:#2C486C;
+*/
+}
+.footer  a:hover {
+	text-decoration: none;
+	color: #FE3F22;
+/* scheint zu viel zu sein
+	background-color:#2C486C;
+*/
+}
+
+		/* LINKS */
+a {
+text-decoration: none;
+color: #1A3557;
+/* scheint zu viel zu sein
+    background-color: #fff; */
+}
+a:hover {
+text-decoration:underline;
+color: #666;
+background-color:#fff;
+}
+a img {
+border: 0;
+}
+
+		/* IMAGE PROPERTIES */
+.border {
+border: 1px solid #2C486C;
+}
+.margin1010 {
+padding: 10px;
+margin: 10px;
+}
+
+.imgleft {
+float: left;
+border: 1px solid #90b905;
+margin: 5px 10px 10px 15px;
+padding: 5px;
+}
+
+		/* HEADING PROPERTIES */
+h1 {
+	font-size: 200%;
+	letter-spacing: 1px;
+	color:#3E6DAD;
+	line-height: 1.1em;
+}
+
+h2 {
+	font-size: 130%;
+	text-transform: uppercase;
+	letter-spacing: 3px;
+	color:#2C486C;
+}
+
+h3 {
+	padding: 5px;
+	text-transform: uppercase;
+	font-size: 110%;
+	color:#fff;
+	background: #3E6DAD; /* ist auf jeden fall nötig */
+	margin: 6px 0 0;
+}
+
+.intro3 h3 {
+	background: #1A3557;
+}
+
+h4 {
+	padding: 5px;
+	text-transform: uppercase;
+	font-size: 110%;
+	color:#fff;
+	background: #1A3557;
+	margin: 6px 0 0;
+}
+
+.current, .current li a
+{
+	background-color: #3E6DAD;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.smallredtext a, .smallgraytext a
+{
+	font-weight: bold;
+	color: #744216;
+}
+
+#changesTraining {
+}
+
+#changesTraining  h4 {
+    background-color: #FF9423;
+    color: black;
+}
+
+a.link-internal
+{
+    background-image: url("/img/article/intlink_1.gif");
+    background-position: left 3px;
+    background-repeat: no-repeat;
+    margin-left: 5px;
+    padding-left: 12px;
+}
+a.link-external
+{
+    background-image: url("/img/article/extlink_1.gif");
+    background-position: left 3px;
+    background-repeat: no-repeat;
+    margin-left: 5px;
+    padding-left: 12px;
+}
+
+a.phpwcmsIntLink {
+    background-image: url("/img/article/intlink_1.gif");
+    background-position: right 3px;
+    background-repeat: no-repeat;
+    margin-right: 2px;
+    padding-right: 17px;
+}
+a.phpwcmsExtLink {
+    background-image: url("/img/article/extlink_1.gif");
+    background-position: right 3px;
+    background-repeat: no-repeat;
+    margin-right: 2px;
+    padding-right: 17px;
+}
+.breadcrumb
+{
+	padding-top: 0.5em;
+}
+
+.dynCalendar {
+  background-color: #C0C0C0;
+  border: 1px outset #F0F0F0;
+  position: absolute;
+  visibility: hidden;
+  z-index: 10000;
+}

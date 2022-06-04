@@ -1,0 +1,261 @@
+/* module cmCalendar CSS - frontend calendar*/
+
+/*main container for the calendar(s)
+div*/
+#cmCalendarMainContainer {
+  position:relative;
+  width:210px; /*this will define in how many columns the month are displayed */
+  /*height:200px; recommended when using ajax*/
+}
+
+
+/*container for the (first) calendar
+div*/
+#cmCalendarContainer1 {
+  width:200px;
+  /*height:200px; when placing more than one in a row set height and check in all browsers*/
+  float:left;
+}
+/*container for the (second) calendar
+div*/
+#cmCalendarContainer2 {
+  width:200px;
+  /*height:200px; when placing more than one in a row set height and check in all browsers*/
+  float:left;
+}
+/*container for the (third) calendar
+div*/
+#cmCalendarContainer3 {
+  width:200px;
+  /*height:200px; when placing more than one in a row set height and check in all browsers*/
+  float:left;
+}
+/*container for the (forth) calendar
+div*/
+#cmCalendarContainer4 {
+  width:200px;
+  height:200px; /*when placing more than one in a row set height and check in all browsers*/
+  float:left;
+}
+
+
+/*current month view in mini calendar
+table*/
+.cmCalendar {
+  background: #FFF;
+  border:1px solid #cdcdcd;
+  border-collapse: separate;
+  border-spacing: 3px;
+  cursor: default;
+  margin: 10px auto 0 ;
+  overflow: hidden;
+  width: 200px;
+}
+
+/*title row
+table*/
+.cmCalendar .cmCalendarHead {
+  border-spacing:0px;
+  height:25px;
+  /*border:1px solid #000000;*/
+}
+
+/*month and year in title row
+table(.cmCalendar) td(.cmCalendarHead) table td*/
+.cmCalendar .cmCalendarMonth {
+  color: #333;
+  font-size:9px;
+  cursor: pointer;
+}
+.cmCalendar .cmCalendarMonth:hover {
+  /*background-color: #CCFF00;*/
+}
+
+/*left and right buttons in title row
+table(.cmCalendar) td(.cmCalendarHead) table td*/
+.cmCalendar .cmCalendarLeftButton, .cmCalendar .cmCalendarRightButton {
+  width:25px;
+  height:25px;
+  cursor: pointer;
+}
+.cmCalendar .cmCalendarLeftButton:hover, .cmCalendar .cmCalendarRightButton:hover {
+
+}
+
+/*weekday names
+table td*/
+.cmCalendar .cmCalendarDayname {
+  border: 0;
+  color: #2496E5;
+  font: normal 12px Arial, Helvetica, sans-serif;
+  height: 21px;
+  text-align: center;
+}
+
+/*fields without date
+table td*/
+.cmCalendar .cmCalendarOffsetday {
+	border:1px solid #cdcdcd;
+  height: 25px;
+}
+
+/*normal days
+table td*/
+.cmCalendar .cmCalendarDays {
+  text-align: center;
+  color: #333;
+  border:1px solid #cdcdcd;
+  height: 25px;
+}
+.cmCalendar .cmCalendarDays:hover {
+	/*background:#CCFF00;*/
+}
+
+/*sunday (overwirtes .cmCalendarDays)
+table td*/
+.cmCalendar .cmCalendarSunday {
+	background-color:#BDDCF8;
+}
+/*saturday (overwirtes .cmCalendarDays)
+table td*/
+.cmCalendar .cmCalendarSaturday {
+	/*background-color:#ffdddd;*/
+}
+
+
+/*avtive days
+table td*/
+.cmCalendar .cmActiveDaynoLink {
+  color:#2496E5;
+  cursor: pointer;
+}
+.cmCalendar .cmCalendarActiveday{
+  text-align: center;
+	border:1px solid #999;
+	background-color:#8FC5F4;
+  color:#FFF;
+  cursor: pointer;
+}
+.cmCalendar .cmCalendarActiveday:hover {
+	background:#2496E5;
+}
+.cmCalendar .cmCalendarActiveday a {
+  display:block;
+  color:#FFF;
+  text-decoration:none;
+}
+
+/*active day WITH articlelink (overwirtes .cmCalendarActiveday and .cmCalendarSunday )
+table td*/
+.cmCalendar .cmCalendarArticlelink {
+	/*border:1px solid #FFFF00;*/
+}
+
+/*today (overwirtes .cmCalendarDays and .cmCalendarActiveday and .cmCalendarSunday)
+table td*/
+.cmCalendar .today {
+	border:1px solid #2496E5;
+}
+
+
+/*ajax only*/
+
+/*month or year selection in ajax mini calendar
+table*/
+#cmMiniCalMonthTable, #cmMiniCalYearTable{
+  border-spacing:2px;
+  margin: 10px auto 0 ;
+  width: 200px;
+  background: #FFF;
+	border:1px solid #cdcdcd;
+  border-collapse: separate;
+  border-spacing: 3px;
+}
+
+/*month or year selection in ajax mini calendar - the cell with the title (year)
+table td*/
+.cmMiniCalMonthTitle, .cmMiniCalYearTitle {
+  text-align:center;
+  padding:5px;
+  border:1px solid #cdcdcd;
+	cursor: pointer;
+}
+.cmMiniCalMonthTitle:hover {
+	background:#2496E5;
+}
+
+/*month or year selection in ajax mini calendar - the cells with the values
+table td*/
+.cmMiniCalMonth, .cmMiniCalYear {
+	border:1px solid #cdcdcd;
+  padding:5px;
+	cursor: pointer;
+}
+.cmMiniCalMonth:hover, .cmMiniCalYear:hover {
+	background:#2496E5;
+}
+/*month or year selection in ajax mini calendar - the actual cell
+table td*/
+.cmMiniCalMonthActual {
+	border:1px solid #2496E5;
+  padding:5px;
+}
+
+/*day detailview in ajax mini calendar - depending on template*/
+
+/*container for all
+div*/
+.cmMiniCalDay {
+
+}
+
+/*titel row with links
+div*/
+.cmMiniCalDayHead {
+  border-bottom:1px solid #cdcdcd;
+  padding-bottom:5px;
+}
+
+/*container for the values
+div*/
+.cmMiniCalDayEntry {
+
+}
+.cmMiniCalDayEntry h2{
+  margin: 5px 0 3px 0;
+}
+
+/*container for date, time, location
+div*/
+.cmMiniCalDayDate {
+
+}
+
+/*container for teaset/description
+div*/
+.cmMiniCalDayDetail{
+  height:120px;
+  overflow:auto;
+}
+
+/*backlink
+div*/
+.cmMiniCalBacklink {
+  float:left;
+  padding:5px;
+  cursor: pointer;
+}
+.cmMiniCalBacklink:hover {
+	background:#CCFF00;
+}
+
+/*link to listing
+div*/
+.cmMiniCalListlink {
+  float:right;
+  padding:5px;
+  cursor: pointer;
+}
+.cmMiniCalListlink:hover {
+	background:#CCFF00;
+}

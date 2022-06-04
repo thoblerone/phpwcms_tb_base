@@ -1,0 +1,121 @@
+/* module calendar backend CSS */
+
+#BackendCalendar {
+width:200px;
+  height:180px;
+}
+
+/*title row
+table*/
+#BackendCalendar #cmCalendarHead {
+  border:1px solid #F3F5F8;
+  border-spacing:0px;
+  /*background-color: #000000;*/
+}
+
+/*month and year in title row 
+table(#cmCalendar) td(.cmCalendarHead) table td*/
+#BackendCalendar .cmCalendarMonth {
+  color: #000000;
+  font-size:9px;
+  padding:5px;
+  cursor: pointer;
+}
+#BackendCalendar .cmCalendarMonth:hover {
+  background-color: #CCFF00;
+}
+
+/*left and right buttons in title row 
+table(#cmCalendar) td(.cmCalendarHead) table td*/
+#BackendCalendar .cmCalendarLeftButton, #BackendCalendar .cmCalendarRightButton {
+  background-color: transparent;
+  color: #000000;
+  font-size:8px;
+  font-weight:bold;
+  width:25px;
+  /*height:25px;*/
+  cursor: pointer;
+}
+#BackendCalendar .cmCalendarLeftButton:hover, #BackendCalendar .cmCalendarRightButton:hover {
+  background-color: #CCFF00;
+}
+
+
+
+#BackendCalendar .dayname {
+	background:#F3F5F8;
+	  width:20px;
+  height:15px;
+}
+
+
+#BackendCalendar .offsetday {
+	background:#F3F5F8;
+	  width:20px;
+  height:15px;
+}
+
+#BackendCalendar .days {
+	border:1px solid #F3F5F8;
+	  width:20px;
+  height:15px;
+}
+
+#BackendCalendar .days:hover {
+	background:#CCFF00;
+}
+
+#BackendCalendar .days a {
+	display:block;
+}
+
+#BackendCalendar .activeday {
+	background-color: #FFCC33;
+	  width:20px;
+  height:15px;
+}
+
+#BackendCalendar .today {
+	border:1px solid #FF0000;
+}
+
+#BackendCalendar .activeday a {
+	display:block;
+}
+
+
+
+/*month or year selection in ajax mini calendar
+table*/
+#cmMiniCalMonthTable, #cmMiniCalYearTable{
+  border-spacing:2px;
+}
+
+/*month or year selection in ajax mini calendar - the cell with the title (year)
+table td*/
+.cmMiniCalMonthTitle, .cmMiniCalYearTitle {
+  text-align:center;
+  padding:5px;
+  border:1px solid #F3F5F8;
+	cursor: pointer;
+}
+.cmMiniCalMonthTitle:hover {
+	background:#CCFF00;
+}
+
+/*month or year selection in ajax mini calendar - the cells with the values
+table td*/
+.cmMiniCalMonth, .cmMiniCalYear {
+	border:1px solid #F3F5F8;
+  padding:5px;
+	cursor: pointer;
+}
+.cmMiniCalMonth:hover, .cmMiniCalYear:hover {
+	background:#CCFF00;
+}
+/*month or year selection in ajax mini calendar - the actual cell
+table td*/
+.cmMiniCalMonthActual{
+	border:1px solid #FF0000;
+  padding:5px;
+}

@@ -1,0 +1,50 @@
+/* CSS Document */
+.cmCalListing {
+  width:400px;
+}
+
+.cmCalListingHead {
+  width:400px;
+}
+
+.cmCalListingEntry {
+  position:relative;
+  float:left;
+}
+
+.cmCalListingEntry h2{
+  font-size:14px;
+  font-weight:bold;
+}
+
+.cmCalListingDate {
+  float:left;
+  width:100px;
+  height:80px;
+  background:#cdcdcd;
+  font-size:12px;
+  font-weight:bold;
+  padding:5px;
+  position:relative;
+}
+
+.cmCalListingDetail {
+  float:left;
+  width:270px;
+  padding:5px;
+}
+.cmCalListingiCal{
+  float:right;
+  width:20px;
+  height:20px;
+}
+
+.cmCalListingSpace {
+  clear:left;
+  border-bottom:1px solid #000000;
+}
+
+.cmCalListingDropdown {
+
+}
+

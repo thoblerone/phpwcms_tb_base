@@ -1,0 +1,51 @@
+<!--CALENDAR_LIST_ENTRY_START//-->
+
+	<div class="cmCalListingEntry">
+    <div class="cmCalListingDate"><div style="position:absolute;font-size:40px;font-weight:bold;color:#969696;">{FORMAT_DATE:j}</div><div style="position:absolute;bottom:5px;">{FORMAT_DATE:l}<br />[CALENDAR_DATE]{CALENDAR_DATE}[/CALENDAR_DATE]</div></div>
+  	<div class="cmCalListingDetail">
+    	[CALENDAR_ICAL]<div class="cmCalListingiCal">{CALENDAR_ICAL}</div>[/CALENDAR_ICAL]
+      [CALENDAR_TITLE]<h2>[LANG_TITLE]{LANG_TITLE}: [/LANG_TITLE]{CALENDAR_TITLE}</h2>[/CALENDAR_TITLE]
+    	[CALENDAR_TIME]<br />[LANG_TIME]{LANG_TIME}: [/LANG_TIME]{CALENDAR_TIME}[/CALENDAR_TIME][CALENDAR_SPAN] - {CALENDAR_SPAN}[/CALENDAR_SPAN]
+    	[CALENDAR_LOCATION]<br />[LANG_LOCATION]{LANG_LOCATION}: [/LANG_LOCATION]{CALENDAR_LOCATION}[/CALENDAR_LOCATION]
+    	[CALENDAR_DESCRIPTION]<br />[LANG_DESCRIPTION]{LANG_DESCRIPTION}: [/LANG_DESCRIPTION]{CALENDAR_DESCRIPTION}[/CALENDAR_DESCRIPTION]
+      [IMAGE]
+  		[ZOOM_ELSE]
+  			[IMAGE_URL]<a href="{IMAGE_URL}"{IMAGE_URL_TARGET}>[/IMAGE_URL]
+  				<img src="img/cmsimage.php/150x150x1/{IMAGE_ID}" alt="{IMAGE}" border="0" />
+  			[IMAGE_URL]</a>[/IMAGE_URL]
+  			[CAPTION]<p>{CAPTION}</p>[/CAPTION]
+  		[/ZOOM_ELSE]
+  		[ZOOM]
+  			<a href="img/cmsimage.php/600x400/{IMAGE_ID}" target="_blank"{LIGHTBOX}[LIGHTBOX_CAPTION] title="{LIGHTBOX_CAPTION}"[/LIGHTBOX_CAPTION]>
+  				<img src="img/cmsimage.php/100x100x1/{IMAGE_ID}" alt="{IMAGE}" border="0" />
+  			</a>
+  		[/ZOOM]		
+  	[/IMAGE]
+      [CALENDAR_ARTICLELINK]<br>{CALENDAR_ARTICLELINK}[/CALENDAR_ARTICLELINK]
+    </div>
+	</div>
+	
+<!--CALENDAR_LIST_ENTRY_END//-->
+
+<!--CALENDAR_LIST_ENTRY_SPACE_START//-->
+
+	<!-- space between CALENDAR items -->
+	<div class="cmCalListingSpace"></div>
+	
+<!--CALENDAR_LIST_ENTRY_SPACE_END//-->
+
+<!--CALENDAR_LIST_TOP_START//-->
+
+  <div class="cmCalListing">
+    <div class="cmCalListingHead">
+      <div style="float:left;">{PRINT_LINK} {ICAL_LINK}</div><div style="float:right;"> [LANG_SELECTION]{LANG_SELECTION}:[/LANG_SELECTION] {SELECTION_DROPDOWN}</div><div style="clear:left;"></div>
+    </div>
+[CALENDAR_ENTRIES]{CALENDAR_ENTRIES}[/CALENDAR_ENTRIES]
+
+<!--CALENDAR_LIST_TOP_END//-->
+
+<!--CALENDAR_LIST_BOTTOM_START//-->
+
+  </div><div style="clear:both;"></div>
+
+<!--CALENDAR_LIST_BOTTOM_END//-->
