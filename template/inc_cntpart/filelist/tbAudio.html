@@ -1,0 +1,54 @@
+<!--FILE_SETTINGS_START//-->
+; this is formatted like WIN.INI
+; please: do not use comments for value lines
+icon_path 		= "img/icons/"
+icon_name 		= "small_icon_{FILE_EXT}.gif"
+file_size_round	= 1
+file_size_space = " "
+date_format		= "%Y-%m-%d"
+set_locale		= "de_DE@Euro"
+<!--FILE_SETTINGS_END//-->
+[TITLE]<h3>{TITLE}</h3>
+[/TITLE][SUBTITLE]<h4>{SUBTITLE}</h4>
+[/SUBTITLE]
+<!--FILE_ENTRY_START//-->
+<div class="tbAudioEntry">
+	<div>
+<!--
+      Bezeichnung          {TAG............}      [Beispiel....................]
+      ====================+======================+==============================
+      FILE_ICON:           {FILE_ICON}            [img/icons/small_icon_pix.gif]
+      FILE_IMAGE:          {FILE_IMAGE}           [content/images/7c25932294ae4e89df1dabf651df06ef.jpg]
+      FILE_LINK:           {FILE_LINK}            [download.php?f=3769b40d14b0a2e01872947a773fdc46]
+      FILE_TARGET:         {FILE_TARGET}          [target="_blank"]
+      FILE_TITLE:          {FILE_TITLE}           [File-Title]
+      FILE_NAME:           {FILE_NAME}            [File-Name]
+      FILE_ID:             {FILE_ID}              [136]        (Ab V1.4.2 r353)
+      FILE_IMAGE_WIDTH:    {FILE_IMAGE_WIDTH}     [600]        (Ab V1.4.2 r352)
+      FILE_IMAGE_HEIGHT:   {FILE_IMAGE_HEIGHT}    [800]        (Ab V1.4.2 r352)
+      FILE_IMAGE_MIME:     {FILE_IMAGE_MIME}      [image/jpeg] (Ab V1.4.2 r352)
+      FILE_IMAGE_CHANNEL:  {FILE_IMAGE_CHANNEL}   [RGB]        (Ab V1.4.2 r352)
+      FILE_IMAGE_LANDSCAPE:{FILE_IMAGE_LANDSCAPE} []           (if width >= height)  (Ab V1.4.2 r352)
+      FILE_IMAGE_PORTRAIT: {FILE_IMAGE_PORTRAIT}  [portrait]   (if width <  height)  (Ab V1.4.2 r352)
+
+      FILE_DESCRIPTION:  {FILE_DESCRIPTION}   [File-Description]
+      FILE_EXT:          {FILE_EXT}           [jpg]
+      FILE_SIZE:         {FILE_SIZE}          [12.3K]
+      FILE_DATE:         {FILE_DATE}          [08/26/09]
+      FILE_DOWNLOADS:    {FILE_DOWNLOADS}     [2]
+//-->
+		[FILE_IMAGE]{FILE_IMAGE}[/FILE_IMAGE]
+		[FILE_DESCRIPTION]{FILE_DESCRIPTION}/{FILE_NAME}[/FILE_DESCRIPTION]
+		<audio controls preload="metadata">
+			<source src="{FILE_LINK}" type="audio/mpeg"> 
+
+			Ihr Browser unterstützt leider nicht das direkte Abspielen dieser Audio-Datei.
+			Sie können Sie aber mit <a href="{FILE_LINK}">diesem Link herunterladen und starten.</a>
+		</audio>		
+		
+	
+	</div>
+
+	</p>
+</div>
+<!--FILE_ENTRY_END//-->

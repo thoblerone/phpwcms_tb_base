@@ -1,0 +1,158 @@
+﻿<!-- NOTICE: Convert file to charset of site -->
+<!--LOGIN_SETTINGS_START//-->
+; this is formatted like WIN.INI
+; please: do not use comments for value lines
+; Cookie expire set to 90 days
+date_format        = "%d/%m/%y"
+set_locale        = "de_DE"
+cookie_expire    = 7776000
+<!--LOGIN_SETTINGS_END//-->
+ <!--LOGIN_FORM_START//-->
+<div class="feLoginForm">
+[ERROR]
+    <br />
+    <h3 style="color:red">Anmeldefehler:</style></h3>
+    <p class="error">
+        Anmeldename und/oder Passwort ist/sind nicht richtig. <br />
+        Sollten Sie Ihren Anmeldenamen und/oder Passwort vergessen haben, <br />
+        senden Sie uns bitte eine [ID kontakt]E-Mail[/ID].
+		<br />
+    </p>
+    [/ERROR][ERROR_ELSE]
+    <h2>Bitte melden Sie sich an:</h2>
+    <p>
+		In diesem nicht &ouml;ffentlichen Bereich unseres Angebots werden die freien Trainingszeiten koordiniert. <br />
+		Er ist daher nur f&uuml;r angemeldete Mitglieder zug&auml;nglich.
+	</p>
+	<p>
+        Bitte geben Sie Ihre Anmeldedaten ein!
+    </p>
+[/ERROR_ELSE]
+    <form action="{FORM_TARGET}#anmeldung" method="post" name="feLoginForm" id="feLoginForm">
+ 
+            <label for="feLogin">Benutzername:</label>
+            <input type="text" name="feLogin" id="feLogin" value="{LOGIN}" />
+ 
+            <label for="fePassword">Passwort:</label>
+            <input type="password" name="fePassword" id="fePassword" value="{PASSWORD}" />
+ 
+            <div class="ku_login">
+            <input class= "logInButton" type="submit" value="Anmelden" name="feSubmit" id="feSubmit" />
+            </div>
+    </form>
+ 
+    <div class="link-unten">
+ 
+	<p><a class="link-internal" href="{REMINDER_FORM}">Benutzername/Passwort vergessen?</a> Oder Sie senden  uns eine [ID kontakt]E-Mail[/ID].</p>
+	[REGISTER_PROFILE]<p><a class="link-internal" href="{REGISTER_PROFILE}">Hier k&ouml;nnen Sie einen Zugang beantragen.</a></p>[/REGISTER_PROFILE]
+ </div>
+ 
+</div>
+<!--LOGIN_FORM_END//-->
+ 
+<!--LOGIN_IS_START//-->
+<div class="feLoggedIn">
+
+	<p>Sie sind angemeldet als <strong>{LOGIN}</strong>
+	  [MANAGE_PROFILE]<p>Sie k&ouml;nnen Ihr <a href="trainingsbuch-profil-bearbeiten.html?profile_manage=edit">Profil hier bearbeiten</a></p>[/MANAGE_PROFILE]
+	  [MANAGE_PROFILE_ELSE]<p>Die selbsts&auml;ndige Benutzerverwaltung ist abgeschaltet.</p>[/MANAGE_PROFILE_ELSE] 
+    <br />	
+    <form action="{FORM_TARGET}#anmeldung" method="post" name="feLoginForm" id="feLoginForm">	<input type="submit" value="Logout" name="feLogout" id="feLogout" class="button" /></p>
+	</form>
+
+</div>
+<!--LOGIN_IS_END//-->
+
+<!--PROFILE_REGISTER_START//-->
+	
+	<h2>Zugang anlegen</h2>
+
+	{FE_USER_REGISTER}
+
+<!--PROFILE_REGISTER_END//-->
+
+<!--PROFILE_MANAGE_START//-->
+	
+	<h2>Zugangsdaten bearbeiten</h2>
+
+	{FE_USER_MANAGE}
+	
+	<hr />
+
+	<form action="{FORM_TARGET}#anmeldung" method="post" name="feLoginForm" id="feLoginForm">
+		<p class="button">
+			<input type="submit" value="Logout" name="feLogout" id="feLogout" />
+		</p>
+	</form>
+
+<!--PROFILE_MANAGE_END//-->
+
+<!--REMINDER_FORM_START//-->
+<div class="feLoginForm">
+
+	[ERROR]
+	<h3>Reminder error:</h3>
+	<p class="error">
+		Bitte &uuml;berpr&uuml;fen Sie Ihre Angaben. Sie m&uuml;ssen einen g&uuml;ltigen Benutzernamen oder eine angemeldete E-Mail-Adresse verwenden!
+	</p>
+	[/ERROR][ERROR_ELSE]
+	<h3>Reminder:</h3>
+	<p>
+		Falls Sie Ihr Passwort vergessen haben, geben Sie bitte Ihren Benutzernamen an. Wir senden Ihnen dann ein anderes Passwort zu.
+		Falls Sie Ihre Login-Daten vergessen haben, geben Sie bitte die E-Mail Adresse an, die Sie bei der Registrierung verwendet haben.
+	</p>
+	[/ERROR_ELSE]
+
+	<form action="{FORM_TARGET}#anmeldung" method="post" name="feLoginForm" id="feLoginForm">
+	
+		<p class="field">
+			<label for="feReminder">Benutzername oder E-Mail:</label>
+			<input type="text" name="feReminder" id="feReminder" value="{REMINDER}" />
+		</p>
+		<p class="button">
+			<input type="submit" value="Daten anfordern" name="feSubmit" id="feSubmit" />
+		</p>
+	
+	</form>
+	
+	<p><a href="{LOGIN_URL}">zur&uuml;ck zum Login</a></p>
+
+</div>
+<!--REMINDER_FORM_END//-->
+
+<!--REMINDER_SUCCESS_START//-->
+	
+	<h3>Zugangsdaten verloren</h3>
+	<p>Ihre Anfrage war erfolgreich. Wir haben Ihnen eine E-Mail mit den Zugangsinformationen gesendet.</p>
+	
+	<p><a href="{LOGIN_URL}">zum Login</a></p>
+
+<!--REMINDER_SUCCESS_END//-->
+
+
+<!--REMINDER_EMAIL_START//-->
+[SUBJECT]
+	TSF Essen Trainingsbuch: Logindaten
+[/SUBJECT]
+
+[LOGIN_EMAIL]
+Sie haben Ihre Zugangsdaten angefordert.
+
+Ihr Benutzername: {LOGIN}
+Ihr Kennwort wurde nicht geändert. Wenn Sie es vergessen haben, nutzen Sie bitte die Erinnerungsfunktion mit o.g. Benutzernamen.
+
+{LOGIN_URL}
+
+[/LOGIN_EMAIL]
+
+[PASSWORD_EMAIL]
+Sie haben Ihre Zugangsdaten angefordert, weil das Passwort vergessen wurde.
+
+Daher haben wir für sie ein neues Passwort erstellt: {PASSWORD}
+
+Bitte ändern Sie beim nächsten einloggen:
+
+{LOGIN_URL}
+
+[/PASSWORD_EMAIL]
+<!--REMINDER_EMAIL_END//-->

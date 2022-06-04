@@ -1,0 +1,36 @@
+<!--IMAGES_HEADER_START//-->
+
+[TITLE]<h1>{TITLE}</h1>[/TITLE]
+[SUBTITLE]<h2>{SUBTITLE}</h2>[/SUBTITLE]
+[TEXT]{TEXT}[/TEXT]
+
+<div class="slider" id="slider_container_{ID}">
+	<div id="slider_{ID}" class="inner">  
+<!--IMAGES_HEADER_END//-->
+
+
+<!--IMAGES_ENTRY_START//-->
+[ZOOM]
+		<div class="imageEntry" style="float:left;padding:5px;margin:5px 5px 0 0;">
+			<a href="{IMAGE_ABS}" {LIGHTBOX_CAPTION}target="_blank"{LIGHTBOX}><img src="{THUMB_ABS}" alt="{THUMB_NAME}" border="0" /></a>
+		</div>
+[/ZOOM][ZOOM_ELSE]
+		[IMAGE_URL]<a href="{IMAGE_URL}"{IMAGE_TARGET}>[/IMAGE_URL]<img src="{THUMB_ABS}" alt="{THUMB_NAME}" border="0" />[IMAGE_URL]</a>[/IMAGE_URL]
+[/ZOOM_ELSE]
+<!--IMAGES_ENTRY_END//-->
+
+
+<!--IMAGES_ENTRY_SPACER_START//--><!--IMAGES_ENTRY_SPACER_END//-->
+
+
+<!--IMAGES_ROW_SPACER_START//-->
+		<br style="clear:both" />
+<!--IMAGES_ROW_SPACER_END//-->
+
+
+<!--IMAGES_FOOTER_START//-->
+	</div>
+	<br style="clear:both" />
+</div>
+
+<!--IMAGES_FOOTER_END//-->
