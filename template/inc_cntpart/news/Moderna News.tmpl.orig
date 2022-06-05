@@ -1,0 +1,125 @@
+<!--NEWS_SETTINGS_START//-->
+; how many news should be listed per row
+news_per_row = 1
+
+; teaser text rendered as <p></p> = p
+; or just line break to <br> = br
+news_teaser_text = br
+
+; template for files - the same as used
+; for content part files , default:
+; files_template_list = default
+files_template_list = default
+files_template_detail = default
+files_direct_download = 0
+<!--NEWS_SETTINGS_END//-->
+
+
+<!--NEWS_LIST_START//-->
+[TITLE]<h3 style="clear:both;">{TITLE}</h3>[/TITLE]
+[SUBTITLE]<h4>{SUBTITLE}</h4>[/SUBTITLE]
+[NEWS_ENTRIES]{NEWS_ENTRIES}[/NEWS_ENTRIES]
+[NEWS_ENTRIES_ELSE]
+<p>Keine aktuelle Meldung verf&uuml;gbar.</p>
+<p>[ID NEWS]zum Archiv[/ID][/NEWS_ENTRIES_ELSE]
+<!--NEWS_LIST_END//-->
+
+
+<!--NEWS_LIST_ENTRY_START//-->
+	<!-- 
+		Changedate: {DATE:m/d/Y H:i:s lang=EN}
+		Livedate:   {LIVEDATE:d.m.Y H:i:s lang=EN}
+		Killdate:   {KILLDATE:d.m.Y H:i:s lang=EN}
+		Sortdate:   {SORTDATE:d.m.Y H:i:s lang=EN}
+		            {SORTDATE:d. M Y lang=DE}
+	//-->
+	<div class="newsEntryBoxed[PRIO] prio{PRIO}[/PRIO][FIRST] firstEntry[/FIRST]">
+	[NEWS_TITLE]<h4>{NEWS_TITLE}</h4>[/NEWS_TITLE]
+	[NEWS_SUBTITLE]<p><strong>{NEWS_SUBTITLE}</strong></p>[/NEWS_SUBTITLE]
+	[NEWS_TOPIC]<!--p topic><strong>{NEWS_TOPIC}</strong></p -->[/NEWS_TOPIC]
+<<<<<<< HEAD
+	[NEWS_TEASER]<!-- Teaser: {SORTDATE:d. M Y lang=DE}--><p>
+		[PHP]echo htmlentities (  utf8_encode("{SORTDATE:d. M Y lang=DE}"));[/PHP]: {NEWS_TEASER}</p>[/NEWS_TEASER]
+	[NEWS_TEASER_ELSE][NEWS_TEXT]<!-- Text: --><p>[PHP]echo htmlentities ( "{SORTDATE:d. M Y lang=DE}");[/PHP]: {NEWS_TEXT}</p>[/NEWS_TEXT][/NEWS_TEASER_ELSE]
+=======
+	[NEWS_TEASER]<!-- Teaser: {SORTDATE:d. M Y lang=DE}--><p>{SORTDATE:d. M Y lang=DE}: {NEWS_TEASER}</p>[/NEWS_TEASER]
+	[NEWS_TEASER_ELSE][NEWS_TEXT]<!-- Text: --><p>{SORTDATE:d. M Y lang=DE}: {NEWS_TEXT}</p>[/NEWS_TEXT][/NEWS_TEASER_ELSE]
+>>>>>>> tsf-anpassungen
+	[URL]<!-- "URL" Weiter-Link -->
+		<p class="link"><a class="phpwcmsIntLink" href="{URL}"{URL_TARGET}>[URL_TEXT]{URL_TEXT}[/URL_TEXT][URL_TEXT_ELSE]weiter[/URL_TEXT_ELSE]</a></p>
+	[/URL][URL_ELSE]
+		[NEWS_DETAIL_LINK]<!-- "Details" Weiter-Link -->
+			<p class="link"><a class="phpwcmsIntLink" href="{NEWS_DETAIL_LINK}">weiter</a></p>
+		[/NEWS_DETAIL_LINK]
+	[/URL_ELSE]
+	[IMAGE]<!-- kein Bild in diesem Template -->[/IMAGE]
+	[AUTHOR]<!-- Autor- und Ort in diesem Template ueberfluessig -->[/AUTHOR]
+	[FILES]<!-- Dateifunktion in diesem Template ueberfluessig -->[/FILES]
+
+	</div>
+<!--NEWS_LIST_ENTRY_END//-->
+
+
+<!--NEWS_LIST_ENTRY_SPACE_START//-->
+
+	<!-- space between news items -->
+
+<!--NEWS_LIST_ENTRY_SPACE_END//-->
+
+<!--NEWS_LIST_ROW_SPACE_START//-->
+
+	<!-- space between rows of news items -->
+
+<!--NEWS_LIST_ROW_SPACE_END//-->
+
+
+<!--NEWS_LIST_START//-->
+[TITLE]<h3>{TITLE}</h3>[/TITLE]
+[SUBTITLE]<h4>{SUBTITLE}</h4>[/SUBTITLE]
+[NEWS_ENTRIES]{NEWS_ENTRIES}[/NEWS_ENTRIES]
+<!--NEWS_LIST_END//-->
+
+
+<!--NEWS_DETAIL_START//-->
+<div class="news">
+	<div class="news-header">
+		[TITLE]<h3>{TITLE}</h3>[/TITLE]
+		[SUBTITLE]<h4>{SUBTITLE}</h4>[/SUBTITLE]
+	</div>
+	<!-- 
+		Changedate: {DATE:m/d/Y H:i:s lang=EN}
+		Livedate:   {LIVEDATE:d.m.Y H:i:s lang=EN}
+		Killdate:   {KILLDATE:d.m.Y H:i:s lang=EN}
+		Sortdate:   {SORTDATE:d.m.Y H:i:s lang=EN}
+	//-->
+	[NEWS_TITLE]<h1>{NEWS_TITLE}</h1>[/NEWS_TITLE]
+	[NEWS_SUBTITLE]<h2>{NEWS_SUBTITLE}</h2>[/NEWS_SUBTITLE]
+	[NEWS_TOPIC]<p>
+		<strong>{NEWS_TOPIC}</strong>[AUTHOR], {AUTHOR}[PLACE], {PLACE}[/PLACE][/AUTHOR][AUTHOR_ELSE][PLACE], {PLACE}[/PLACE][/AUTHOR_ELSE]
+	</p>[/NEWS_TOPIC]
+	[IMAGE]
+		[ZOOM_ELSE]
+			[IMAGE_URL]<a href="{IMAGE_URL}"{IMAGE_URL_TARGET}>[/IMAGE_URL]
+				<img src="img/cmsimage.php/150x150x0/{IMAGE_ID}" alt="{IMAGE}" border="0" />
+			[IMAGE_URL]</a>[/IMAGE_URL]
+			[CAPTION]<p>{CAPTION}</p>[/CAPTION]
+		[/ZOOM_ELSE]
+		[ZOOM]
+			<a href="img/cmsimage.php/600x400/{IMAGE_ID}" target="_blank"{LIGHTBOX}[LIGHTBOX_CAPTION] title="{LIGHTBOX_CAPTION}"[/LIGHTBOX_CAPTION]>
+				<img src="img/cmsimage.php/150x150x0/{IMAGE_ID}" alt="{IMAGE}" border="0" />
+			</a>
+		[/ZOOM]		
+	[/IMAGE]
+	[NEWS_TEXT]{NEWS_TEXT}[/NEWS_TEXT]
+	[NEWS_TEXT_ELSE][NEWS_TEASER]{NEWS_TEASER}[/NEWS_TEASER][/NEWS_TEXT_ELSE]
+	[URL]
+		<p><a class="phpwcmsIntLink" href="{URL}"{URL_TARGET}>[URL_TEXT]{URL_TEXT}[/URL_TEXT][URL_TEXT_ELSE]weiter[/URL_TEXT_ELSE]</a></p>
+	[/URL]
+	[FILES]{FILES}[/FILES]
+	
+	[NEWS_LIST_LINK]
+		<p><a class="phpwcmsIntLink" href="{NEWS_LIST_LINK}">zur&uuml;ck</a></p>
+	[/NEWS_LIST_LINK]
+	
+</div>
+<!--NEWS_DETAIL_END//-->
