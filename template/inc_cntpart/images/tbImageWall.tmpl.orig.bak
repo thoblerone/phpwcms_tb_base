@@ -24,7 +24,11 @@ General data:
         height/width max: {THUMB_HEIGHT_MAX}px/{THUMB_WIDTH_MAX}px
         columns:          {THUMB_COLUMNS}
 		Space:			  {SPACE}
+<<<<<<< HEAD
 		Zoom:			  {ZOOM}
+		
+		
+=======
 -->
 <!--IMAGES_HEADER_END//-->
 
@@ -33,6 +37,7 @@ General data:
 <!--IMAGES_ENTRY_START//-->[COPYRIGHT]copyr:{COPYRIGHT}[/COPYRIGHT]
 <!--   This data is available
 	
+>>>>>>> tsf-anpassungen
 Individual image data inide IMAGES_ENTRY Block
         image ID:         {IMAGE_ID}
         image Hash:       {IMAGE_HASH}
@@ -57,9 +62,16 @@ Individual image data inide IMAGES_ENTRY Block
         height/width:     {IMAGE_HEIGHT}px/{IMAGE_WIDTH}px
 		Lightbox:         {LIGHTBOX}
       [/ZOOM]
+<<<<<<< HEAD
+-->
+<!--IMAGES_HEADER_END//-->
 
+ 
+
+<!--IMAGES_ENTRY_START//-->[COPYRIGHT]copyr:{COPYRIGHT}[/COPYRIGHT][PHP]
+=======
 -->[PHP]
-
+>>>>>>> tsf-anpassungen
 // suche die kleinste Spalte
 $nextColumnIndex = array_keys($GLOBALS['arrColumnTop'], min($GLOBALS['arrColumnTop']));
 $GLOBALS['nextColumnIndex'] = $nextColumnIndex[0];

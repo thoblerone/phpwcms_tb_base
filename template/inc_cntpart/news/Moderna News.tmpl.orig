@@ -37,14 +37,9 @@ files_direct_download = 0
 	[NEWS_TITLE]<h4>{NEWS_TITLE}</h4>[/NEWS_TITLE]
 	[NEWS_SUBTITLE]<p><strong>{NEWS_SUBTITLE}</strong></p>[/NEWS_SUBTITLE]
 	[NEWS_TOPIC]<!--p topic><strong>{NEWS_TOPIC}</strong></p -->[/NEWS_TOPIC]
-<<<<<<< HEAD
 	[NEWS_TEASER]<!-- Teaser: {SORTDATE:d. M Y lang=DE}--><p>
 		[PHP]echo htmlentities (  utf8_encode("{SORTDATE:d. M Y lang=DE}"));[/PHP]: {NEWS_TEASER}</p>[/NEWS_TEASER]
 	[NEWS_TEASER_ELSE][NEWS_TEXT]<!-- Text: --><p>[PHP]echo htmlentities ( "{SORTDATE:d. M Y lang=DE}");[/PHP]: {NEWS_TEXT}</p>[/NEWS_TEXT][/NEWS_TEASER_ELSE]
-=======
-	[NEWS_TEASER]<!-- Teaser: {SORTDATE:d. M Y lang=DE}--><p>{SORTDATE:d. M Y lang=DE}: {NEWS_TEASER}</p>[/NEWS_TEASER]
-	[NEWS_TEASER_ELSE][NEWS_TEXT]<!-- Text: --><p>{SORTDATE:d. M Y lang=DE}: {NEWS_TEXT}</p>[/NEWS_TEXT][/NEWS_TEASER_ELSE]
->>>>>>> tsf-anpassungen
 	[URL]<!-- "URL" Weiter-Link -->
 		<p class="link"><a class="phpwcmsIntLink" href="{URL}"{URL_TARGET}>[URL_TEXT]{URL_TEXT}[/URL_TEXT][URL_TEXT_ELSE]weiter[/URL_TEXT_ELSE]</a></p>
 	[/URL][URL_ELSE]
