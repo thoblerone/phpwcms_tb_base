@@ -91,7 +91,8 @@ function cmShowArticles($loc_art, $name, $noart, $width=200) {
 }
 
 if(!function_exists("render_date")){
-  function render_date($text='', $date, $rt='DATE') {
+  function render_date($text='', $date, $rt='DATE') {	// TB: Funktion müsste überflüssig sein, da stets in 
+	// \include\inc_front\front.func.inc.php definiert
   	// render date by replacing placeholder tags by value
   	$rt = preg_quote($rt);
   	$text = preg_replace('/\{'.$rt.':(.*?) lang=(..)\}/e', 'international_date_format("$2","$1","'.$date.'")', $text);

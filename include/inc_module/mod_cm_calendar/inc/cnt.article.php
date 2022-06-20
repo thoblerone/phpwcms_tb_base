@@ -642,8 +642,44 @@ case 1 :
         } else {
     		  $plugin["eventlisting"]["formatdate"]["text"] = '{DATE:'.$cal->langInfo['cm_lang_dateformat'].' lang='.$cal->langInfo['cm_lang_langloc'].'}';
           $plugin["eventlisting"]["formatdate"]["datestrrepl"] = render_date($plugin["eventlisting"]["formatdate"]["text"], strtotime($value['cm_events_date']), 'DATE');
-          $plugin["eventlisting"]["output"] = preg_replace('/\{FORMAT_DATE:(.*?)\}/e','render_date("{FORMAT_DATE:$1 lang='.$cal->langInfo['cm_lang_langloc'].'}", '.strtotime($value['cm_events_date']).', "FORMAT_DATE")', $plugin["eventlisting"]["output"]);
+          // original-code: $plugin["eventlisting"]["output"] = preg_replace('/\{FORMAT_DATE:(.*?)\}/e','render_date("{FORMAT_DATE:$1 lang='.$cal->langInfo['cm_lang_langloc'].'}", '.strtotime($value['cm_events_date']).', "FORMAT_DATE")', $plugin["eventlisting"]["output"]);
+          // PHP 7 erlaubt preg_replace mit option /e nicht mehr. Die Änderung für die vorige Zeile ist wie folgt.
+		  // Achtung: dies ist nur der wichtigste von mehreren Fixes, es gibt drei weitere, die beim TSF z.Zt. nicht verwendet werden:
+		  //          Zeile 641 (Kalender-Listing mit cm_events_dat_undef)
+		  //		  Zeile 933 (Calendar-Teaser-Listing mit cm_events_dat_undef)
+		  //          Zeile 937 (normales Calendar-Teaser-Listing)
+		  $plugin["eventlisting"]["output"] = preg_replace_callback('/\{FORMAT_DATE:(.*?)\}/', 
+				function ($matches) use($value, $cal)
+				{
+					// return var_dump($matches); =>					
+					// array(2) {
+					//   [0]=>
+					//   string(19) "{FORMAT_DATE:Y-m-d}"
+					//   [1]=>
+					//   string(5) "Y-m-d"
+					// }					
+					
+					//return strtolower($matches[0]);
+					
+					// 	$matchdump = print_r(
+					// 	array (
+					// 		0 => "@661",
+					// 		1 => $matches,
+					// 		2 => $value['cm_events_date'],
+					// 		3 => strtotime($value['cm_events_date']),
+					// 		4 => $cal->langInfo['cm_lang_langloc'],
+					// 		5 => $value
+					// 		));
+					// 	
+					
+					return 
+						//"<!--@669: ". $matchdump . " -->" .
+
+						render_date("{FORMAT_DATE:".$matches[1]."}", strtotime($value['cm_events_date']), "FORMAT_DATE");
+				}, 
+				$plugin["eventlisting"]["output"]);
         }
+
 
         //special date formats
         $plugin["eventlisting"]["output"]  = render_cnt_template($plugin["eventlisting"]["output"], 'LANG_DATE', html_specialchars($cal->langInfo['cm_lang_date']));
