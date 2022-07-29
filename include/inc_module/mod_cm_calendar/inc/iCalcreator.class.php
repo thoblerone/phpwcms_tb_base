@@ -641,9 +641,9 @@ class vcalendar {
       case 'URL':
             /* remote file - URL */
         $value     = trim( $value );
-        $value     = str_replace( 'HTTP://',   'http://', $value );
-        $value     = str_replace( 'WEBCAL://', 'http://', $value );
-        $value     = str_replace( 'webcal://', 'http://', $value );
+        $value     = str_replace( 'HTTP://',   'https://', $value );
+        $value     = str_replace( 'WEBCAL://', 'https://', $value );
+        $value     = str_replace( 'webcal://', 'https://', $value );
         $this->url = $value;
         $this->directory = null;
         $parts     = pathinfo( $value );

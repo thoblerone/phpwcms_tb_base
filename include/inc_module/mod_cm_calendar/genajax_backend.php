@@ -16,7 +16,7 @@
 // load general configuration
 $path = dirname(dirname(dirname(realpath(dirname(__FILE__)))));
 $phpwcms = array();
-require_once ($path.'/config/phpwcms/conf.inc.php');
+require_once ($path.'/include/config/conf.inc.php');
 require_once ($path.'/include/inc_lib/default.inc.php');
 require_once ($path.'/include/inc_lib/general.inc.php');
 require_once ($path.'/include/inc_lib/dbcon.inc.php');

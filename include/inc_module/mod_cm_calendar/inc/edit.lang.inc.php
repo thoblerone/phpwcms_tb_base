@@ -253,7 +253,7 @@ if (!defined('PHPWCMS_ROOT')) {
   <tr><td colspan="3" class="rowspacer0x7"><img src="img/leer.gif" alt="" width="1" height="1" /></td></tr>
 	<tr><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="10" /></td></tr>
 
-  <tr><td align="right" class="chatlist"><?php echo $BLM['lang_dateformat'] ?>:&nbsp;</td><td><input type="text" name="cm_lang_dateformat" class="v12" style="width:200px;" size="20" maxlength="200" value="<?php echo $plugin['data']['lang']['cm_lang_dateformat'] ?>" />&nbsp;<a href="http://www.php.net/manual/function.date.php" target="_blank">Reference</a></td></tr>
+  <tr><td align="right" class="chatlist"><?php echo $BLM['lang_dateformat'] ?>:&nbsp;</td><td><input type="text" name="cm_lang_dateformat" class="v12" style="width:200px;" size="20" maxlength="200" value="<?php echo $plugin['data']['lang']['cm_lang_dateformat'] ?>" />&nbsp;<a href="https://www.php.net/manual/function.date.php" target="_blank">Reference</a></td></tr>
   <tr><td align="right" class="chatlist"><?php echo $BLM['lang_undf'] ?>:&nbsp;</td><td><input type="text" name="cm_lang_undf" class="v12" style="width:200px;" size="20" maxlength="200" value="<?php echo $plugin['data']['lang']['cm_lang_undf'] ?>" />&nbsp;<?php echo $BLM['lang_undf_exmpl'] ?></td></tr>
 
 	<tr><td colspan="3"><img src="img/leer.gif" alt="" width="1" height="10" /></td></tr>

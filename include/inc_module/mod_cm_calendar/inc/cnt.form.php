@@ -117,7 +117,7 @@ if(empty($content['cm_calendar']['cals'])) {
 
 //header additions
 $BE['HEADER'][] = '<link rel="stylesheet" type="text/css" href="include/inc_module/mod_cm_calendar/template/msdropdown/dd.css">
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <script type="text/javascript" src="include/inc_module/mod_cm_calendar/template/msdropdown/js/jquery.dd.js"></script>';
 
 ?>

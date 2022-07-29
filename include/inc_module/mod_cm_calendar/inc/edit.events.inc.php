@@ -22,7 +22,7 @@ if (!defined('PHPWCMS_ROOT')) {
 
 $BE['HEADER'][] = '<link rel="stylesheet" media="screen" type="text/css" href="include/inc_module/mod_cm_calendar/template/datepicker/css/datepicker.css">
 
-<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 <script type="text/javascript" src="include/inc_module/mod_cm_calendar/template/datepicker/js/datepicker.js"></script>
 
 
